@@ -2,6 +2,7 @@ import Foundation
 
 public enum RemoteFeedLoaderError {
     case connectivity
+    case invalidData
 }
 
 public final class RemoteFeedLoader {
@@ -14,8 +15,14 @@ public final class RemoteFeedLoader {
     }
     
     public func load(completion: @escaping (RemoteFeedLoaderError) -> Void) {
-        client.get(from: url) { _ in
-            completion(.connectivity)
+        client.get(from: url) { result in
+            switch result {
+            case .success:
+                completion(.invalidData)
+                
+            case .failure:
+                completion(.connectivity)
+            }
         }
     }
 }
