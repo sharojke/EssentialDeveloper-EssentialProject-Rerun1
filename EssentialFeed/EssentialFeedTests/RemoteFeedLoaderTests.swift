@@ -4,12 +4,18 @@ import XCTest
 // swiftlint:disable force_unwrapping
 
 private final class HTTPClientSpy: HTTPClient {
-    var requestedURLs = [URL]()
-    var capturedCompletions = [(Error) -> Void]()
+    private var messages = [(url: URL, completion: (Error) -> Void)]()
+    
+    var requestedURLs: [URL] {
+        return messages.map { $0.url }
+    }
     
     func get(from url: URL, completion: @escaping (Error) -> Void) {
-        requestedURLs.append(url)
-        capturedCompletions.append(completion)
+        messages.append((url, completion))
+    }
+    
+    func complete(with error: Error, at index: Int = 0) {
+        messages[index].completion(error)
     }
 }
 
@@ -46,7 +52,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         sut.load { receivedErrors.append($0) }
         
         let error = NSError(domain: "a domain", code: .zero)
-        client.capturedCompletions.first?(error)
+        client.complete(with: error)
         
         XCTAssertEqual(receivedErrors, [.connectivity])
     }
