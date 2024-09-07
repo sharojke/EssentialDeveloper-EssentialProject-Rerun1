@@ -1,30 +1,13 @@
+import EssentialFeed
 import XCTest
 
 // swiftlint:disable force_unwrapping
-
-protocol HTTPClient {
-    func get(from url: URL)
-}
 
 private final class HTTPClientSpy: HTTPClient {
     var requestedURL: URL?
     
     func get(from url: URL) {
         requestedURL = url
-    }
-}
-    
-final class RemoteFeedLoader {
-    private let url: URL
-    private let client: HTTPClient
-    
-    init(url: URL, client: HTTPClient) {
-        self.url = url
-        self.client = client
-    }
-    
-    func load() {
-        client.get(from: url)
     }
 }
 
