@@ -19,7 +19,7 @@ private final class HTTPClientSpy: HTTPClient {
         messages[index].completion(.failure(error))
     }
     
-    func complete(with statusCode: Int, data: Data = Data(), at index: Int = 0) {
+    func complete(with statusCode: Int, data: Data, at index: Int = 0) {
         let message = messages[index]
         let response = HTTPURLResponse(
             url: message.url,
@@ -72,7 +72,8 @@ final class RemoteFeedLoaderTests: XCTestCase {
         let statusCodes = [199, 201, 300, 400, 500]
         statusCodes.enumerated().forEach { index, statusCode in
             expect(sut, toCompleteWithResult: .failure(.invalidData)) {
-                client.complete(with: statusCode, at: index)
+                let json = makeItemsJSON([])
+                client.complete(with: statusCode, data: json, at: index)
             }
         }
     }
