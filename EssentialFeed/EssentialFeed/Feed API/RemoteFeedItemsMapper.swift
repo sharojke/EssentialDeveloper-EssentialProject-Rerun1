@@ -21,8 +21,12 @@ private struct Item: Decodable {
 }
 
 enum RemoteFeedItemsMapper {
+    private static var okStatusCode: Int {
+        return 200
+    }
+    
     static func map(data: Data, response: HTTPURLResponse) throws -> [FeedItem] {
-        guard response.statusCode == 200 else {
+        guard response.statusCode == okStatusCode else {
             throw RemoteFeedLoaderError.invalidData
         }
         
