@@ -1,13 +1,6 @@
 import Foundation
 
-public typealias RemoteFeedLoaderResult = Result<[FeedItem], RemoteFeedLoaderError>
-
-public enum RemoteFeedLoaderError: Error {
-    case connectivity
-    case invalidData
-}
-
-public final class RemoteFeedLoader {
+public final class RemoteFeedLoader: FeedLoader {
     private let url: URL
     private let client: HTTPClient
     
@@ -16,7 +9,7 @@ public final class RemoteFeedLoader {
         self.client = client
     }
     
-    public func load(completion: @escaping (RemoteFeedLoaderResult) -> Void) {
+    public func load(completion: @escaping (FeedLoader.LoadResult) -> Void) {
         client.get(from: url) { [weak self] result in
             guard self != nil else { return }
             
@@ -25,8 +18,15 @@ public final class RemoteFeedLoader {
                 completion(RemoteFeedItemsMapper.map(data, from: response))
                 
             case .failure:
-                completion(.failure(.connectivity))
+                completion(.failure(LoadError.connectivity))
             }
         }
+    }
+}
+
+public extension RemoteFeedLoader {
+    enum LoadError: Error {
+        case connectivity
+        case invalidData
     }
 }
