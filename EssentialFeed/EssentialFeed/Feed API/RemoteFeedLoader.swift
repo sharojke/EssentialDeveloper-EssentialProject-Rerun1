@@ -1,6 +1,8 @@
 import Foundation
 
-public enum RemoteFeedLoaderError {
+public typealias RemoteFeedLoaderResult = Result<[FeedItem], RemoteFeedLoaderError>
+
+public enum RemoteFeedLoaderError: Error {
     case connectivity
     case invalidData
 }
@@ -14,14 +16,14 @@ public final class RemoteFeedLoader {
         self.client = client
     }
     
-    public func load(completion: @escaping (RemoteFeedLoaderError) -> Void) {
+    public func load(completion: @escaping (RemoteFeedLoaderResult) -> Void) {
         client.get(from: url) { result in
             switch result {
             case .success:
-                completion(.invalidData)
+                completion(.failure(.invalidData))
                 
             case .failure:
-                completion(.connectivity)
+                completion(.failure(.connectivity))
             }
         }
     }

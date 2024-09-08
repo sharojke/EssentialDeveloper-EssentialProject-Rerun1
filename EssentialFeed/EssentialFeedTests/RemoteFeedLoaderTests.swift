@@ -59,7 +59,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
     func test_load_deliversErrorOnClientError() {
         let (sut, client) = makeSUT()
         
-        expect(sut, toCompleteWithError: .connectivity) {
+        expect(sut, toCompleteWithResult: .failure(.connectivity)) {
             let error = NSError(domain: "a domain", code: .zero)
             client.complete(with: error)
         }
@@ -70,7 +70,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         
         let statusCodes = [199, 201, 300, 400, 500]
         statusCodes.enumerated().forEach { index, statusCode in
-            expect(sut, toCompleteWithError: .invalidData) {
+            expect(sut, toCompleteWithResult: .failure(.invalidData)) {
                 client.complete(with: statusCode, at: index)
             }
         }
@@ -79,7 +79,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
     func test_load_deliversErrorOn200HTTPResponseWithInvalidJSON() {
         let (sut, client) = makeSUT()
         
-        expect(sut, toCompleteWithError: .invalidData) {
+        expect(sut, toCompleteWithResult: .failure(.invalidData)) {
             let invalidJSON = Data("invalid json".utf8)
             client.complete(with: 200, data: invalidJSON)
         }
@@ -97,17 +97,17 @@ final class RemoteFeedLoaderTests: XCTestCase {
     
     private func expect(
         _ sut: RemoteFeedLoader,
-        toCompleteWithError expectedError: RemoteFeedLoaderError,
+        toCompleteWithResult expectedResult: RemoteFeedLoaderResult,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        var receivedErrors = [RemoteFeedLoaderError]()
-        sut.load { receivedErrors.append($0) }
+        var receivedResults = [RemoteFeedLoaderResult]()
+        sut.load { receivedResults.append($0) }
         
         action()
         
-        XCTAssertEqual(receivedErrors, [expectedError], file: file, line: line)
+        XCTAssertEqual(receivedResults, [expectedResult], file: file, line: line)
     }
 }
 
