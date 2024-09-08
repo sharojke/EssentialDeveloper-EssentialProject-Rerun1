@@ -4,13 +4,13 @@ import XCTest
 // swiftlint:disable force_unwrapping
 
 private final class HTTPClientSpy: HTTPClient {
-    private var messages = [(url: URL, completion: (Result<HTTPURLResponse, Error>) -> Void)]()
+    private var messages = [(url: URL, completion: (Result<(Data, HTTPURLResponse), Error>) -> Void)]()
     
     var requestedURLs: [URL] {
         return messages.map { $0.url }
     }
     
-    func get(from url: URL, completion: @escaping (Result<HTTPURLResponse, Error>) -> Void) {
+    func get(from url: URL, completion: @escaping (Result<(Data, HTTPURLResponse), Error>) -> Void) {
         messages.append((url, completion))
     }
     
@@ -18,10 +18,7 @@ private final class HTTPClientSpy: HTTPClient {
         messages[index].completion(.failure(error))
     }
     
-    func complete(with statusCode: Int, at index: Int = 0) {
-        print(index)
-        print(messages.count)
-        print()
+    func complete(with statusCode: Int, data: Data = Data(), at index: Int = 0) {
         let message = messages[index]
         let response = HTTPURLResponse(
             url: message.url,
@@ -29,7 +26,7 @@ private final class HTTPClientSpy: HTTPClient {
             httpVersion: nil,
             headerFields: nil
         )!
-        message.completion(.success(response))
+        message.completion(.success((data, response)))
     }
 }
 
@@ -83,6 +80,18 @@ final class RemoteFeedLoaderTests: XCTestCase {
             
             XCTAssertEqual(receivedErrors, [.invalidData])
         }
+    }
+    
+    func test_load_deliversErrorOn200HTTPResponseWithInvalidJSON() {
+        let (sut, client) = makeSUT()
+        
+        var receivedErrors = [RemoteFeedLoaderError]()
+        sut.load { receivedErrors.append($0) }
+        
+        let invalidJSON = Data("invalid json".utf8)
+        client.complete(with: 200, data: invalidJSON)
+        
+        XCTAssertEqual(receivedErrors, [.invalidData])
     }
     
     // MARK: - Helpers
