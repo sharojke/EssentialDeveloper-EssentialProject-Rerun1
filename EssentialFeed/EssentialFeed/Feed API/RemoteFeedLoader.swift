@@ -1,6 +1,8 @@
 import Foundation
 
 public final class RemoteFeedLoader: FeedLoader {
+    public typealias LoadResult = FeedLoader.LoadResult
+    
     private let url: URL
     private let client: HTTPClient
     
@@ -9,7 +11,7 @@ public final class RemoteFeedLoader: FeedLoader {
         self.client = client
     }
     
-    public func load(completion: @escaping (FeedLoader.LoadResult) -> Void) {
+    public func load(completion: @escaping (LoadResult) -> Void) {
         client.get(from: url) { [weak self] result in
             guard self != nil else { return }
             
