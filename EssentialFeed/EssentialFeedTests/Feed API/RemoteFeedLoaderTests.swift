@@ -157,10 +157,11 @@ final class RemoteFeedLoaderTests: XCTestCase {
             case let (.success(receivedItems), .success(expectedItems)):
                 XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
                 
-            case let (.failure(receivedError), .failure(expectedError)):
+            case let (.failure(receivedError as RemoteFeedLoader.LoadError),
+                      .failure(expectedError as RemoteFeedLoader.LoadError)):
                 XCTAssertEqual(
-                    receivedError as NSError,
-                    expectedError as NSError,
+                    receivedError,
+                    expectedError,
                     file: file,
                     line: line
                 )
