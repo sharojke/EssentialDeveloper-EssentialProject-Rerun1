@@ -2,6 +2,7 @@ import EssentialFeed
 import XCTest
 
 // swiftlint:disable force_unwrapping
+// swiftlint:disable force_try
 
 private final class HTTPClientSpy: HTTPClient {
     private var messages = [(url: URL, completion: (Result<(Data, HTTPURLResponse), Error>) -> Void)]()
@@ -93,6 +94,40 @@ final class RemoteFeedLoaderTests: XCTestCase {
             client.complete(with: 200, data: emptyListJSON)
         }
     }
+    
+    func test_load_deliversItemsOn200HTTPResponseWithNoJSONItems() {
+        let (sut, client) = makeSUT()
+        let item1 = FeedItem(
+            id: UUID(),
+            description: nil,
+            location: nil,
+            imageURL: URL(string: "https://1.com")!
+        )
+        let item1JSON = [
+            "id": item1.id.uuidString,
+            "image": item1.imageURL.absoluteString
+        ] as [String: Any]
+        let item2 = FeedItem(
+            id: UUID(),
+            description: "2",
+            location: "2",
+            imageURL: URL(string: "https://2.com")!
+        )
+        let item2JSON = [
+            "id": item2.id.uuidString,
+            "description": item2.description as Any,
+            "location": item2.location as Any,
+            "image": item2.imageURL.absoluteString
+        ] as [String: Any]
+        let itemsJSON = [
+            "items": [item1JSON, item2JSON]
+        ]
+        
+        expect(sut, toCompleteWithResult: .success([item1, item2])) {
+            let json = try! JSONSerialization.data(withJSONObject: itemsJSON)
+            client.complete(with: 200, data: json)
+        }
+    }
 
     // MARK: - Helpers
     
@@ -121,3 +156,4 @@ final class RemoteFeedLoaderTests: XCTestCase {
 }
 
 // swiftlint:enable force_unwrapping
+// swiftlint:enable force_try
