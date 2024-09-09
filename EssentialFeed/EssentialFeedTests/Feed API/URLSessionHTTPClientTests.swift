@@ -119,9 +119,17 @@ final class URLSessionHTTPClientTests: XCTestCase {
         XCTAssertEqual(receivedError?.domain, expectedError.domain)
     }
     
-    func test_getFromURL_failsOnAllNilValues() {
-        let error = resultError(data: nil, response: nil, error: nil)
-        XCTAssertNotNil(error)
+    func test_getFromURL_failsOnAllInvalidRepresentationCases() {
+        XCTAssertNotNil(resultError(data: nil, response: nil, error: nil))
+        XCTAssertNotNil(resultError(data: nil, response: nonHTTPURLResponse(), error: nil))
+        XCTAssertNotNil(resultError(data: nil, response: anyHTTPURLResponse(), error: nil))
+        XCTAssertNotNil(resultError(data: anyData(), response: nil, error: nil))
+        XCTAssertNotNil(resultError(data: anyData(), response: nil, error: anyError()))
+        XCTAssertNotNil(resultError(data: nil, response: nonHTTPURLResponse(), error: anyError()))
+        XCTAssertNotNil(resultError(data: nil, response: anyHTTPURLResponse(), error: anyError()))
+        XCTAssertNotNil(resultError(data: anyData(), response: nonHTTPURLResponse(), error: anyError()))
+        XCTAssertNotNil(resultError(data: anyData(), response: anyHTTPURLResponse(), error: anyError()))
+        XCTAssertNotNil(resultError(data: anyData(), response: nonHTTPURLResponse(), error: nil))
     }
     
     // MARK: - Helpers
@@ -134,6 +142,32 @@ final class URLSessionHTTPClientTests: XCTestCase {
     
     private func anyURL() -> URL {
         return URL(string: "https://a-url.com")!
+    }
+    
+    private func nonHTTPURLResponse() -> URLResponse {
+        return URLResponse(
+            url: anyURL(),
+            mimeType: nil,
+            expectedContentLength: .zero,
+            textEncodingName: nil
+        )
+    }
+    
+    private func anyHTTPURLResponse() -> HTTPURLResponse {
+        return HTTPURLResponse(
+            url: anyURL(),
+            mimeType: nil,
+            expectedContentLength: .zero,
+            textEncodingName: nil
+        )
+    }
+    
+    private func anyData() -> Data {
+        return Data()
+    }
+    
+    private func anyError() -> Error {
+        return NSError(domain: "", code: .zero)
     }
     
     private func resultError(
