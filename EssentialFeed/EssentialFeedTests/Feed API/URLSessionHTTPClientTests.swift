@@ -5,30 +5,6 @@ import XCTest
 // swiftlint:disable non_overridable_class_declaration
 // swiftlint:disable implicitly_unwrapped_optional
 
-final class URLSessionHTTPClient: HTTPClient {
-    private struct UnexpectedValuesRepresentation: Error {}
-    
-    private let session: URLSession
-    
-    init(session: URLSession = .shared) {
-        self.session = session
-    }
-    
-    func get(from url: URL, completion: @escaping (HTTPClient.GetResult) -> Void) {
-        session.dataTask(with: url) { data, response, error in
-            if let error {
-                completion(.failure(error))
-            } else if let data,
-                      let response = response as? HTTPURLResponse {
-                completion(.success((data, response)))
-            } else {
-                completion(.failure(UnexpectedValuesRepresentation()))
-            }
-        }
-        .resume()
-    }
-}
-
 private final class URLProtocolStub: URLProtocol {
     struct Stub {
         let data: Data?
