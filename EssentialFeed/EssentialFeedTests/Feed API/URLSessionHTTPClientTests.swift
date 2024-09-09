@@ -5,6 +5,8 @@ import XCTest
 // swiftlint:disable non_overridable_class_declaration
 
 final class URLSessionHTTPClient {
+    private struct UnexpectedValuesRepresentation: Error {}
+    
     private let session: URLSession
     
     init(session: URLSession = .shared) {
@@ -15,6 +17,8 @@ final class URLSessionHTTPClient {
         session.dataTask(with: url) { _, _, error in
             if let error {
                 completion(.failure(error))
+            } else {
+                completion(.failure(UnexpectedValuesRepresentation()))
             }
         }
         .resume()
@@ -122,6 +126,27 @@ final class URLSessionHTTPClientTests: XCTestCase {
                 
             default:
                 XCTFail("Expected \(expectedError), got \(result) instead")
+            }
+            
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1)
+    }
+    
+    func test_getFromURL_failsOnAllNilValues() {
+        URLProtocolStub.stub(data: nil, response: nil, error: nil)
+        
+        let sut = makeSUT()
+        
+        let exp = expectation(description: "Wait for get completion")
+        sut.get(from: anyURL()) { result in
+            switch result {
+            case .failure:
+                break
+                
+            default:
+                XCTFail("Expected failure, got \(result) instead")
             }
             
             exp.fulfill()
