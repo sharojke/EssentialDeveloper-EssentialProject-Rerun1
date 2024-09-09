@@ -5,7 +5,7 @@ import XCTest
 // swiftlint:disable non_overridable_class_declaration
 // swiftlint:disable implicitly_unwrapped_optional
 
-final class URLSessionHTTPClient {
+final class URLSessionHTTPClient: HTTPClient {
     private struct UnexpectedValuesRepresentation: Error {}
     
     private let session: URLSession
@@ -159,7 +159,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> URLSessionHTTPClient {
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> HTTPClient {
         let sut = URLSessionHTTPClient()
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
