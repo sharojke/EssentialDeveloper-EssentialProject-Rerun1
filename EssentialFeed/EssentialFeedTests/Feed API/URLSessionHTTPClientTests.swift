@@ -14,9 +14,13 @@ final class URLSessionHTTPClient {
     }
     
     func get(from url: URL, completion: @escaping (HTTPClient.GetResult) -> Void) {
-        session.dataTask(with: url) { _, _, error in
+        session.dataTask(with: url) { data, response, error in
             if let error {
                 completion(.failure(error))
+            } else if let data,
+                      data.count > .zero,
+                      let response = response as? HTTPURLResponse {
+                completion(.success((data, response)))
             } else {
                 completion(.failure(UnexpectedValuesRepresentation()))
             }
@@ -132,6 +136,29 @@ final class URLSessionHTTPClientTests: XCTestCase {
         XCTAssertNotNil(resultError(data: anyData(), response: nonHTTPURLResponse(), error: nil))
     }
     
+    func test_getFromURL_succeedsOnHTTPURLResponseWithData() {
+        let expectedData = anyData()
+        let expectedResponse = anyHTTPURLResponse()
+        URLProtocolStub.stub(data: expectedData, response: expectedResponse, error: nil)
+        
+        let exp = expectation(description: "Wait for get completion")
+        makeSUT().get(from: anyURL()) { result in
+            switch result {
+            case let .success((receivedData, receivedResponse)):
+                XCTAssertEqual(receivedData, expectedData)
+                XCTAssertEqual(receivedResponse.url, expectedResponse.url)
+                XCTAssertEqual(receivedResponse.statusCode, expectedResponse.statusCode)
+                
+            case .failure(let error):
+                XCTFail("Expected success, got \(error) instead")
+            }
+            
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.5)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> URLSessionHTTPClient {
@@ -141,7 +168,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
     }
     
     private func anyURL() -> URL {
-        return URL(string: "https://a-url.com")!
+        return URL(string: "http://any-url.com")!
     }
     
     private func nonHTTPURLResponse() -> URLResponse {
@@ -156,14 +183,14 @@ final class URLSessionHTTPClientTests: XCTestCase {
     private func anyHTTPURLResponse() -> HTTPURLResponse {
         return HTTPURLResponse(
             url: anyURL(),
-            mimeType: nil,
-            expectedContentLength: .zero,
-            textEncodingName: nil
-        )
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: nil
+        )!
     }
     
     private func anyData() -> Data {
-        return Data()
+        return Data("any data".utf8)
     }
     
     private func anyError() -> Error {
