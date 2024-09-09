@@ -1,3 +1,4 @@
+import EssentialFeed
 import XCTest
 
 // swiftlint:disable force_unwrapping
@@ -9,25 +10,42 @@ final class URLSessionHTTPClient {
         self.session = session
     }
     
-    func get(from url: URL) {
-        session.dataTask(with: url) { _, _, _ in
+    func get(from url: URL, completion: @escaping (HTTPClient.GetResult) -> Void) {
+        session.dataTask(with: url) { _, _, error in
+            if let error {
+                completion(.failure(error))
+            }
         }
         .resume()
     }
 }
 
 private final class URLSessionSpy: URLSession {
-    private var stubs = [URL: URLSessionDataTask]()
+    struct Stub {
+        let task: URLSessionDataTask
+        let error: Error?
+    }
+    
+    private var stubs = [URL: Stub]()
     
     override func dataTask(
         with url: URL,
         completionHandler: @escaping (Data?, URLResponse?, (any Error)?) -> Void
     ) -> URLSessionDataTask {
-        return stubs[url] ?? FakeURLSessionDataTask()
+        guard let stub = stubs[url] else {
+            fatalError("Can not find a stub for \(url)")
+        }
+        
+        completionHandler(nil, nil, stub.error)
+        return stub.task
     }
     
-    func stub(url: URL, task: URLSessionDataTask) {
-        stubs[url] = task
+    func stub(
+        url: URL,
+        task: URLSessionDataTask = FakeURLSessionDataTask(),
+        error: Error? = nil
+    ) {
+        stubs[url] = Stub(task: task, error: error)
     }
 }
 
@@ -51,9 +69,32 @@ final class URLSessionHTTPClientTests: XCTestCase {
         let sut = URLSessionHTTPClient(session: session)
         session.stub(url: url, task: task)
         
-        sut.get(from: url)
+        sut.get(from: url) { _ in }
         
         XCTAssertEqual(task.resumeCallCount, 1)
+    }
+    
+    func test_getFromURL_failsOnRequestError() {
+        let url = URL(string: "https://a-url.com")!
+        let session = URLSessionSpy()
+        let expectedError = NSError(domain: "", code: .zero)
+        let sut = URLSessionHTTPClient(session: session)
+        session.stub(url: url, error: expectedError)
+        
+        let exp = expectation(description: "Wait for get completion")
+        sut.get(from: url) { result in
+            switch result {
+            case .failure(let receivedError as NSError):
+                XCTAssertEqual(receivedError, expectedError)
+                
+            default:
+                XCTFail("Expected \(expectedError), got \(result) instead")
+            }
+            
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1)
     }
 }
 
