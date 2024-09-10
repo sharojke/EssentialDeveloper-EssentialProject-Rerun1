@@ -48,7 +48,8 @@ final class EssentialFeedAPIEndToEndTests: XCTestCase {
             id: id(at: index),
             description: description(at: index),
             location: location(at: index),
-            imageURL: imageURL(at: index))
+            imageURL: imageURL(at: index)
+        )
     }
     
     private func id(at index: Int) -> UUID {
@@ -92,7 +93,7 @@ final class EssentialFeedAPIEndToEndTests: XCTestCase {
     }
     
     private func imageURL(at index: Int) -> URL {
-        return URL(string: "https://url-\(index+1).com")!
+        return URL(string: "https://url-\(index + 1).com")!
     }
 }
 
