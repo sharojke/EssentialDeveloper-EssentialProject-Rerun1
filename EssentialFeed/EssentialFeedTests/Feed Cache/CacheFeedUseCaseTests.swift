@@ -3,14 +3,6 @@ import XCTest
 
 // swiftlint:disable force_unwrapping
 
-protocol FeedStore {
-    typealias DeleteResult = Result<Void, Error>
-    typealias InsertResult = Result<Void, Error>
-    
-    func deleteCachedFeed(completion: @escaping (DeleteResult) -> Void)
-    func insert(_ items: [FeedItem], timestamp: Date, completion: @escaping (InsertResult) -> Void)
-}
-
 private final class FeedStoreSpy: FeedStore {
     enum Message: Equatable {
         case deleteCachedFeed
