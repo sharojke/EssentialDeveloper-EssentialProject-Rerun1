@@ -161,6 +161,30 @@ final class CacheFeedUseCaseTests: XCTestCase {
         }
     }
     
+    func test_save_succeedsOnSuccessfulCacheInsertion() {
+        let (sut, store) = makeSUT()
+        let items = [uniqueItem(), uniqueItem()]
+        let exp = expectation(description: "Wait for save completion")
+        
+        var receivedResult: Result<Void, Error>?
+        sut.save(items) { result in
+            receivedResult = result
+            exp.fulfill()
+        }
+        
+        store.completeDeletionSuccessfully()
+        store.completeInsertionSuccessfully()
+        wait(for: [exp], timeout: 1)
+        
+        switch receivedResult {
+        case .success:
+            break
+            
+        default:
+            XCTFail("Expected failure, received \(receivedResult as Any) instead")
+        }
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
