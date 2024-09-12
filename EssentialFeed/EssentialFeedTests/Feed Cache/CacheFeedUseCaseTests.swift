@@ -9,9 +9,13 @@ protocol FeedStore {
 
 private final class FeedStoreSpy: FeedStore {
     private(set) var deleteCachedFeedCallCount = 0
+    private(set) var insertCallCount = 0
     
     func deleteCachedFeed() {
         deleteCachedFeedCallCount += 1
+    }
+    
+    func completeDeletion(with error: Error, at index: Int = .zero) {
     }
 }
 
@@ -43,6 +47,17 @@ final class CacheFeedUseCaseTests: XCTestCase {
         XCTAssertTrue(store.deleteCachedFeedCallCount == 1)
     }
     
+    func test_save_doesNotRequestCacheInsertionOnDeletionError() {
+        let (sut, store) = makeSUT()
+        let items = [uniqueItem(), uniqueItem()]
+        let deletionError = anyNSError()
+        
+        sut.save(items)
+        store.completeDeletion(with: deletionError)
+        
+        XCTAssertTrue(store.insertCallCount == .zero)
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
@@ -67,6 +82,10 @@ final class CacheFeedUseCaseTests: XCTestCase {
     
     private func anyURL() -> URL {
         return URL(string: "http://any-url.com")!
+    }
+    
+    private func anyNSError() -> NSError {
+        return NSError(domain: "", code: .zero)
     }
 }
 
