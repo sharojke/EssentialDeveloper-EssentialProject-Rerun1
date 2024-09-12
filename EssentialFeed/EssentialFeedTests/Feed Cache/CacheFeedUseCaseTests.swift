@@ -109,7 +109,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
     func test_save_doesNotDeliverDeletionErrorAfterSUTHasBeenDeallocated() {
         var (sut, store): (LocalFeedLoader?, FeedStoreSpy) = makeSUT()
         
-        var receivedResults = [Result<Void, Error>]()
+        var receivedResults = [LocalFeedLoader.SaveResult]()
         sut?.save([uniqueItem()]) { receivedResults.append($0) }
         
         sut = nil
@@ -121,7 +121,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
     func test_save_doesNotDeliverInsertionErrorAfterSUTHasBeenDeallocated() {
         var (sut, store): (LocalFeedLoader?, FeedStoreSpy) = makeSUT()
         
-        var receivedResults = [Result<Void, Error>]()
+        var receivedResults = [LocalFeedLoader.SaveResult]()
         sut?.save([uniqueItem()]) { receivedResults.append($0) }
         
         store.completeDeletionSuccessfully()
@@ -164,7 +164,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
     
     private func expect(
         _ sut: LocalFeedLoader,
-        toCompleteWithResult expectedResult: Result<Void, Error>,
+        toCompleteWithResult expectedResult: LocalFeedLoader.SaveResult,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -172,7 +172,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
         let items = [uniqueItem(), uniqueItem()]
         let exp = expectation(description: "Wait for save completion")
         
-        var receivedResult: Result<Void, Error>?
+        var receivedResult: LocalFeedLoader.SaveResult?
         sut.save(items) { result in
             receivedResult = result
             exp.fulfill()
