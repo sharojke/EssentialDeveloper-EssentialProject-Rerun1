@@ -4,18 +4,35 @@ import XCTest
 // swiftlint:disable force_unwrapping
 
 protocol FeedStore {
-    func deleteCachedFeed()
+    typealias DeleteResult = Result<Void, Error>
+    typealias InsertResult = Result<Void, Error>
+    
+    func deleteCachedFeed(completion: @escaping (DeleteResult) -> Void)
+    func insert(_ items: [FeedItem], completion: @escaping (InsertResult) -> Void)
 }
 
 private final class FeedStoreSpy: FeedStore {
-    private(set) var deleteCachedFeedCallCount = 0
     private(set) var insertCallCount = 0
+    private var deletionCompletions = [(DeleteResult) -> Void]()
     
-    func deleteCachedFeed() {
-        deleteCachedFeedCallCount += 1
+    var deleteCachedFeedCallCount: Int {
+        return deletionCompletions.count
+    }
+    
+    func deleteCachedFeed(completion: @escaping (DeleteResult) -> Void) {
+        deletionCompletions.append(completion)
+    }
+    
+    func insert(_ items: [FeedItem], completion: @escaping (InsertResult) -> Void) {
+        insertCallCount += 1
     }
     
     func completeDeletion(with error: Error, at index: Int = .zero) {
+        deletionCompletions[index](.failure(error))
+    }
+    
+    func completeDeletionSuccessfully(at index: Int = .zero) {
+        deletionCompletions[index](.success(Void()))
     }
 }
 
@@ -27,7 +44,15 @@ final class LocalFeedLoader {
     }
     
     func save(_ items: [FeedItem]) {
-        store.deleteCachedFeed()
+        store.deleteCachedFeed { [weak self] result in
+            switch result {
+            case .success:
+                self?.store.insert([]) { _ in }
+                
+            case .failure:
+                break
+            }
+        }
     }
 }
 
@@ -56,6 +81,16 @@ final class CacheFeedUseCaseTests: XCTestCase {
         store.completeDeletion(with: deletionError)
         
         XCTAssertTrue(store.insertCallCount == .zero)
+    }
+    
+    func test_save_requestsNewCacheInsertionOnSuccessfulDeletion() {
+        let (sut, store) = makeSUT()
+        let items = [uniqueItem(), uniqueItem()]
+        
+        sut.save(items)
+        store.completeDeletionSuccessfully()
+        
+        XCTAssertTrue(store.insertCallCount == 1)
     }
     
     // MARK: Helpers
