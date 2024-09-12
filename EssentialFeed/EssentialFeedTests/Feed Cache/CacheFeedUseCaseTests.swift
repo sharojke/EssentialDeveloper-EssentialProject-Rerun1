@@ -130,6 +130,18 @@ final class CacheFeedUseCaseTests: XCTestCase {
         }
     }
     
+    func test_save_doesNotDeliverDeletionErrorAfterSUTHasBeenDeallocated() {
+        var (sut, store): (LocalFeedLoader?, FeedStoreSpy) = makeSUT()
+        
+        var receivedResults = [Result<Void, Error>]()
+        sut?.save([uniqueItem()]) { receivedResults.append($0) }
+        
+        sut = nil
+        store.completeDeletion(with: anyNSError())
+        
+        XCTAssertTrue(receivedResults.isEmpty)
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
