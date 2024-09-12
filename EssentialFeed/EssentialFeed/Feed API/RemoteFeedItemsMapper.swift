@@ -4,7 +4,7 @@ private struct Root: Decodable {
     let items: [Item]
     
     var feed: [FeedItem] {
-        return items.map { $0.item }
+        return items.map(\.item)
     }
 }
 
