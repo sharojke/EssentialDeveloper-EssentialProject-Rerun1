@@ -47,7 +47,7 @@ final class LocalFeedLoader {
         self.currentDate = currentDate
     }
     
-    func save(_ items: [FeedItem]) {
+    func save(_ items: [FeedItem], completion: @escaping (Result<Void, Error>) -> Void) {
         store.deleteCachedFeed { [weak self] result in
             guard let self else { return }
             
@@ -55,8 +55,8 @@ final class LocalFeedLoader {
             case .success:
                 store.insert(items, timestamp: currentDate()) { _ in }
                 
-            case .failure:
-                break
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
     }
@@ -73,7 +73,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let items = [uniqueItem(), uniqueItem()]
         
-        sut.save(items)
+        sut.save(items) { _ in }
         
         XCTAssertTrue(store.receivedMessages == [.deleteCachedFeed])
     }
@@ -83,7 +83,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
         let items = [uniqueItem(), uniqueItem()]
         let deletionError = anyNSError()
         
-        sut.save(items)
+        sut.save(items) { _ in }
         store.completeDeletion(with: deletionError)
         
         XCTAssertTrue(store.receivedMessages == [.deleteCachedFeed])
@@ -94,10 +94,35 @@ final class CacheFeedUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT(currentDate: { timestamp })
         let items = [uniqueItem(), uniqueItem()]
         
-        sut.save(items)
+        sut.save(items) { _ in }
         store.completeDeletionSuccessfully()
         
         XCTAssertTrue(store.receivedMessages == [.deleteCachedFeed, .insert(items, timestamp)])
+    }
+    
+    func test_save_failsOnDeletionError() {
+        let expectedError = anyNSError()
+        let (sut, store) = makeSUT()
+        let items = [uniqueItem(), uniqueItem()]
+        let exp = expectation(description: "Wait for save completion")
+        
+        var receivedResult: Result<Void, Error>?
+        sut.save(items) { result in
+            receivedResult = result
+            exp.fulfill()
+        }
+        
+        store.completeDeletion(with: expectedError)
+        wait(for: [exp], timeout: 1)
+        
+        switch receivedResult {
+        case .failure(let receivedError as NSError):
+            XCTAssertEqual(receivedError.code, expectedError.code)
+            XCTAssertEqual(receivedError.domain, expectedError.domain)
+            
+        default:
+            XCTFail("Expected failure, received \(receivedResult as Any) instead")
+        }
     }
     
     // MARK: Helpers
