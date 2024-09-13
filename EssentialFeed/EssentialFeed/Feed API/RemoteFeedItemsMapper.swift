@@ -1,27 +1,14 @@
 import Foundation
 
 private struct Root: Decodable {
-    let items: [Item]
-    
-    var feed: [FeedItem] {
-        return items.map(\.item)
-    }
+    let items: [RemoteFeedItem]
 }
 
-private struct Item: Decodable {
+struct RemoteFeedItem: Decodable {
     let id: UUID
     let description: String?
     let location: String?
     let image: URL
-    
-    var item: FeedItem {
-        return FeedItem(
-            id: id,
-            description: description,
-            location: location,
-            imageURL: image
-        )
-    }
 }
 
 enum RemoteFeedItemsMapper {
@@ -29,12 +16,12 @@ enum RemoteFeedItemsMapper {
         return 200
     }
     
-    static func map(_ data: Data, from response: HTTPURLResponse) -> RemoteFeedLoader.LoadResult {
+    static func map(_ data: Data, from response: HTTPURLResponse) throws -> [RemoteFeedItem] {
         guard response.statusCode == okStatusCode,
               let root = try? JSONDecoder().decode(Root.self, from: data) else {
-            return .failure(RemoteFeedLoader.LoadError.invalidData)
+            throw RemoteFeedLoader.LoadError.invalidData
         }
         
-        return .success(root.feed)
+        return root.items
     }
 }
