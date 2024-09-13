@@ -25,7 +25,7 @@ public final class RemoteFeedLoader: FeedLoader {
     
     private func map(_ data: Data, from response: HTTPURLResponse) -> LoadResult {
         do {
-            let remote = try RemoteFeedItemsMapper.map(data, from: response)
+            let remote = try RemoteFeedImagesMapper.map(data, from: response)
             return .success(remote.toModels())
         } catch {
             return .failure(error)
@@ -40,14 +40,14 @@ public extension RemoteFeedLoader {
     }
 }
 
-private extension Array where Element == RemoteFeedItem {
-    func toModels() -> [FeedItem] {
+private extension Array where Element == RemoteFeedImage {
+    func toModels() -> [FeedImage] {
         return map { remote in
-            return FeedItem(
+            return FeedImage(
                 id: remote.id,
                 description: remote.description,
                 location: remote.location,
-                imageURL: remote.image
+                url: remote.image
             )
         }
     }

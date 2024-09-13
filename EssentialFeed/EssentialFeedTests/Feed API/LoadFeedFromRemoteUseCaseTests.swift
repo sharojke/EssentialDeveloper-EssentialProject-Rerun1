@@ -72,7 +72,7 @@ final class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         let statusCodes = [199, 201, 300, 400, 500]
         statusCodes.enumerated().forEach { index, statusCode in
             expect(sut, toCompleteWithResult: failure(.invalidData)) {
-                let json = makeItemsJSON([])
+                let json = makeFeedJSON([])
                 client.complete(with: statusCode, data: json, at: index)
             }
         }
@@ -91,7 +91,7 @@ final class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         let (sut, client) = makeSUT()
         
         expect(sut, toCompleteWithResult: .success([])) {
-            let emptyListJSON = makeItemsJSON([])
+            let emptyListJSON = makeFeedJSON([])
             client.complete(with: 200, data: emptyListJSON)
         }
     }
@@ -100,18 +100,18 @@ final class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         let (sut, client) = makeSUT()
         let item1 = makeItem(
             id: UUID(),
-            imageURL: URL(string: "https://1.com")!
+            url: URL(string: "https://1.com")!
         )
         let item2 = makeItem(
             id: UUID(),
-            imageURL: URL(string: "https://2.com")!,
+            url: URL(string: "https://2.com")!,
             description: "2",
             location: "2"
         )
         let items = [item1, item2]
         
         expect(sut, toCompleteWithResult: .success(items.map { $0.model })) {
-            let json = makeItemsJSON(items.map { $0.json })
+            let json = makeFeedJSON(items.map { $0.json })
             client.complete(with: 200, data: json)
         }
     }
@@ -125,7 +125,7 @@ final class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         sut?.load { receivedResults.append($0) }
         
         sut = nil
-        client.complete(with: 200, data: makeItemsJSON([]))
+        client.complete(with: 200, data: makeFeedJSON([]))
         
         XCTAssertTrue(receivedResults.isEmpty)
     }
@@ -184,26 +184,26 @@ final class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     private func makeItem(
         id: UUID,
-        imageURL: URL,
+        url: URL,
         description: String? = nil,
         location: String? = nil
-    ) -> (model: FeedItem, json: [String: Any]) {
-        let model = FeedItem(
+    ) -> (model: FeedImage, json: [String: Any]) {
+        let model = FeedImage(
             id: id,
             description: description,
             location: location,
-            imageURL: imageURL
+            url: url
         )
         let json = [
             "id": model.id.uuidString,
             "description": model.description as Any,
             "location": model.location as Any,
-            "image": model.imageURL.absoluteString
+            "image": model.url.absoluteString
         ]
         return (model, json)
     }
     
-    private func makeItemsJSON(_ items: [[String: Any]]) -> Data {
+    private func makeFeedJSON(_ items: [[String: Any]]) -> Data {
         let json = ["items": items]
         return try! JSONSerialization.data(withJSONObject: json)
     }
