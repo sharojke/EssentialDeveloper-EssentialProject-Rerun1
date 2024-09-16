@@ -10,6 +10,14 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         XCTAssertTrue(store.receivedMessages.isEmpty)
     }
     
+    func test_load_requestsCacheRetrieval() {
+        let (sut, store) = makeSUT()
+        
+        sut.load()
+        
+        XCTAssertTrue(store.receivedMessages == [.retrieve])
+    }
+    
     private func makeSUT(
         currentDate: @escaping () -> Date = Date.init,
         file: StaticString = #filePath,
