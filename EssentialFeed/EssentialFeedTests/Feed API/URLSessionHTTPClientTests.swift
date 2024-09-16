@@ -140,10 +140,6 @@ final class URLSessionHTTPClientTests: XCTestCase {
         return sut
     }
     
-    private func anyURL() -> URL {
-        return URL(string: "http://any-url.com")!
-    }
-    
     private func nonHTTPURLResponse() -> URLResponse {
         return URLResponse(
             url: anyURL(),
@@ -167,10 +163,6 @@ final class URLSessionHTTPClientTests: XCTestCase {
     }
     
     private func anyError() -> Error {
-        return NSError(domain: "", code: .zero)
-    }
-    
-    private func anyNSError() -> NSError {
         return NSError(domain: "", code: .zero)
     }
     

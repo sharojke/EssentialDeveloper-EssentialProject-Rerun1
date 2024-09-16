@@ -92,7 +92,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
         XCTAssertTrue(receivedResults.isEmpty)
     }
     
-    // MARK: Helpers
+    // MARK: - Helpers
     
     private func makeSUT(
         currentDate: @escaping () -> Date = Date.init,
@@ -126,14 +126,6 @@ final class CacheFeedUseCaseTests: XCTestCase {
             )
         }
         return (feed, local)
-    }
-    
-    private func anyURL() -> URL {
-        return URL(string: "http://any-url.com")!
-    }
-    
-    private func anyNSError() -> NSError {
-        return NSError(domain: "", code: .zero)
     }
     
     private func expect(
