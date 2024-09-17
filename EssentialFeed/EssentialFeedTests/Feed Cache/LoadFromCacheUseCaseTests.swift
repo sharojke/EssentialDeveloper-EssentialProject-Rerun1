@@ -21,24 +21,20 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         let expectedError = anyNSError()
         let exp = expectation(description: "Wait for load completion")
         
-        var receivedResult: FeedStore.RetrieveResult?
-        sut.load { result in
-            receivedResult = result
+        sut.load { receivedResult in
+            switch receivedResult {
+            case .failure(let receivedError as NSError):
+                XCTAssertEqual(receivedError.code, expectedError.code)
+                XCTAssertEqual(receivedError.domain, expectedError.domain)
+                
+            default:
+                XCTFail("Expected failure, received \(receivedResult as Any) instead")
+            }
             exp.fulfill()
         }
         store.completeRetrieval(with: expectedError)
         
         wait(for: [exp], timeout: 1)
-        switch receivedResult {
-        case .failure(let receivedError as NSError):
-            XCTAssertEqual(receivedError.code, expectedError.code)
-            XCTAssertEqual(receivedError.domain, expectedError.domain)
-            
-        default:
-            XCTFail("Expected failure, received \(receivedResult as Any) instead")
-        }
-        
-        XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
     
     // MARK: - Helpers

@@ -3,7 +3,7 @@ import Foundation
 public protocol FeedStore {
     typealias DeleteResult = Result<Void, Error>
     typealias InsertResult = Result<Void, Error>
-    typealias RetrieveResult = Result<Void, Error>
+    typealias RetrieveResult = Result<[FeedImage], Error>
     
     func deleteCachedFeed(completion: @escaping (DeleteResult) -> Void)
     func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping (InsertResult) -> Void)

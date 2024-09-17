@@ -1,8 +1,7 @@
 import Foundation
 
-public final class LocalFeedLoader {
+public final class LocalFeedLoader: FeedLoader {
     public typealias SaveResult = Result<Void, Error>
-    public typealias LoadResult = Result<Void, Error>
     
     private let store: FeedStore
     private let currentDate: () -> Date
