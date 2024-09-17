@@ -37,7 +37,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         let (feed, localFeed) = uniqueFeed()
         let (sut, store) = makeSUT()
         let lessThanSevenDaysOld = Date()
-            .adding(days: 7, calendar: calendar)
+            .adding(days: -7, calendar: calendar)
             .adding(seconds: 1, calendar: calendar)
         
         expect(sut, toCompleteWith: .success(feed)) {
@@ -82,6 +82,19 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         
         sut.load { _ in }
         store.completeRetrievalWithEmptyCache()
+        
+        XCTAssertTrue(store.receivedMessages == [.retrieve])
+    }
+    
+    func test_load_doesNotDeleteCacheOnLessThanSevenDayOldCache() {
+        let (_, localFeed) = uniqueFeed()
+        let (sut, store) = makeSUT()
+        let lessThanSevenDaysOld = Date()
+            .adding(days: -7, calendar: calendar)
+            .adding(seconds: 1, calendar: calendar)
+        
+        sut.load { _ in }
+        store.completeRetrieval(with: localFeed, date: lessThanSevenDaysOld)
         
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
