@@ -1,8 +1,6 @@
 import EssentialFeed
 import XCTest
 
-// swiftlint:disable force_unwrapping
-
 final class CacheFeedUseCaseTests: XCTestCase {
     func test_init_doesNotMessageStoreUponCreation() {
         let (_, store) = makeSUT()
@@ -163,5 +161,3 @@ final class CacheFeedUseCaseTests: XCTestCase {
         }
     }
 }
-
-// swiftlint:enable force_unwrapping
