@@ -143,7 +143,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         currentDate: @escaping () -> Date = Date.init,
         file: StaticString = #filePath,
         line: UInt = #line
-    ) -> (sut: LocalFeedLoader, store: FeedStoreSpy) {
+    ) -> (sut: FeedLoader, store: FeedStoreSpy) {
         let store = FeedStoreSpy()
         let sut = LocalFeedLoader(store: store, currentDate: currentDate)
         trackForMemoryLeaks(store, file: file, line: line)
