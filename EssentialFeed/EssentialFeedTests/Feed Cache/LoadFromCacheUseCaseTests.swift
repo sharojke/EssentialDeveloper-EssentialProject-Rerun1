@@ -46,7 +46,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
     }
     
     func test_load_deliversNoImagesOnSevenDaysOldCache() {
-        let (feed, localFeed) = uniqueFeed()
+        let (_, localFeed) = uniqueFeed()
         let (sut, store) = makeSUT()
         let sevenDaysOld = Date()
             .adding(days: -7, calendar: calendar)
