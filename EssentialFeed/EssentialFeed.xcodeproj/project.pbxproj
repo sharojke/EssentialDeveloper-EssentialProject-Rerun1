@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BBA383152C99FCA100725349 /* FeedCache+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA383142C99FCA100725349 /* FeedCache+TestHelpers.swift */; };
 		BBB516F32C936D0C00A080BF /* CacheFeedUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB516F22C936D0C00A080BF /* CacheFeedUseCaseTests.swift */; };
 		BBB516F62C9381C200A080BF /* FeedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB516F52C9381C200A080BF /* FeedStore.swift */; };
 		BBB516F82C938EFB00A080BF /* LocalFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB516F72C938EFB00A080BF /* LocalFeedLoader.swift */; };
@@ -50,6 +51,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BBA383142C99FCA100725349 /* FeedCache+TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeedCache+TestHelpers.swift"; sourceTree = "<group>"; };
 		BBB516F22C936D0C00A080BF /* CacheFeedUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheFeedUseCaseTests.swift; sourceTree = "<group>"; };
 		BBB516F52C9381C200A080BF /* FeedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedStore.swift; sourceTree = "<group>"; };
 		BBB516F72C938EFB00A080BF /* LocalFeedLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFeedLoader.swift; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				BBB517072C98CD7B00A080BF /* FeedStoreSpy.swift */,
+				BBA383142C99FCA100725349 /* FeedCache+TestHelpers.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -426,6 +429,7 @@
 				BBDDD7532C8B91F000D6EF3F /* EssentialFeedTests.swift in Sources */,
 				BBB516F32C936D0C00A080BF /* CacheFeedUseCaseTests.swift in Sources */,
 				BBB517082C98CD7B00A080BF /* FeedStoreSpy.swift in Sources */,
+				BBA383152C99FCA100725349 /* FeedCache+TestHelpers.swift in Sources */,
 				BBB517052C98CCF200A080BF /* LoadFromCacheUseCaseTests.swift in Sources */,
 				BBBEEF682C8F8F70000663ED /* XCTestCase+MemoryLeakTracking.swift in Sources */,
 				BBB5170A2C98CFEF00A080BF /* SharedTestHelpers.swift in Sources */,

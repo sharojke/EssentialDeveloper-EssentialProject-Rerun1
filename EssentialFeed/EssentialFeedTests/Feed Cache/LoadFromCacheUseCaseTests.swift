@@ -33,6 +33,18 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         }
     }
     
+    func test_load_deliversTheCacheOnLessThanSevenDaysOldCache() {
+        let (feed, localFeed) = uniqueFeed()
+        let (sut, store) = makeSUT()
+        let lessThanSevenDaysOld = Date()
+            .adding(days: 7, calendar: calendar)
+            .adding(seconds: 1, calendar: calendar)
+        
+        expect(sut, toCompleteWith: .success(feed)) {
+            store.completeRetrieval(with: localFeed, date: lessThanSevenDaysOld)
+        }
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(
@@ -70,7 +82,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
             case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
                 XCTAssertEqual(
                     receivedError.domain,
-                    receivedError.domain,
+                    expectedError.domain,
                     "Expected \(receivedError.domain), got \(receivedError.domain) instead",
                     file: file,
                     line: line
@@ -85,9 +97,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
                 
             default:
                 XCTFail(
-                    "Expected \(expectedResult), received \(receivedResult) instead",
-                    file: file,
-                    line: line
+                    "Expected \(expectedResult), received \(receivedResult) instead", file: file, line: line
                 )
             }
             exp.fulfill()
