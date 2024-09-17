@@ -25,6 +25,7 @@ public final class LocalFeedLoader: FeedLoader {
                 completion(.success([]))
                 
             case .failure(let error):
+                store.deleteCachedFeed { _ in }
                 completion(.failure(error))
             }
         }
