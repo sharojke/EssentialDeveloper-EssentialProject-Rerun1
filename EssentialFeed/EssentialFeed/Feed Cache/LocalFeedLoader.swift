@@ -12,10 +12,15 @@ public final class LocalFeedLoader: FeedLoader {
     }
     
     public func load(completion: @escaping (LoadResult) -> Void) {
-        store.retrieve { result in
+        store.retrieve { [weak self] result in
+            guard let self else { return }
+            
             switch result {
-            case .success(let feed):
-                completion(.success(feed.models))
+            case .success(let feed) where validate(feed.timestamp):
+                completion(.success(feed.feed.models))
+                
+            case .success:
+                completion(.success([]))
                 
             case .failure(let error):
                 completion(.failure(error))
@@ -44,6 +49,17 @@ public final class LocalFeedLoader: FeedLoader {
             
             completion(result)
         }
+    }
+    
+    private func validate(_ timestamp: Date) -> Bool {
+        let calendar = Calendar(identifier: .gregorian)
+        let maxAgeInDays = 7
+        
+        guard let maxAge = calendar.date(byAdding: .day, value: maxAgeInDays, to: timestamp) else {
+            return false
+        }
+        
+        return currentDate() < maxAge
     }
 }
 
