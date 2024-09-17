@@ -14,8 +14,8 @@ public final class LocalFeedLoader: FeedLoader {
     public func load(completion: @escaping (LoadResult) -> Void) {
         store.retrieve { result in
             switch result {
-            case .success:
-                break
+            case .success(let feed):
+                completion(.success(feed))
                 
             case .failure(let error):
                 completion(.failure(error))
