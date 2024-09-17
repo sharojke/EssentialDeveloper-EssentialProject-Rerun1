@@ -38,10 +38,7 @@ public final class LocalFeedLoader: FeedLoader {
             case .success(let feed) where validate(feed.timestamp):
                 break
                 
-            case .success:
-                store.deleteCachedFeed { _ in }
-                
-            case .failure:
+            case .success, .failure:
                 store.deleteCachedFeed { _ in }
             }
         }
