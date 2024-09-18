@@ -1,22 +1,32 @@
 import Foundation
 
-public final class LocalFeedLoader: FeedLoader {
-    private let store: FeedStore
+private final class FeedCachePolicy {
     private let currentDate: () -> Date
     private let calendar = Calendar(identifier: .gregorian)
-    private let maxCacheAgeInDays = 7
+    private var maxCacheAgeInDays: Int { 7 }
     
-    public init(store: FeedStore, currentDate: @escaping () -> Date) {
-        self.store = store
+    public init(currentDate: @escaping () -> Date) {
         self.currentDate = currentDate
     }
     
-    private func validate(_ timestamp: Date) -> Bool {
+    func validate(_ timestamp: Date) -> Bool {
         guard let maxAge = calendar.date(byAdding: .day, value: maxCacheAgeInDays, to: timestamp) else {
             return false
         }
         
         return currentDate() < maxAge
+    }
+}
+
+public final class LocalFeedLoader: FeedLoader {
+    private let store: FeedStore
+    private let currentDate: () -> Date
+    private let feedCachePolicy: FeedCachePolicy
+    
+    public init(store: FeedStore, currentDate: @escaping () -> Date) {
+        self.store = store
+        self.currentDate = currentDate
+        feedCachePolicy = FeedCachePolicy(currentDate: currentDate)
     }
 }
 
@@ -26,7 +36,7 @@ public extension LocalFeedLoader {
             guard let self else { return }
             
             switch result {
-            case .success(let feed) where validate(feed.timestamp):
+            case .success(let feed) where feedCachePolicy.validate(feed.timestamp):
                 completion(.success(feed.feed.models))
                 
             case .success:
@@ -45,7 +55,7 @@ public extension LocalFeedLoader {
             guard let self else { return }
             
             switch result {
-            case .success(let feed) where validate(feed.timestamp):
+            case .success(let feed) where feedCachePolicy.validate(feed.timestamp):
                 break
                 
             case .success, .failure:
