@@ -33,34 +33,34 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         }
     }
     
-    func test_load_deliversTheCacheOnLessThanSevenDaysOldCache() {
+    func test_load_deliversTheCacheOnNonExpiredCache() {
         let (feed, localFeed) = uniqueFeed()
         let (sut, store) = makeSUT()
-        let lessThanSevenDaysOld = Date()
-            .adding(days: -7, calendar: calendar)
+        let nonExpired = Date()
+            .minusFeedCacheMaxAge(calendar: calendar)
             .adding(seconds: 1, calendar: calendar)
         
         expect(sut, toCompleteWith: .success(feed)) {
-            store.completeRetrieval(with: localFeed, date: lessThanSevenDaysOld)
+            store.completeRetrieval(with: localFeed, date: nonExpired)
         }
     }
     
-    func test_load_deliversNoImagesOnSevenDaysOldCache() {
+    func test_load_deliversNoImagesOnCacheExpiration() {
         let (_, localFeed) = uniqueFeed()
         let (sut, store) = makeSUT()
-        let sevenDaysOld = Date()
-            .adding(days: -7, calendar: calendar)
+        let expiration = Date()
+            .minusFeedCacheMaxAge(calendar: calendar)
         
         expect(sut, toCompleteWith: .success([])) {
-            store.completeRetrieval(with: localFeed, date: sevenDaysOld)
+            store.completeRetrieval(with: localFeed, date: expiration)
         }
     }
     
-    func test_load_deliversNoImagesOnMoreThanSevenDaysOldCache() {
+    func test_load_deliversNoImagesOnExpiredCache() {
         let (_, localFeed) = uniqueFeed()
         let (sut, store) = makeSUT()
         let moreThanSevenDaysOld = Date()
-            .adding(days: -7, calendar: calendar)
+            .minusFeedCacheMaxAge(calendar: calendar)
             .adding(seconds: -1, calendar: calendar)
         
         expect(sut, toCompleteWith: .success([])) {
@@ -86,11 +86,11 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
     
-    func test_load_hasNoSideEffectsOnLessThanSevenDaysOldCache() {
+    func test_load_hasNoSideEffectsOnNonExpiredCache() {
         let (_, localFeed) = uniqueFeed()
         let (sut, store) = makeSUT()
         let lessThanSevenDaysOld = Date()
-            .adding(days: -7, calendar: calendar)
+            .minusFeedCacheMaxAge(calendar: calendar)
             .adding(seconds: 1, calendar: calendar)
         
         sut.load { _ in }
@@ -99,27 +99,27 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
     
-    func test_load_hasNoSideEffectsOnSevenDaysOldCache() {
+    func test_load_hasNoSideEffectsOnCacheExpiration() {
         let (_, localFeed) = uniqueFeed()
         let (sut, store) = makeSUT()
-        let sevenDaysOld = Date()
-            .adding(days: -7, calendar: calendar)
+        let expiration = Date()
+            .minusFeedCacheMaxAge(calendar: calendar)
         
         sut.load { _ in }
-        store.completeRetrieval(with: localFeed, date: sevenDaysOld)
+        store.completeRetrieval(with: localFeed, date: expiration)
         
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
     
-    func test_load_hasNoSideEffectsOnMoreThanSevenDaysOldCache() {
+    func test_load_hasNoSideEffectsOnExpiredCache() {
         let (_, localFeed) = uniqueFeed()
         let (sut, store) = makeSUT()
-        let moreThanSevenDaysOld = Date()
-            .adding(days: -7, calendar: calendar)
+        let expired = Date()
+            .minusFeedCacheMaxAge(calendar: calendar)
             .adding(seconds: -1, calendar: calendar)
         
         sut.load { _ in }
-        store.completeRetrieval(with: localFeed, date: moreThanSevenDaysOld)
+        store.completeRetrieval(with: localFeed, date: expired)
         
         XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
