@@ -1,21 +1,5 @@
 import Foundation
 
-private enum FeedCachePolicy {
-    private static var maxCacheAgeInDays: Int { 7 }
-    
-    static func validate(
-        _ timestamp: Date,
-        against date: Date,
-        calendar: Calendar = Calendar(identifier: .gregorian)
-    ) -> Bool {
-        guard let maxAge = calendar.date(byAdding: .day, value: maxCacheAgeInDays, to: timestamp) else {
-            return false
-        }
-        
-        return date < maxAge
-    }
-}
-
 public final class LocalFeedLoader: FeedLoader {
     private let store: FeedStore
     private let currentDate: () -> Date
