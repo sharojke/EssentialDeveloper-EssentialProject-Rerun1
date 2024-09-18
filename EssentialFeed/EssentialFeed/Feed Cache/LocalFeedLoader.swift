@@ -1,9 +1,9 @@
 import Foundation
 
-private final class FeedCachePolicy {
-    private var maxCacheAgeInDays: Int { 7 }
+private enum FeedCachePolicy {
+    private static var maxCacheAgeInDays: Int { 7 }
     
-    func validate(
+    static func validate(
         _ timestamp: Date,
         against date: Date,
         calendar: Calendar = Calendar(identifier: .gregorian)
@@ -19,7 +19,6 @@ private final class FeedCachePolicy {
 public final class LocalFeedLoader: FeedLoader {
     private let store: FeedStore
     private let currentDate: () -> Date
-    private let feedCachePolicy = FeedCachePolicy()
     
     public init(store: FeedStore, currentDate: @escaping () -> Date) {
         self.store = store
@@ -33,7 +32,7 @@ public extension LocalFeedLoader {
             guard let self else { return }
             
             switch result {
-            case .success(let feed) where feedCachePolicy.validate(feed.timestamp, against: currentDate()):
+            case .success(let feed) where FeedCachePolicy.validate(feed.timestamp, against: currentDate()):
                 completion(.success(feed.feed.models))
                 
             case .success:
@@ -52,7 +51,7 @@ public extension LocalFeedLoader {
             guard let self else { return }
             
             switch result {
-            case .success(let feed) where feedCachePolicy.validate(feed.timestamp, against: currentDate()):
+            case .success(let feed) where FeedCachePolicy.validate(feed.timestamp, against: currentDate()):
                 break
                 
             case .success, .failure:
