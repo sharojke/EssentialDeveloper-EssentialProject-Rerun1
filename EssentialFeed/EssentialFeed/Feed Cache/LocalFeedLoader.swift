@@ -1,32 +1,29 @@
 import Foundation
 
 private final class FeedCachePolicy {
-    private let currentDate: () -> Date
-    private let calendar = Calendar(identifier: .gregorian)
     private var maxCacheAgeInDays: Int { 7 }
     
-    public init(currentDate: @escaping () -> Date) {
-        self.currentDate = currentDate
-    }
-    
-    func validate(_ timestamp: Date) -> Bool {
+    func validate(
+        _ timestamp: Date,
+        against date: Date,
+        calendar: Calendar = Calendar(identifier: .gregorian)
+    ) -> Bool {
         guard let maxAge = calendar.date(byAdding: .day, value: maxCacheAgeInDays, to: timestamp) else {
             return false
         }
         
-        return currentDate() < maxAge
+        return date < maxAge
     }
 }
 
 public final class LocalFeedLoader: FeedLoader {
     private let store: FeedStore
     private let currentDate: () -> Date
-    private let feedCachePolicy: FeedCachePolicy
+    private let feedCachePolicy = FeedCachePolicy()
     
     public init(store: FeedStore, currentDate: @escaping () -> Date) {
         self.store = store
         self.currentDate = currentDate
-        feedCachePolicy = FeedCachePolicy(currentDate: currentDate)
     }
 }
 
@@ -36,7 +33,7 @@ public extension LocalFeedLoader {
             guard let self else { return }
             
             switch result {
-            case .success(let feed) where feedCachePolicy.validate(feed.timestamp):
+            case .success(let feed) where feedCachePolicy.validate(feed.timestamp, against: currentDate()):
                 completion(.success(feed.feed.models))
                 
             case .success:
@@ -55,7 +52,7 @@ public extension LocalFeedLoader {
             guard let self else { return }
             
             switch result {
-            case .success(let feed) where feedCachePolicy.validate(feed.timestamp):
+            case .success(let feed) where feedCachePolicy.validate(feed.timestamp, against: currentDate()):
                 break
                 
             case .success, .failure:
