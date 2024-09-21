@@ -2,7 +2,6 @@ import EssentialFeed
 import XCTest
 
 // swiftlint:disable force_unwrapping
-// swiftlint:disable force_try
 
 final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
     override func setUp() {
@@ -41,20 +40,20 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
         assertThatRetrieveHasNoSideEffectsOnNonEmptyCache(on: sut)
     }
     
-    func test_retrieve_deliversFailureOnRetrievalError() {
+    func test_retrieve_deliversFailureOnRetrievalError() throws {
         let storeURL = testSpecificStoreURL()
         let sut = makeSUT(storeURL: storeURL)
         
-        try! "invalid data".write(to: storeURL, atomically: false, encoding: .utf8)
+        try "invalid data".write(to: storeURL, atomically: false, encoding: .utf8)
         
         assertThatRetrieveDeliversFailureOnRetrievalError(on: sut)
     }
     
-    func test_retrieve_hasNoSideEffectsOnFailure() {
+    func test_retrieve_hasNoSideEffectsOnFailure() throws {
         let storeURL = testSpecificStoreURL()
         let sut = makeSUT(storeURL: storeURL)
         
-        try! "invalid data".write(to: storeURL, atomically: false, encoding: .utf8)
+        try "invalid data".write(to: storeURL, atomically: false, encoding: .utf8)
         
         assertThatRetrieveHasNoSideEffectsOnFailure(on: sut)
     }
@@ -160,4 +159,3 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
 }
 
 // swiftlint:enable force_unwrapping
-// swiftlint:enable force_try
