@@ -128,6 +128,18 @@ final class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieveTwice: .failure(anyNSError()))
     }
     
+    func test_insert_overridesPreviouslyInsertedCachedValues() {
+        let sut = makeSUT()
+
+        insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
+        
+        let latestFeed = uniqueFeed().local
+        let latestDate = Date()
+        insert(feed: latestFeed, timestamp: latestDate, to: sut)
+        
+        expect(sut, toRetrieve: .success(LocalFeed(feed: latestFeed, timestamp: latestDate)))
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
