@@ -1,6 +1,6 @@
 import Foundation
 
-public struct LocalFeed: Codable {
+public struct LocalFeed {
     public let feed: [LocalFeedImage]
     public let timestamp: Date
     
@@ -10,7 +10,7 @@ public struct LocalFeed: Codable {
     }
 }
 
-public struct LocalFeedImage: Equatable, Codable {
+public struct LocalFeedImage: Equatable {
     public let id: UUID
     public let description: String?
     public let location: String?
