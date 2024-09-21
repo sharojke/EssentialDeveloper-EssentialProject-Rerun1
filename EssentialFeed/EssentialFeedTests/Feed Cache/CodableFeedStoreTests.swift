@@ -116,6 +116,32 @@ final class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
     }
     
+    func test_storeSideEffects_runSerially() {
+        let sut = makeSUT()
+        var completedOperationsInOrder = [XCTestExpectation]()
+        
+        let operation1 = expectation(description: "Operation 1")
+        sut.insert(uniqueFeed().local, timestamp: Date()) { _ in
+            completedOperationsInOrder.append(operation1)
+            operation1.fulfill()
+        }
+        
+        let operation2 = expectation(description: "Operation 2")
+        sut.deleteCachedFeed { _ in
+            completedOperationsInOrder.append(operation2)
+            operation2.fulfill()
+        }
+        
+        let operation3 = expectation(description: "Operation 3")
+        sut.insert(uniqueFeed().local, timestamp: Date()) { _ in
+            completedOperationsInOrder.append(operation3)
+            operation3.fulfill()
+        }
+        
+        waitForExpectations(timeout: 5)
+        XCTAssertEqual(completedOperationsInOrder, [operation1, operation2, operation3], "The order is wrong")
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
