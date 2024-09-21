@@ -91,17 +91,7 @@ final class CodableFeedStoreTests: XCTestCase {
         let feed = uniqueFeed().local
         let date = Date()
 
-        let exp = expectation(description: "Wait for insert")
-        sut.insert(feed, timestamp: date) { result in
-            switch result {
-            case .success:
-                exp.fulfill()
-                
-            case .failure(let error):
-                XCTFail("Expected success, got \(error) instead")
-            }
-        }
-        wait(for: [exp], timeout: 1)
+        insert(feed: feed, timestamp: date, to: sut)
         
         expect(sut, toRetrieve: .success(LocalFeed(feed: feed, timestamp: date)))
     }
@@ -111,17 +101,7 @@ final class CodableFeedStoreTests: XCTestCase {
         let feed = uniqueFeed().local
         let date = Date()
 
-        let exp = expectation(description: "Wait for insert")
-        sut.insert(feed, timestamp: date) { result in
-            switch result {
-            case .success:
-                exp.fulfill()
-                
-            case .failure(let error):
-                XCTFail("Expected success, got \(error) instead")
-            }
-        }
-        wait(for: [exp], timeout: 1)
+        insert(feed: feed, timestamp: date, to: sut)
         
         expect(sut, toRetrieveTwice: .success(LocalFeed(feed: feed, timestamp: date)))
     }
@@ -170,6 +150,26 @@ final class CodableFeedStoreTests: XCTestCase {
     ) {
         expect(sut, toRetrieve: expectedResult, file: file, line: line)
         expect(sut, toRetrieve: expectedResult, file: file, line: line)
+    }
+    
+    private func insert(
+        feed: [LocalFeedImage],
+        timestamp: Date,
+        to sut: CodableFeedStore,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let exp = expectation(description: "Wait for insert")
+        sut.insert(feed, timestamp: timestamp) { result in
+            switch result {
+            case .success:
+                exp.fulfill()
+                
+            case .failure(let error):
+                XCTFail("Expected success, got \(error) instead")
+            }
+        }
+        wait(for: [exp], timeout: 1)
     }
     
     private func testSpecificStoreURL() -> URL {
