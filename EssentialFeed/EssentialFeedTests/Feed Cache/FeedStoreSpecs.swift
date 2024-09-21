@@ -6,7 +6,7 @@ FailableInsertFeedStoreSpecs &
 FailableDeleteFeedStoreSpecs
 
 protocol FailableRetrieveFeedStoreSpecs: FeedStoreSpecs {
-    func test_retrieve_deliversErrorOnRetrievalError()
+    func test_retrieve_deliversFailureOnRetrievalError()
     func test_retrieve_hasNoSideEffectsOnFailure()
 }
 
