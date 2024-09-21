@@ -177,7 +177,7 @@ final class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
     }
     
-    func test_delete_removesValuesFromCacheOnNonEmptyCache() {
+    func test_delete_emptiesPreviouslyInsertedCache() {
         let sut = makeSUT()
         
         insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
