@@ -168,18 +168,7 @@ final class CodableFeedStoreTests: XCTestCase {
     func test_delete_hasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT()
         
-        let exp = expectation(description: "Wait for delete")
-        sut.deleteCachedFeed { result in
-            switch result {
-            case .success:
-                break
-                
-            case .failure(let error):
-                XCTFail("Expected success, got \(error) instead")
-            }
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1)
+        expect(sut, toDeleteCacheFeed: .success(Void()))
 
         expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
     }
@@ -188,20 +177,8 @@ final class CodableFeedStoreTests: XCTestCase {
         let sut = makeSUT()
         
         insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
+        expect(sut, toDeleteCacheFeed: .success(Void()))
         
-        let exp = expectation(description: "Wait for delete")
-        sut.deleteCachedFeed { result in
-            switch result {
-            case .success:
-                break
-                
-            case .failure(let error):
-                XCTFail("Expected success, got \(error) instead")
-            }
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1)
-
         expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
     }
     
@@ -282,6 +259,33 @@ final class CodableFeedStoreTests: XCTestCase {
             }
             exp.fulfill()
         }
+        wait(for: [exp], timeout: 1)
+    }
+    
+    private func expect(
+        _ sut: CodableFeedStore,
+        toDeleteCacheFeed expectedResult: FeedStore.DeleteResult,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let exp = expectation(description: "Wait for delete cache feed")
+
+        sut.deleteCachedFeed { receivedResult in
+            switch (receivedResult, expectedResult) {
+            case (.success, .success), (.failure, .failure):
+                break
+                
+            default:
+                XCTFail(
+                    "Expected \(expectedResult), got \(receivedResult) instead",
+                    file: file,
+                    line: line
+                )
+            }
+            
+            exp.fulfill()
+        }
+        
         wait(for: [exp], timeout: 1)
     }
     
