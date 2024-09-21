@@ -56,12 +56,15 @@ final class CodableFeedStore {
     }
     
     func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping (InsertResult) -> Void) {
-        let encoder = JSONEncoder()
-        let localFeed = Cache(feed: feed.map(CodableFeedImage.init), timestamp: timestamp)
-        let encoded = try! encoder.encode(localFeed)
-        try! encoded.write(to: storeURL)
-        
-        completion(.success(Void()))
+        do {
+            let encoder = JSONEncoder()
+            let localFeed = Cache(feed: feed.map(CodableFeedImage.init), timestamp: timestamp)
+            let encoded = try! encoder.encode(localFeed)
+            try encoded.write(to: storeURL)
+            completion(.success(Void()))
+        } catch {
+            completion(.failure(error))
+        }
     }
 }
 
@@ -140,6 +143,18 @@ final class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieve: .success(LocalFeed(feed: latestFeed, timestamp: latestDate)))
     }
     
+    func test_insert_deliversErrorOnInsertionError() {
+        let invalidStoreURL = URL(string: "invalid://store-url")!
+        let sut = makeSUT(storeURL: invalidStoreURL)
+        
+        expect(
+            sut,
+            toInsertFeed: uniqueFeed().local,
+            withTimestamp: Date(),
+            andCompleteWith: .failure(anyNSError())
+        )
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
@@ -194,6 +209,32 @@ final class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieve: expectedResult, file: file, line: line)
     }
     
+    private func expect(
+        _ sut: CodableFeedStore,
+        toInsertFeed feed: [LocalFeedImage],
+        withTimestamp timestamp: Date,
+        andCompleteWith expectedResult: FeedStore.InsertResult,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let exp = expectation(description: "Wait for insert")
+        sut.insert(feed, timestamp: timestamp) { receivedResult in
+            switch (receivedResult, expectedResult) {
+            case (.success, .success), (.failure, .failure):
+                break
+                
+            default:
+                XCTFail(
+                    "Expected \(expectedResult), got \(receivedResult) instead",
+                    file: file,
+                    line: line
+                )
+            }
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1)
+    }
+    
     private func insert(
         feed: [LocalFeedImage],
         timestamp: Date,
@@ -201,17 +242,14 @@ final class CodableFeedStoreTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Wait for insert")
-        sut.insert(feed, timestamp: timestamp) { result in
-            switch result {
-            case .success:
-                exp.fulfill()
-                
-            case .failure(let error):
-                XCTFail("Expected success, got \(error) instead")
-            }
-        }
-        wait(for: [exp], timeout: 1)
+        expect(
+            sut,
+            toInsertFeed: feed,
+            withTimestamp: timestamp,
+            andCompleteWith: .success(Void()),
+            file: file,
+            line: line
+        )
     }
     
     private func testSpecificStoreURL() -> URL {
