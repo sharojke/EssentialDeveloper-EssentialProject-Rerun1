@@ -67,7 +67,20 @@ final class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieveTwice: .failure(anyNSError()))
     }
     
-    func test_insert_overridesPreviouslyInsertedCachedValues() {
+    func test_insert_deliversNoErrorOnEmptyCache() {
+        let sut = makeSUT()
+        
+        insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
+    }
+    
+    func test_insert_deliversNoErrorOnNonEmptyCache() {
+        let sut = makeSUT()
+        insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
+        
+        insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
+    }
+    
+    func test_insert_overridesPreviouslyInsertedCacheValues() {
         let sut = makeSUT()
 
         insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
@@ -91,12 +104,40 @@ final class CodableFeedStoreTests: XCTestCase {
         )
     }
     
+    func test_insert_hasNoSideEffectsOnFailure() {
+        let invalidStoreURL = URL(string: "invalid://store-url")!
+        let sut = makeSUT(storeURL: invalidStoreURL)
+                
+        expect(
+            sut,
+            toInsertFeed: uniqueFeed().local,
+            withTimestamp: Date(),
+            andCompleteWith: .failure(anyNSError())
+        )
+        
+        expect(sut, toRetrieve: .success(LocalFeed(feed: [], timestamp: Date())))
+    }
+    
+    func test_delete_deliversNoErrorOnEmptyCache() {
+        let sut = makeSUT()
+        
+        expect(sut, toDeleteCacheFeed: .success(Void()))
+    }
+    
     func test_delete_hasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT()
         
         expect(sut, toDeleteCacheFeed: .success(Void()))
 
         expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
+    }
+    
+    func test_delete_deliversNoErrorOnNonEmptyCache() {
+        let sut = makeSUT()
+        
+        insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
+        
+        expect(sut, toDeleteCacheFeed: .success(Void()))
     }
     
     func test_delete_emptiesPreviouslyInsertedCache() {
@@ -112,8 +153,14 @@ final class CodableFeedStoreTests: XCTestCase {
         let sut = makeSUT(storeURL: cachesDirectory())
         
         expect(sut, toDeleteCacheFeed: .failure(anyNSError()))
+    }
+    
+    func test_delete_hasNoSideEffectsOnFailure() {
+        let sut = makeSUT(storeURL: cachesDirectory())
         
-        expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
+        expect(sut, toDeleteCacheFeed: .failure(anyNSError()))
+        
+        expect(sut, toRetrieve: .success(LocalFeed(feed: [], timestamp: Date())))
     }
     
     func test_storeSideEffects_runSerially() {
