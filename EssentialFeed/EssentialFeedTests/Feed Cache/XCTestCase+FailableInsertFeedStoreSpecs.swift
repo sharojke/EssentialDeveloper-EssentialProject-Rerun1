@@ -19,7 +19,7 @@ extension FailableInsertFeedStoreSpecs where Self: XCTestCase {
     
     func assertThatInsertHasNoSideEffectsOnInsertionError(
         on sut: FeedStore,
-        file: StaticString = #file,
+        file: StaticString = #filePath,
         line: UInt = #line
     ) {
         expect(
