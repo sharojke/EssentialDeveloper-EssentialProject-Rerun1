@@ -4,11 +4,7 @@ import XCTest
 // swiftlint:disable force_unwrapping
 // swiftlint:disable force_try
 
-final class CodableFeedStore {
-    typealias RetrieveResult = FeedStore.RetrieveResult
-    typealias InsertResult = FeedStore.InsertResult
-    typealias DeleteResult = FeedStore.DeleteResult
-    
+final class CodableFeedStore: FeedStore {
     private struct Cache: Codable {
         let feed: [CodableFeedImage]
         let timestamp: Date
