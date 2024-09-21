@@ -196,7 +196,7 @@ final class CodableFeedStoreTests: XCTestCase {
         storeURL: URL? = nil,
         file: StaticString = #filePath,
         line: UInt = #line
-    ) -> CodableFeedStore {
+    ) -> FeedStore {
         let storeURL = storeURL ?? testSpecificStoreURL()
         let sut = CodableFeedStore(storeURL: storeURL)
         trackForMemoryLeaks(sut, file: file, line: line)
@@ -204,7 +204,7 @@ final class CodableFeedStoreTests: XCTestCase {
     }
     
     private func expect(
-        _ sut: CodableFeedStore,
+        _ sut: FeedStore,
         toRetrieve expectedResult: FeedStore.RetrieveResult,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -235,7 +235,7 @@ final class CodableFeedStoreTests: XCTestCase {
     }
     
     private func expect(
-        _ sut: CodableFeedStore,
+        _ sut: FeedStore,
         toRetrieveTwice expectedResult: FeedStore.RetrieveResult,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -245,7 +245,7 @@ final class CodableFeedStoreTests: XCTestCase {
     }
     
     private func expect(
-        _ sut: CodableFeedStore,
+        _ sut: FeedStore,
         toInsertFeed feed: [LocalFeedImage],
         withTimestamp timestamp: Date,
         andCompleteWith expectedResult: FeedStore.InsertResult,
@@ -271,7 +271,7 @@ final class CodableFeedStoreTests: XCTestCase {
     }
     
     private func expect(
-        _ sut: CodableFeedStore,
+        _ sut: FeedStore,
         toDeleteCacheFeed expectedResult: FeedStore.DeleteResult,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -300,7 +300,7 @@ final class CodableFeedStoreTests: XCTestCase {
     private func insert(
         feed: [LocalFeedImage],
         timestamp: Date,
-        to sut: CodableFeedStore,
+        to sut: FeedStore,
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
