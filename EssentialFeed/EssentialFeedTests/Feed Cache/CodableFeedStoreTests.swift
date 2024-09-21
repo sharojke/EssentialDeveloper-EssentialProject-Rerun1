@@ -47,8 +47,12 @@ final class CodableFeedStore {
             return completion(.success(Void()))
         }
         
-        try! FileManager.default.removeItem(at: storeURL)
-        completion(.success(Void()))
+        do {
+            try FileManager.default.removeItem(at: storeURL)
+            completion(.success(Void()))
+        } catch {
+            completion(.failure(error))
+        }
     }
     
     func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping (InsertResult) -> Void) {
@@ -182,6 +186,14 @@ final class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
     }
     
+    func test_delete_deliversErrorOnDeletionError() {
+        let sut = makeSUT(storeURL: cachesDirectory())
+        
+        expect(sut, toDeleteCacheFeed: .failure(anyNSError()))
+        
+        expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
@@ -307,9 +319,11 @@ final class CodableFeedStoreTests: XCTestCase {
     }
     
     private func testSpecificStoreURL() -> URL {
-        return FileManager.default
-            .urls(for: .cachesDirectory, in: .userDomainMask).first!
-            .appendingPathComponent("\(type(of: self)).store")
+        return cachesDirectory().appendingPathComponent("\(type(of: self)).store")
+    }
+    
+    private func cachesDirectory() -> URL {
+        return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
     
     private func removeStoreArtifacts() {
