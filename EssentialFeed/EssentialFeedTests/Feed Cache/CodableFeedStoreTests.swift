@@ -7,6 +7,7 @@ import XCTest
 final class CodableFeedStore {
     typealias RetrieveResult = FeedStore.RetrieveResult
     typealias InsertResult = FeedStore.InsertResult
+    typealias DeleteResult = FeedStore.DeleteResult
     
     private struct Cache: Codable {
         let feed: [CodableFeedImage]
@@ -16,7 +17,7 @@ final class CodableFeedStore {
             return LocalFeed(feed: feed.map(\.local), timestamp: timestamp)
         }
     }
-
+    
     private struct CodableFeedImage: Equatable, Codable {
         private let id: UUID
         private let description: String?
@@ -41,18 +42,8 @@ final class CodableFeedStore {
         self.storeURL = storeURL
     }
     
-    func retrieve(completion: @escaping (RetrieveResult) -> Void) {
-        guard let data = try? Data(contentsOf: storeURL) else {
-            return completion(.success(LocalFeed(feed: [], timestamp: Date())))
-        }
-        
-        do {
-            let decoder = JSONDecoder()
-            let decoded = try decoder.decode(Cache.self, from: data)
-            completion(.success(decoded.localFeed))
-        } catch {
-            completion(.failure(error))
-        }
+    func deleteCachedFeed(completion: @escaping (DeleteResult) -> Void) {
+        completion(.success(Void()))
     }
     
     func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping (InsertResult) -> Void) {
@@ -62,6 +53,20 @@ final class CodableFeedStore {
             let encoded = try! encoder.encode(localFeed)
             try encoded.write(to: storeURL)
             completion(.success(Void()))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    func retrieve(completion: @escaping (RetrieveResult) -> Void) {
+        guard let data = try? Data(contentsOf: storeURL) else {
+            return completion(.success(LocalFeed(feed: [], timestamp: Date())))
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            let decoded = try decoder.decode(Cache.self, from: data)
+            completion(.success(decoded.localFeed))
         } catch {
             completion(.failure(error))
         }
@@ -153,6 +158,25 @@ final class CodableFeedStoreTests: XCTestCase {
             withTimestamp: Date(),
             andCompleteWith: .failure(anyNSError())
         )
+    }
+    
+    func test_delete_hasNoSideEffectsOnEmptyCache() {
+        let sut = makeSUT()
+        
+        let exp = expectation(description: "Wait for delete")
+        sut.deleteCachedFeed { result in
+            switch result {
+            case .success:
+                break
+                
+            case .failure(let error):
+                XCTFail("Expected success, got \(error) instead")
+            }
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1)
+
+        expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
     }
     
     // MARK: Helpers
