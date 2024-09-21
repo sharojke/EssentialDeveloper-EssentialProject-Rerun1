@@ -4,7 +4,7 @@ import XCTest
 // swiftlint:disable force_unwrapping
 // swiftlint:disable force_try
 
-final class CodableFeedStoreTests: XCTestCase {
+final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
     override func setUp() {
         super.setUp()
         
