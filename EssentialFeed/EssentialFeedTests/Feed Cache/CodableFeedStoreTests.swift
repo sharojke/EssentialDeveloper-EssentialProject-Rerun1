@@ -20,33 +20,25 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
     func test_retrieve_deliversEmptyOnEmptyCache() {
         let sut = makeSUT()
         
-        expect(sut, toRetrieve: .success(LocalFeed(feed: [], timestamp: Date())))
+        assertThatRetrieveDeliversEmptyOnEmptyCache(on: sut)
     }
     
     func test_retrieve_hasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT()
 
-        expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
+        assertThatRetrieveHasNoSideEffectsOnEmptyCache(on: sut)
     }
     
     func test_retrieve_deliversFoundValuesOnNonEmptyCache() {
         let sut = makeSUT()
-        let feed = uniqueFeed().local
-        let date = Date()
-
-        insert(feed: feed, timestamp: date, to: sut)
         
-        expect(sut, toRetrieve: .success(LocalFeed(feed: feed, timestamp: date)))
+        assertThatRetrieveDeliversFoundValuesOnNonEmptyCache(on: sut)
     }
     
     func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
         let sut = makeSUT()
-        let feed = uniqueFeed().local
-        let date = Date()
-
-        insert(feed: feed, timestamp: date, to: sut)
         
-        expect(sut, toRetrieveTwice: .success(LocalFeed(feed: feed, timestamp: date)))
+        assertThatRetrieveHasNoSideEffectsOnNonEmptyCache(on: sut)
     }
     
     func test_retrieve_deliversErrorOnRetrievalError() {
@@ -70,26 +62,19 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
     func test_insert_deliversNoErrorOnEmptyCache() {
         let sut = makeSUT()
         
-        insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
+        assertThatInsertDeliversNoErrorOnEmptyCache(on: sut)
     }
     
     func test_insert_deliversNoErrorOnNonEmptyCache() {
         let sut = makeSUT()
-        insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
-        
-        insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
+
+        assertThatInsertDeliversNoErrorOnNonEmptyCache(on: sut)
     }
     
     func test_insert_overridesPreviouslyInsertedCacheValues() {
         let sut = makeSUT()
 
-        insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
-        
-        let latestFeed = uniqueFeed().local
-        let latestDate = Date()
-        insert(feed: latestFeed, timestamp: latestDate, to: sut)
-        
-        expect(sut, toRetrieve: .success(LocalFeed(feed: latestFeed, timestamp: latestDate)))
+        assertThatInsertOverridesPreviouslyInsertedCacheValues(on: sut)
     }
     
     func test_insert_deliversErrorOnInsertionError() {
@@ -121,32 +106,25 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
     func test_delete_deliversNoErrorOnEmptyCache() {
         let sut = makeSUT()
         
-        expect(sut, toDeleteCacheFeed: .success(Void()))
+        assertThatDeleteDeliversNoErrorOnEmptyCache(on: sut)
     }
     
     func test_delete_hasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT()
-        
-        expect(sut, toDeleteCacheFeed: .success(Void()))
 
-        expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
+        assertThatDeleteHasNoSideEffectsOnEmptyCache(on: sut)
     }
     
     func test_delete_deliversNoErrorOnNonEmptyCache() {
         let sut = makeSUT()
-        
-        insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
-        
-        expect(sut, toDeleteCacheFeed: .success(Void()))
+
+        assertThatDeleteDeliversNoErrorOnNonEmptyCache(on: sut)
     }
     
     func test_delete_emptiesPreviouslyInsertedCache() {
         let sut = makeSUT()
         
-        insert(feed: uniqueFeed().local, timestamp: Date(), to: sut)
-        expect(sut, toDeleteCacheFeed: .success(Void()))
-        
-        expect(sut, toRetrieveTwice: .success(LocalFeed(feed: [], timestamp: Date())))
+        assertThatDeleteEmptiesPreviouslyInsertedCache(on: sut)
     }
     
     func test_delete_deliversErrorOnDeletionError() {
@@ -165,28 +143,8 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
     
     func test_storeSideEffects_runSerially() {
         let sut = makeSUT()
-        var completedOperationsInOrder = [XCTestExpectation]()
         
-        let operation1 = expectation(description: "Operation 1")
-        sut.insert(uniqueFeed().local, timestamp: Date()) { _ in
-            completedOperationsInOrder.append(operation1)
-            operation1.fulfill()
-        }
-        
-        let operation2 = expectation(description: "Operation 2")
-        sut.deleteCachedFeed { _ in
-            completedOperationsInOrder.append(operation2)
-            operation2.fulfill()
-        }
-        
-        let operation3 = expectation(description: "Operation 3")
-        sut.insert(uniqueFeed().local, timestamp: Date()) { _ in
-            completedOperationsInOrder.append(operation3)
-            operation3.fulfill()
-        }
-        
-        waitForExpectations(timeout: 5)
-        XCTAssertEqual(completedOperationsInOrder, [operation1, operation2, operation3], "The order is wrong")
+        assertThatSideEffectsRunSerially(on: sut)
     }
     
     // MARK: Helpers
