@@ -5,6 +5,18 @@ import XCTest
 // swiftlint:disable force_try
 
 final class EssentialFeedCacheIntegrationTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        
+        removeStoreArtifacts()
+    }
+    
+    override func tearDown() {
+        super.tearDown()
+        
+        removeStoreArtifacts()
+    }
+    
     func test_load_deliversNoItemsOnEmptyCache() {
         let sut = makeSUT()
         
@@ -22,6 +34,32 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
         }
         
         wait(for: [exp], timeout: 1)
+    }
+    
+    func test_load_deliversItemsSavedOnASeparateInstance() {
+        let sutToPerformSave = makeSUT()
+        let sutToPerformLoad = makeSUT()
+        let feed = uniqueFeed().models
+        
+        let exp1 = expectation(description: "Wait for save")
+        sutToPerformSave.save(feed) { _ in
+            exp1.fulfill()
+        }
+        wait(for: [exp1], timeout: 1)
+        
+        let exp2 = expectation(description: "Wait for save")
+        sutToPerformLoad.load { result in
+            switch result {
+            case .success(let receivedFeed):
+                XCTAssertEqual(receivedFeed, feed)
+                
+            case .failure(let error):
+                XCTFail("Expected success, got \(error) instead")
+            }
+            
+            exp2.fulfill()
+        }
+        wait(for: [exp2], timeout: 1)
     }
     
     // MARK: Helpers
@@ -42,6 +80,10 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
     
     private func cachesDirectory() -> URL {
         return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+    }
+    
+    private func removeStoreArtifacts() {
+        try? FileManager.default.removeItem(at: testSpecificStoreURL())
     }
 }
 
