@@ -29,7 +29,15 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
         let feed = uniqueFeed().models
         
         let exp1 = expectation(description: "Wait for save")
-        sutToPerformSave.save(feed) { _ in
+        sutToPerformSave.save(feed) { result in
+            switch result {
+            case .success:
+                break
+                
+            case .failure(let error):
+                XCTFail("Expect success, got \(error) instead")
+            }
+            
             exp1.fulfill()
         }
         wait(for: [exp1], timeout: 1)
