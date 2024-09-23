@@ -965,8 +965,7 @@
 				BBC21F8C2C9F4DFD005901E8 /* FeedStore.xcdatamodel */,
 			);
 			currentVersion = BBC21F8C2C9F4DFD005901E8 /* FeedStore.xcdatamodel */;
-			name = FeedStore.xcdatamodeld;
-			path = "/Users/macbookgray/Desktop/EssentialDeveloper/EssentialProject-Rerun1/EssentialFeed/EssentialFeed/Feed Cache/Infrastrucure/CoreData/FeedStore.xcdatamodeld";
+			path = FeedStore.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
