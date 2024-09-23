@@ -35,6 +35,7 @@ public final class CoreDataFeedStore: FeedStore {
                 try context.save()
                 completion(.success(Void()))
             } catch {
+                context.rollback()
                 completion(.failure(error))
             }
         }
@@ -48,6 +49,7 @@ public final class CoreDataFeedStore: FeedStore {
                     .map(context.save)
                 completion(.success(Void()))
             } catch {
+                context.rollback()
                 completion(.failure(error))
             }
         }

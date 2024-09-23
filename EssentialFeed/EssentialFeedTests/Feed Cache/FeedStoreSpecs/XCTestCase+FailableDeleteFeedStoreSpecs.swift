@@ -12,11 +12,12 @@ extension FailableDeleteFeedStoreSpecs where Self: XCTestCase {
     
     func assertThatDeleteHasNoSideEffectsOnDeletionError(
         on sut: FeedStore,
+        storedFeed: LocalFeed = LocalFeed(feed: [], timestamp: Date()),
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
         expect(sut, toDeleteCacheFeed: .failure(anyNSError()), file: file, line: line)
         
-        expect(sut, toRetrieve: .success(LocalFeed(feed: [], timestamp: Date())), file: file, line: line)
+        expect(sut, toRetrieve: .success(storedFeed), file: file, line: line)
     }
 }
