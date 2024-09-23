@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB900BE52CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB900BE42CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift */; };
 		BBA383152C99FCA100725349 /* FeedCache+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA383142C99FCA100725349 /* FeedCache+TestHelpers.swift */; };
 		BBA383172C9A0B5000725349 /* ValidateFeedCacheUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA383162C9A0B5000725349 /* ValidateFeedCacheUseCaseTests.swift */; };
 		BBA3831F2C9B6CDA00725349 /* FeedCachePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA3831E2C9B6CDA00725349 /* FeedCachePolicy.swift */; };
@@ -76,6 +77,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BB900BE42CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSManagedObjectContext+Stub.swift"; sourceTree = "<group>"; };
 		BBA383142C99FCA100725349 /* FeedCache+TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeedCache+TestHelpers.swift"; sourceTree = "<group>"; };
 		BBA383162C9A0B5000725349 /* ValidateFeedCacheUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateFeedCacheUseCaseTests.swift; sourceTree = "<group>"; };
 		BBA3831E2C9B6CDA00725349 /* FeedCachePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCachePolicy.swift; sourceTree = "<group>"; };
@@ -186,6 +188,7 @@
 			children = (
 				BBB517072C98CD7B00A080BF /* FeedStoreSpy.swift */,
 				BBA383142C99FCA100725349 /* FeedCache+TestHelpers.swift */,
+				BB900BE42CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -571,6 +574,7 @@
 				BBA383172C9A0B5000725349 /* ValidateFeedCacheUseCaseTests.swift in Sources */,
 				BBC21F7F2C9F4918005901E8 /* CoreDataFeedStoreTests.swift in Sources */,
 				BBC21F782C9F34E7005901E8 /* XCTestCase+FailableRetrieveFeedStoreSpecs.swift in Sources */,
+				BB900BE52CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift in Sources */,
 				BBDDD7942C8C912400D6EF3F /* LoadFeedFromRemoteUseCaseTests.swift in Sources */,
 				BBF11CE62C8F6E03009A97E2 /* URLSessionHTTPClientTests.swift in Sources */,
 				BBDDD7532C8B91F000D6EF3F /* EssentialFeedTests.swift in Sources */,
