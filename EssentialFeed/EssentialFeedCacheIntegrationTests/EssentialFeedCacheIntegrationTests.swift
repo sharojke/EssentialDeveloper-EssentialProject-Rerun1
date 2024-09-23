@@ -2,7 +2,6 @@ import EssentialFeed
 import XCTest
 
 // swiftlint:disable force_unwrapping
-// swiftlint:disable force_try
 
 final class EssentialFeedCacheIntegrationTests: XCTestCase {
     override func setUp() {
@@ -17,15 +16,15 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
         removeStoreArtifacts()
     }
     
-    func test_load_deliversNoItemsOnEmptyCache() {
-        let sut = makeSUT()
+    func test_load_deliversNoItemsOnEmptyCache() throws {
+        let sut = try makeSUT()
         
         expect(sut, toLoad: [])
     }
     
-    func test_load_deliversItemsSavedOnASeparateInstance() {
-        let sutToPerformSave = makeSUT()
-        let sutToPerformLoad = makeSUT()
+    func test_load_deliversItemsSavedOnASeparateInstance() throws {
+        let sutToPerformSave = try makeSUT()
+        let sutToPerformLoad = try makeSUT()
         let feed = uniqueFeed().models
         
         save(feed: feed, with: sutToPerformSave)
@@ -33,10 +32,10 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
         expect(sutToPerformLoad, toLoad: feed)
     }
     
-    func test_save_overridesItemsSavedOnASeparateInstance() {
-        let sutToPerformFirstSave = makeSUT()
-        let sutToPerformLastSave = makeSUT()
-        let sutToPerformLoad = makeSUT()
+    func test_save_overridesItemsSavedOnASeparateInstance() throws {
+        let sutToPerformFirstSave = try makeSUT()
+        let sutToPerformLastSave = try makeSUT()
+        let sutToPerformLoad = try makeSUT()
         let firstFeed = uniqueFeed().models
         let lastFeed = uniqueFeed().models
         
@@ -48,8 +47,8 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
     
     // MARK: Helpers
     
-    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> LocalFeedLoader {
-        let store = try! CoreDataFeedStore(storeURL: inMemoryStoreURL())
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) throws -> LocalFeedLoader {
+        let store = try CoreDataFeedStore(storeURL: inMemoryStoreURL())
         let sut = LocalFeedLoader(store: store, currentDate: Date.init)
         trackForMemoryLeaks(store, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
@@ -118,4 +117,3 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
 }
 
 // swiftlint:enable force_unwrapping
-// swiftlint:enable force_try
