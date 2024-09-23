@@ -141,6 +141,29 @@ final class CoreDataFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
         )
     }
     
+    func test_delete_removesAllObjects() throws {
+        let store = try makeSUT()
+
+        expect(
+            store,
+            toInsertFeed: uniqueFeed().local,
+            withTimestamp: Date(),
+            andCompleteWith: .success(Void())
+        )
+        
+        expect(store, toDeleteCacheFeed: .success(Void()))
+
+        let context = try NSPersistentContainer.load(
+            name: CoreDataFeedStore.modelName,
+            model: XCTUnwrap(CoreDataFeedStore.model),
+            url: inMemoryStoreURL()
+        ).viewContext
+
+        let existingObjects = try context.allExistingObjects()
+
+        XCTAssertEqual(existingObjects, [], "Found orphaned objects in Core Data")
+    }
+    
     func test_storeSideEffects_runSerially() throws {
         let sut = try makeSUT()
         

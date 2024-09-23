@@ -18,6 +18,7 @@ protocol FailableInsertFeedStoreSpecs: FeedStoreSpecs {
 protocol FailableDeleteFeedStoreSpecs: FeedStoreSpecs {
     func test_delete_deliversErrorOnDeletionError() throws
     func test_delete_hasNoSideEffectsOnFailure() throws
+    func test_delete_removesAllObjects() throws
 }
 
 // Created by `command`+`control`+`up arrow`
