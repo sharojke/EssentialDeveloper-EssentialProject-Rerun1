@@ -16,7 +16,10 @@ public extension LocalFeedLoader {
             guard let self else { return }
             
             switch result {
-            case .success(let feed) where FeedCachePolicy.validate(feed.timestamp, against: currentDate()):
+            case .success(.some(let feed)) where FeedCachePolicy.validate(
+                feed.timestamp,
+                against: currentDate()
+            ):
                 completion(.success(feed.feed.models))
                 
             case .success:
@@ -35,7 +38,10 @@ public extension LocalFeedLoader {
             guard let self else { return }
             
             switch result {
-            case .success(let feed) where FeedCachePolicy.validate(feed.timestamp, against: currentDate()):
+            case .success(.some(let feed)) where FeedCachePolicy.validate(
+                feed.timestamp,
+                against: currentDate()
+            ):
                 break
                 
             case .success, .failure:

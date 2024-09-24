@@ -12,7 +12,7 @@ extension FailableDeleteFeedStoreSpecs where Self: XCTestCase {
     
     func assertThatDeleteHasNoSideEffectsOnDeletionError(
         on sut: FeedStore,
-        storedFeed: LocalFeed = LocalFeed(feed: [], timestamp: Date()),
+        storedFeed: CachedFeed? = nil,
         file: StaticString = #filePath,
         line: UInt = #line
     ) {

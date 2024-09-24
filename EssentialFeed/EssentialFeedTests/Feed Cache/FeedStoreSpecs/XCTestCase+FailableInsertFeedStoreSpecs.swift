@@ -31,6 +31,6 @@ extension FailableInsertFeedStoreSpecs where Self: XCTestCase {
             line: line
         )
         
-        expect(sut, toRetrieve: .success(LocalFeed(feed: [], timestamp: Date())), file: file, line: line)
+        expect(sut, toRetrieve: .success(nil), file: file, line: line)
     }
 }

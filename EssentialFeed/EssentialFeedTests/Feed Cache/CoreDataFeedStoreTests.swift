@@ -137,7 +137,7 @@ final class CoreDataFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
         
         assertThatDeleteHasNoSideEffectsOnDeletionError(
             on: sut,
-            storedFeed: LocalFeed(feed: feed, timestamp: timestamp)
+            storedFeed: CachedFeed(feed: feed, timestamp: timestamp)
         )
     }
     
