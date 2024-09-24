@@ -9,21 +9,21 @@ final class FeedStoreSpy: FeedStore {
     }
     
     private(set) var receivedMessages = [Message]()
-    private var deletionCompletions = [(DeleteResult) -> Void]()
-    private var insertionCompletions = [(InsertResult) -> Void]()
-    private var retrievalCompletions = [(RetrieveResult) -> Void]()
+    private var deletionCompletions = [DeleteCompletion]()
+    private var insertionCompletions = [InsertCompletion]()
+    private var retrievalCompletions = [RetrieveCompletion]()
     
-    func deleteCachedFeed(completion: @escaping (DeleteResult) -> Void) {
+    func deleteCachedFeed(completion: @escaping DeleteCompletion) {
         deletionCompletions.append(completion)
         receivedMessages.append(.deleteCachedFeed)
     }
     
-    func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping (InsertResult) -> Void) {
+    func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertCompletion) {
         insertionCompletions.append(completion)
         receivedMessages.append(.insert(feed, timestamp))
     }
     
-    func retrieve(completion: @escaping (RetrieveResult) -> Void) {
+    func retrieve(completion: @escaping RetrieveCompletion) {
         retrievalCompletions.append(completion)
         receivedMessages.append(.retrieve)
     }
