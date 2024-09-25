@@ -9,6 +9,15 @@
     }
   ],
   "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:EssentialFeed.xcodeproj",
+          "identifier" : "BBDDD7332C8B90B200D6EF3F",
+          "name" : "EssentialFeed"
+        }
+      ]
+    },
     "testExecutionOrdering" : "random"
   },
   "testTargets" : [
@@ -16,7 +25,7 @@
       "parallelizable" : true,
       "target" : {
         "containerPath" : "container:EssentialFeed.xcodeproj",
-        "identifier" : "BBC21F932CA06AD2005901E8",
+        "identifier" : "BBC21FA72CA06CA0005901E8",
         "name" : "EssentialFeedCacheIntegrationTests"
       }
     }
