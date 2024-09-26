@@ -3,10 +3,18 @@ import UIKit
 import XCTest
 
 private final class LoaderSpy: FeedLoader {
-    private(set) var loadCallCount = 0
+    private var completions = [(LoadResult) -> Void]()
+    
+    var loadCallCount: Int {
+        return completions.count
+    }
     
     func load(completion: @escaping (LoadResult) -> Void) {
-        loadCallCount += 1
+        completions.append(completion)
+    }
+    
+    func completeFeedLoading(at index: Int = .zero) {
+        completions[index](.success([]))
     }
 }
 
@@ -43,7 +51,13 @@ final class FeedViewController: UITableViewController {
     @objc
     private func refresh() {
         refreshControl?.beginRefreshing()
-        loader.load { _ in }
+        loader.load { [weak self] _ in
+            self?.stopRefreshing()
+        }
+    }
+    
+    private func stopRefreshing() {
+        refreshControl?.endRefreshing()
     }
 }
 
@@ -74,6 +88,15 @@ final class FeedViewControllerTests: XCTestCase {
         sut.simulateAppearance()
         
         XCTAssertEqual(loader.loadCallCount, 1)
+    }
+    
+    func test_viewIsAppearing_hidesLoadingIndicatorOnLoadingCompletion() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoading()
+        
+        XCTAssertEqual(sut.refreshControl?.isRefreshing, false)
     }
     
     func test_pullToRefresh_loadsFeed() {
