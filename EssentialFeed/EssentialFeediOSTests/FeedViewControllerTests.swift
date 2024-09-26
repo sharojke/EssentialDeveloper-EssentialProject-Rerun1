@@ -76,64 +76,37 @@ private final class FakeRefreshControl: UIRefreshControl {
 }
 
 final class FeedViewControllerTests: XCTestCase {
-    func test_init_doesNotLoadFeed() {
-        let (_, loader) = makeSUT()
-        
-        XCTAssertEqual(loader.loadCallCount, .zero)
-    }
-    
-    func test_viewIsAppearing_loadsFeed() {
+    func test_loadFeedActions_requestFeedFromLoader() {
         let (sut, loader) = makeSUT()
+        XCTAssertEqual(loader.loadCallCount, .zero, "Expected no requests before view is appeared")
         
         sut.simulateAppearance()
-        
-        XCTAssertEqual(loader.loadCallCount, 1)
-    }
-    
-    func test_viewIsAppearing_hidesLoadingIndicatorOnLoadingCompletion() {
-        let (sut, loader) = makeSUT()
-        
-        sut.simulateAppearance()
-        loader.completeFeedLoading()
-        
-        XCTAssertFalse(sut.isShowingLoadingIndicator())
-    }
-    
-    func test_userInitiatedFeedReload_loadsFeed() {
-        let (sut, loader) = makeSUT()
-        
-        sut.simulateAppearance()
-        sut.simulateUserInitiatedFeedReload()
-        XCTAssertEqual(loader.loadCallCount, 2)
+        XCTAssertEqual(loader.loadCallCount, 1, "Expected a request after view is appeared")
         
         sut.simulateUserInitiatedFeedReload()
-        XCTAssertEqual(loader.loadCallCount, 3)
-    }
-    
-    func test_userInitiatedFeedReload_hidesLoadingIndicatorOnLoadingCompletion() {
-        let (sut, loader) = makeSUT()
+        XCTAssertEqual(loader.loadCallCount, 2, "Expected another request after initiating a load")
         
-        sut.simulateAppearance()
-        loader.completeFeedLoading(at: 0)
         sut.simulateUserInitiatedFeedReload()
-        loader.completeFeedLoading(at: 1)
-        
-        XCTAssertFalse(sut.isShowingLoadingIndicator())
+        XCTAssertEqual(loader.loadCallCount, 3, "Expected another request after initiating another load")
     }
     
-    func test_loadingIndicator_reactorsAccordinglyOnUsersInteractions() {
+    func test_loadingFeedIndicator_isVisibleWhileLoadingFeed() {
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
-        XCTAssertTrue(sut.isShowingLoadingIndicator())
+        XCTAssertTrue(sut.isShowingLoadingIndicator(), "Expected visible after view is appeared")
         
         loader.completeFeedLoading(at: 0)
+        XCTAssertFalse(sut.isShowingLoadingIndicator(), "Expected hidden after the loading is completed")
+        
         sut.simulateUserInitiatedFeedReload()
-        XCTAssertTrue(sut.isShowingLoadingIndicator())
+        XCTAssertTrue(sut.isShowingLoadingIndicator(), "Expected visible after initiating a load")
         
         loader.completeFeedLoading(at: 1)
+        XCTAssertFalse(sut.isShowingLoadingIndicator(), "Expected hidden after the loading is completed")
+        
         sut.simulateAppearance()
-        XCTAssertFalse(sut.isShowingLoadingIndicator())
+        XCTAssertFalse(sut.isShowingLoadingIndicator(), "Expected hidden after view is appeared on second+ time")
     }
     
     // MARK: Helpers
