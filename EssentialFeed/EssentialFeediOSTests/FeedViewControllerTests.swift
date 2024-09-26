@@ -1,6 +1,6 @@
 import EssentialFeed
-import XCTest
 import UIKit
+import XCTest
 
 final class LoaderSpy: FeedLoader {
     private(set) var loadCallCount = 0
