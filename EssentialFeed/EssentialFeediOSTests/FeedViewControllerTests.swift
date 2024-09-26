@@ -2,19 +2,18 @@ import EssentialFeed
 import XCTest
 import UIKit
 
-final class LoaderSpy {
+final class LoaderSpy: FeedLoader {
     private(set) var loadCallCount = 0
     
-    func load() {
+    func load(completion: @escaping (LoadResult) -> Void) {
         loadCallCount += 1
     }
 }
 
-
 final class FeedViewController: UIViewController {
-    private let loader: LoaderSpy
+    private let loader: FeedLoader
     
-    init(loader: LoaderSpy) {
+    init(loader: FeedLoader) {
         self.loader = loader
         super.init(nibName: nil, bundle: nil)
     }
@@ -26,7 +25,7 @@ final class FeedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loader.load()
+        loader.load { _ in }
     }
 }
 
