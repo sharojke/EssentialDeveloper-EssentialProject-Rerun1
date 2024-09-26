@@ -99,24 +99,24 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(sut.refreshControl?.isRefreshing, false)
     }
     
-    func test_pullToRefresh_loadsFeed() {
+    func test_userInitiatedFeedReload_loadsFeed() {
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
-        sut.refreshControl?.simulatePullToRefresh()
+        sut.simulateUserInitiatedFeedReload()
         XCTAssertEqual(loader.loadCallCount, 2)
         
-        sut.refreshControl?.simulatePullToRefresh()
+        sut.simulateUserInitiatedFeedReload()
         XCTAssertEqual(loader.loadCallCount, 3)
     }
     
-    func test_pullToRefresh_hidesLoadingIndicatorOnLoadingCompletion() {
+    func test_userInitiatedFeedReload_hidesLoadingIndicatorOnLoadingCompletion() {
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
-        loader.completeFeedLoading()
-        sut.refreshControl?.simulatePullToRefresh()
-        loader.completeFeedLoading()
+        loader.completeFeedLoading(at: 0)
+        sut.simulateUserInitiatedFeedReload()
+        loader.completeFeedLoading(at: 1)
         
         XCTAssertEqual(sut.refreshControl?.isRefreshing, false)
     }
@@ -127,11 +127,11 @@ final class FeedViewControllerTests: XCTestCase {
         sut.simulateAppearance()
         XCTAssertEqual(sut.refreshControl?.isRefreshing, true)
         
-        sut.refreshControl?.endRefreshing()
-        sut.refreshControl?.simulatePullToRefresh()
+        loader.completeFeedLoading(at: 0)
+        sut.simulateUserInitiatedFeedReload()
         XCTAssertEqual(sut.refreshControl?.isRefreshing, true)
         
-        sut.refreshControl?.endRefreshing()
+        loader.completeFeedLoading(at: 1)
         sut.simulateAppearance()
         XCTAssertEqual(sut.refreshControl?.isRefreshing, false)
     }
@@ -171,7 +171,11 @@ private extension FeedViewController {
         endAppearanceTransition()
     }
     
-    func replaceRefreshControlWithFakeForiOS17Support() {
+    func simulateUserInitiatedFeedReload() {
+        refreshControl?.simulatePullToRefresh()
+    }
+    
+    private func replaceRefreshControlWithFakeForiOS17Support() {
         let fake = FakeRefreshControl()
         
         refreshControl?.allTargets.forEach { target in
