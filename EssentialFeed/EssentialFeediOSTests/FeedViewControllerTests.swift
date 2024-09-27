@@ -3,6 +3,9 @@ import EssentialFeediOS
 import UIKit
 import XCTest
 
+// swiftlint:disable force_unwrapping
+// swiftlint:disable force_cast
+
 private final class LoaderSpy: FeedLoader {
     private var completions = [(LoadResult) -> Void]()
     
@@ -14,8 +17,8 @@ private final class LoaderSpy: FeedLoader {
         completions.append(completion)
     }
     
-    func completeFeedLoading(at index: Int = .zero) {
-        completions[index](.success([]))
+    func completeFeedLoading(with feed: [FeedImage] = [], at index: Int = .zero) {
+        completions[index](.success(feed))
     }
 }
 
@@ -67,6 +70,24 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertFalse(sut.isShowingLoadingIndicator(), "Expected hidden after view is appeared on second+ time")
     }
     
+    func test_loadFeedCompletion_rendersSuccessfullyLoadedFeed() {
+        let image0 = makeImage(description: "a description", location: "a location")
+        let image1 = makeImage(description: nil, location: "another location")
+        let image2 = makeImage(description: "another description", location: nil)
+        let image3 = makeImage(description: nil, location: nil)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        assertThat(sut, isRendering: [])
+        
+        loader.completeFeedLoading(with: [image0], at: .zero)
+        assertThat(sut, isRendering: [image0])
+        
+        sut.simulateUserInitiatedFeedReload()
+        loader.completeFeedLoading(with: [image0, image1, image2, image3], at: 1)
+        assertThat(sut, isRendering: [image0, image1, image2, image3])
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
@@ -78,6 +99,64 @@ final class FeedViewControllerTests: XCTestCase {
         trackForMemoryLeaks(loader, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, loader)
+    }
+    
+    private func makeImage(
+        description: String? = nil,
+        location: String? = nil,
+        url: URL = URL(string: "http://any-url.com)")!
+    ) -> FeedImage {
+        return FeedImage(id: UUID(), description: description, location: location, url: url)
+    }
+    
+    private func assertThat(
+        _ sut: FeedViewController,
+        isRendering feed: [FeedImage],
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        XCTAssertEqual(
+            sut.numberOfRenderedFeedImageViews(),
+            feed.count,
+            "Expected \(feed.count) image, got \(sut.numberOfRenderedFeedImageViews()) instead",
+            file: file,
+            line: line
+        )
+        feed.enumerated().forEach { index, image in
+            assertThat(sut, hasConfiguredFor: image, at: index, file: file, line: line)
+        }
+    }
+    
+    private func assertThat(
+        _ sut: FeedViewController,
+        hasConfiguredFor image: FeedImage,
+        at index: Int,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let shouldLocationBeVisible = image.location != nil
+        let view = sut.feedImageView(at: index)
+        XCTAssertEqual(
+            view.isShowingLocation,
+            shouldLocationBeVisible,
+            "Expected `isShowingLocation` to be \(shouldLocationBeVisible) for index at \(index)",
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            view.locationText,
+            image.location,
+            "Expected `locationText` to be \(image.location as Any) for index at \(index)",
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            view.descriptionText,
+            image.description,
+            "Expected `descriptionText` to be \(image.description as Any) for index at \(index)",
+            file: file,
+            line: line
+        )
     }
 }
 
@@ -91,6 +170,8 @@ private extension UIRefreshControl {
     }
 }
 
+// MARK: - FeedViewController+Appearance
+
 private extension FeedViewController {
     func simulateAppearance() {
         if !isViewLoaded {
@@ -100,14 +181,6 @@ private extension FeedViewController {
         
         beginAppearanceTransition(true, animated: false)
         endAppearanceTransition()
-    }
-    
-    func simulateUserInitiatedFeedReload() {
-        refreshControl?.simulatePullToRefresh()
-    }
-    
-    func isShowingLoadingIndicator() -> Bool {
-        return refreshControl?.isRefreshing == true
     }
     
     private func replaceRefreshControlWithFakeForiOS17Support() {
@@ -122,3 +195,48 @@ private extension FeedViewController {
         refreshControl = fake
     }
 }
+
+// MARK: - FeedViewController+RefreshUIAndLogic
+
+private extension FeedViewController {
+    func simulateUserInitiatedFeedReload() {
+        refreshControl?.simulatePullToRefresh()
+    }
+    
+    func isShowingLoadingIndicator() -> Bool {
+        return refreshControl?.isRefreshing == true
+    }
+}
+
+// MARK: - FeedViewController+Items
+
+private extension FeedViewController {
+    var feedImagesSection: Int { .zero }
+    
+    func numberOfRenderedFeedImageViews() -> Int {
+        return tableView.numberOfRows(inSection: feedImagesSection)
+    }
+    
+    func feedImageView(at index: Int) -> FeedImageCell {
+        let ds = tableView.dataSource
+        let indexPath = IndexPath(row: index, section: feedImagesSection)
+        return ds?.tableView(tableView, cellForRowAt: indexPath) as! FeedImageCell
+    }
+}
+
+private extension FeedImageCell {
+    var isShowingLocation: Bool {
+        return !locationContainer.isHidden
+    }
+    
+    var locationText: String? {
+        return locationLabel.text
+    }
+    
+    var descriptionText: String? {
+        return descriptionLabel.text
+    }
+}
+
+// swiftlint:enable force_unwrapping
+// swiftlint:enable force_cast
