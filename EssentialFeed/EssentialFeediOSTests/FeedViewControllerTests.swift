@@ -7,6 +7,18 @@ import XCTest
 // swiftlint:disable force_cast
 
 private final class LoaderSpy: FeedLoader, FeedImageDataLoader {
+    private final class TaskSpy: FeedImageDataLoaderTask {
+        private let onCancel: () -> Void
+        
+        init(onCancel: @escaping () -> Void) {
+            self.onCancel = onCancel
+        }
+        
+        func cancel() {
+            onCancel()
+        }
+    }
+    
     private var feedRequests = [(LoadResult) -> Void]()
     private(set) var loadedImageURLs = [URL]()
     private(set) var cancelledImageURLs = [URL]()
@@ -27,12 +39,11 @@ private final class LoaderSpy: FeedLoader, FeedImageDataLoader {
         feedRequests[index](.failure(anyNSError()))
     }
     
-    func loadImageData(from url: URL) {
+    func loadImageData(from url: URL) -> FeedImageDataLoaderTask {
         loadedImageURLs.append(url)
-    }
-    
-    func cancelImageDataLoad(from url: URL) {
-        cancelledImageURLs.append(url)
+        return TaskSpy { [weak self] in
+            self?.cancelledImageURLs.append(url)
+        }
     }
 }
 
