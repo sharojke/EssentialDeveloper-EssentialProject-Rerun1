@@ -72,6 +72,10 @@ final class FeedViewControllerTests: XCTestCase {
         
         sut.simulateAppearance()
         XCTAssertFalse(sut.isShowingLoadingIndicator(), "Expected hidden after view is appeared on second+ time")
+        
+        sut.simulateUserInitiatedFeedReload()
+        loader.completeFeedLoadingWithError(at: 2)
+        XCTAssertFalse(sut.isShowingLoadingIndicator(), "Expected hidden after view is appeared on second+ time")
     }
     
     func test_loadFeedCompletion_rendersSuccessfullyLoadedFeed() {
