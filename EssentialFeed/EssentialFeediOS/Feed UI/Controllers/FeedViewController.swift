@@ -2,14 +2,27 @@ import EssentialFeed
 import UIKit
 
 public final class FeedViewController: UITableViewController {
-    private let feedLoader: FeedLoader
+    private let refreshController: FeedRefreshViewController
     private let imageLoader: FeedImageDataLoader
     private var onViewIsAppearing: ((FeedViewController) -> Void)?
-    private var feed = [FeedImage]()
     private var imageLoaderTasks = [IndexPath: FeedImageDataLoaderTask]()
+    private var feed = [FeedImage]() {
+        didSet { tableView.reloadData() }
+    }
+    
+    override public var refreshControl: UIRefreshControl? {
+        get {
+            return refreshController.view
+        }
+        set {
+            guard let newValue else { return }
+            
+            refreshController.view = newValue
+        }
+    }
     
     public init(feedLoader: FeedLoader, feedImageDataLoader: FeedImageDataLoader) {
-        self.feedLoader = feedLoader
+        self.refreshController = FeedRefreshViewController(feedLoader: feedLoader)
         self.imageLoader = feedImageDataLoader
         super.init(nibName: nil, bundle: nil)
     }
@@ -22,10 +35,13 @@ public final class FeedViewController: UITableViewController {
         super.viewDidLoad()
         
         tableView.prefetchDataSource = self
-        refreshControl = UIRefreshControl()
-        refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        refreshControl = refreshController.view
+        refreshController.onRefresh = { [weak self] feed in
+            self?.feed = feed
+        }
+        
         onViewIsAppearing = { viewController in
-            viewController.refresh()
+            viewController.refreshController.refresh()
             viewController.onViewIsAppearing = nil
         }
     }
@@ -103,23 +119,6 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
 // MARK: - Helpers
 
 private extension FeedViewController {
-    @objc
-    func refresh() {
-        refreshControl?.beginRefreshing()
-        feedLoader.load { [weak self] result in
-            self?.stopRefreshing()
-            
-            if let feed = try? result.get() {
-                self?.feed = feed
-                self?.tableView.reloadData()
-            }
-        }
-    }
-    
-    func stopRefreshing() {
-        refreshControl?.endRefreshing()
-    }
-    
 //    func startImageLoaderTask(at indexPath: IndexPath) {}
     
     func cancelImageLoaderTask(at indexPath: IndexPath) {
