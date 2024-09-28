@@ -5,6 +5,7 @@ import XCTest
 
 // swiftlint:disable force_unwrapping
 // swiftlint:disable force_cast
+// swiftlint:disable file_length
 
 private final class LoaderSpy: FeedLoader, FeedImageDataLoader {
     private final class TaskSpy: FeedImageDataLoaderTask {
@@ -20,8 +21,12 @@ private final class LoaderSpy: FeedLoader, FeedImageDataLoader {
     }
     
     private var feedRequests = [(LoadResult) -> Void]()
-    private(set) var loadedImageURLs = [URL]()
+    private var imageRequests = [(url: URL, completion: LoadImageResultCompletion)]()
     private(set) var cancelledImageURLs = [URL]()
+    
+    var loadedImageURLs: [URL] {
+        return imageRequests.map(\.url)
+    }
     
     var loadFeedCallCount: Int {
         return feedRequests.count
@@ -39,11 +44,22 @@ private final class LoaderSpy: FeedLoader, FeedImageDataLoader {
         feedRequests[index](.failure(anyNSError()))
     }
     
-    func loadImageData(from url: URL) -> FeedImageDataLoaderTask {
-        loadedImageURLs.append(url)
+    func loadImageData(
+        from url: URL,
+        completion: @escaping LoadImageResultCompletion
+    ) -> FeedImageDataLoaderTask {
+        imageRequests.append((url, completion))
         return TaskSpy { [weak self] in
             self?.cancelledImageURLs.append(url)
         }
+    }
+    
+    func completeImageLoading(with imageData: Data = Data(), at index: Int = .zero) {
+        imageRequests[index].completion(.success(imageData))
+    }
+    
+    func completeImageLoadingWithError(at index: Int) {
+        imageRequests[index].completion(.failure(anyNSError()))
     }
 }
 
@@ -179,6 +195,50 @@ final class FeedViewControllerTests: XCTestCase {
             loader.cancelledImageURLs,
             [image0.url, image1.url],
             "Expected two cancelled image URL request once first view becomes not visible"
+        )
+    }
+    
+    func test_feedImageViewLoadingIndicator_isVisibleWhileLoadingImage() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoading(with: [makeImage(), makeImage()])
+        
+        let view0 = sut.simulateFeedImageViewVisible(at: .zero)
+        let view1 = sut.simulateFeedImageViewVisible(at: 1)
+        XCTAssertEqual(
+            view0.isShowingImageLoadingIndicator,
+            true,
+            "Expected loading indicator for the first view while loading the first image"
+        )
+        XCTAssertEqual(
+            view1.isShowingImageLoadingIndicator,
+            true,
+            "Expected loading indicator for the second view while loading the second image"
+        )
+        
+        loader.completeImageLoading(at: .zero)
+        XCTAssertEqual(
+            view0.isShowingImageLoadingIndicator,
+            false,
+            "Expected no loading indicator for the first view after the first image is loaded"
+        )
+        XCTAssertEqual(
+            view1.isShowingImageLoadingIndicator,
+            true,
+            "Expected loading indicator for the second view after the first image is loaded"
+        )
+        
+        loader.completeImageLoading(at: 1)
+        XCTAssertEqual(
+            view0.isShowingImageLoadingIndicator,
+            false,
+            "Expected no loading indicator for the first view after the second image is loaded"
+        )
+        XCTAssertEqual(
+            view1.isShowingImageLoadingIndicator,
+            false,
+            "Expected no loading indicator for the second view after the second image is loaded"
         )
     }
     
@@ -342,7 +402,12 @@ private extension FeedImageCell {
     var descriptionText: String? {
         return descriptionLabel.text
     }
+    
+    var isShowingImageLoadingIndicator: Bool {
+        return feedImageContainer.isShimmering
+    }
 }
 
 // swiftlint:enable force_unwrapping
 // swiftlint:enable force_cast
+// swiftlint:enable file_length
