@@ -91,6 +91,14 @@ public extension FeedViewController {
     ) {
         cancelImageLoaderTask(at: indexPath)
     }
+    
+//    override func tableView(
+//        _ tableView: UITableView,
+//        willDisplay cell: UITableViewCell,
+//        forRowAt indexPath: IndexPath
+//    ) {
+//        startImageLoaderTask(at: indexPath)
+//    }
 }
 
 extension FeedViewController: UITableViewDataSourcePrefetching {
@@ -125,6 +133,8 @@ private extension FeedViewController {
     func stopRefreshing() {
         refreshControl?.endRefreshing()
     }
+    
+//    func startImageLoaderTask(at indexPath: IndexPath) {}
     
     func cancelImageLoaderTask(at indexPath: IndexPath) {
         imageLoaderTasks[indexPath]?.cancel()
