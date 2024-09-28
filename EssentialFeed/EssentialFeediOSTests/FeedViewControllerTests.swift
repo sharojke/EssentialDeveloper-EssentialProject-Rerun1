@@ -389,6 +389,34 @@ final class FeedViewControllerTests: XCTestCase {
         )
     }
     
+    func test_feedImageView_preloadsImageURLWhenNearVisible() {
+        let image0 = makeImage(url: URL(string: "http://first-url.com")!)
+        let image1 = makeImage(url: URL(string: "http://second-url.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoading(with: [image0, image1])
+        XCTAssertEqual(
+            loader.loadedImageURLs,
+            [],
+            "Expected no image URLs before near visible"
+        )
+        
+        sut.simulateFeedImageViewNearVisible(at: .zero)
+        XCTAssertEqual(
+            loader.loadedImageURLs,
+            [image0.url],
+            "Expected the first image URL after the first view is near visible"
+        )
+        
+        sut.simulateFeedImageViewNearVisible(at: 1)
+        XCTAssertEqual(
+            loader.loadedImageURLs,
+            [image0.url, image1.url],
+            "Expected two first image URLs after the second view is near visible"
+        )
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
@@ -543,6 +571,12 @@ private extension FeedViewController {
         let indexPath = IndexPath(row: index, section: feedImagesSection)
         let delegate = tableView.delegate
         delegate?.tableView?(tableView, didEndDisplaying: view, forRowAt: indexPath)
+    }
+    
+    func simulateFeedImageViewNearVisible(at index: Int) {
+        let ds = tableView.prefetchDataSource
+        let indexPath = IndexPath(row: index, section: feedImagesSection)
+        ds?.tableView(tableView, prefetchRowsAt: [indexPath])
     }
 }
 
