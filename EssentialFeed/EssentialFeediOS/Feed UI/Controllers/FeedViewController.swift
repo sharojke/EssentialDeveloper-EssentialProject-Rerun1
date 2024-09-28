@@ -3,11 +3,9 @@ import UIKit
 
 public final class FeedViewController: UITableViewController {
     private let refreshController: FeedRefreshViewController
-    private let imageLoader: FeedImageDataLoader
     private var onViewIsAppearing: ((FeedViewController) -> Void)?
-    private var cellControllers = [IndexPath: FeedImageCellController]()
     
-    private var feed = [FeedImage]() {
+    var tableModel = [FeedImageCellController]() {
         didSet { tableView.reloadData() }
     }
     
@@ -22,10 +20,14 @@ public final class FeedViewController: UITableViewController {
         }
     }
     
-    public init(feedLoader: FeedLoader, feedImageDataLoader: FeedImageDataLoader) {
-        self.refreshController = FeedRefreshViewController(feedLoader: feedLoader)
-        self.imageLoader = feedImageDataLoader
+    init(refreshController: FeedRefreshViewController) {
+        self.refreshController = refreshController
         super.init(nibName: nil, bundle: nil)
+        
+        onViewIsAppearing = { viewController in
+            viewController.refreshController.refresh()
+            viewController.onViewIsAppearing = nil
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -37,14 +39,6 @@ public final class FeedViewController: UITableViewController {
         
         tableView.prefetchDataSource = self
         refreshControl = refreshController.view
-        refreshController.onRefresh = { [weak self] feed in
-            self?.feed = feed
-        }
-        
-        onViewIsAppearing = { viewController in
-            viewController.refreshController.refresh()
-            viewController.onViewIsAppearing = nil
-        }
     }
     
     override public func viewIsAppearing(_ animated: Bool) {
@@ -56,7 +50,7 @@ public final class FeedViewController: UITableViewController {
 
 public extension FeedViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return feed.count
+        return tableModel.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -69,7 +63,7 @@ public extension FeedViewController {
         didEndDisplaying cell: UITableViewCell,
         forRowAt indexPath: IndexPath
     ) {
-        removeCellController(at: indexPath)
+        cancelCellControllerLoad(at: indexPath)
     }
     
 //    override func tableView(
@@ -89,23 +83,18 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        indexPaths.forEach(removeCellController)
+        indexPaths.forEach(cancelCellControllerLoad)
     }
 }
 
 // MARK: - Helpers
 
 private extension FeedViewController {
-//    func startImageLoaderTask(at indexPath: IndexPath) {}
-    
-    func removeCellController(at indexPath: IndexPath) {
-        cellControllers[indexPath] = nil
+    func cancelCellControllerLoad(at indexPath: IndexPath) {
+        cellControllerForRow(at: indexPath).cancelLoad()
     }
     
     func cellControllerForRow(at indexPath: IndexPath) -> FeedImageCellController {
-        let cellModel = feed[indexPath.row]
-        let controller = FeedImageCellController(model: cellModel, imageLoader: imageLoader)
-        cellControllers[indexPath] = controller
-        return controller
+        return tableModel[indexPath.row]
     }
 }
