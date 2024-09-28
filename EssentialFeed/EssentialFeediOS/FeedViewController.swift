@@ -49,23 +49,6 @@ public final class FeedViewController: UITableViewController {
         
         onViewIsAppearing?(self)
     }
-    
-    @objc
-    private func refresh() {
-        refreshControl?.beginRefreshing()
-        feedLoader.load { [weak self] result in
-            self?.stopRefreshing()
-            
-            if let feed = try? result.get() {
-                self?.feed = feed
-                self?.tableView.reloadData()
-            }
-        }
-    }
-    
-    private func stopRefreshing() {
-        refreshControl?.endRefreshing()
-    }
 }
 
 public extension FeedViewController {
@@ -106,8 +89,7 @@ public extension FeedViewController {
         didEndDisplaying cell: UITableViewCell,
         forRowAt indexPath: IndexPath
     ) {
-        imageLoaderTasks[indexPath]?.cancel()
-        imageLoaderTasks[indexPath] = nil
+        cancelImageLoaderTask(at: indexPath)
     }
 }
 
@@ -115,7 +97,37 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
             let cellModel = feed[indexPath.row]
-            _ = imageLoader.loadImageData(from: cellModel.url) { _ in }
+            imageLoaderTasks[indexPath] = imageLoader.loadImageData(from: cellModel.url) { _ in }
         }
+    }
+    
+    public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+        indexPaths.forEach(cancelImageLoaderTask)
+    }
+}
+
+// MARK: - Helpers
+
+private extension FeedViewController {
+    @objc
+    func refresh() {
+        refreshControl?.beginRefreshing()
+        feedLoader.load { [weak self] result in
+            self?.stopRefreshing()
+            
+            if let feed = try? result.get() {
+                self?.feed = feed
+                self?.tableView.reloadData()
+            }
+        }
+    }
+    
+    func stopRefreshing() {
+        refreshControl?.endRefreshing()
+    }
+    
+    func cancelImageLoaderTask(at indexPath: IndexPath) {
+        imageLoaderTasks[indexPath]?.cancel()
+        imageLoaderTasks[indexPath] = nil
     }
 }
