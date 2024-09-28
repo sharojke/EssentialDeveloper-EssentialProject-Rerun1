@@ -3,9 +3,10 @@ import EssentialFeediOS
 import UIKit
 import XCTest
 
+// swiftlint:disable file_length
 // swiftlint:disable force_unwrapping
 // swiftlint:disable force_cast
-// swiftlint:disable file_length
+// swiftlint:disable type_body_length
 
 private final class LoaderSpy: FeedLoader, FeedImageDataLoader {
     private final class TaskSpy: FeedImageDataLoaderTask {
@@ -288,6 +289,50 @@ final class FeedViewControllerTests: XCTestCase {
         )
     }
     
+    func test_feedImageViewRetryButton_isVisibleOnImageURLLoadError() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoading(with: [makeImage(), makeImage()])
+        
+        let view0 = sut.simulateFeedImageViewVisible(at: .zero)
+        let view1 = sut.simulateFeedImageViewVisible(at: 1)
+        XCTAssertEqual(
+            view0.isShowingRetryAction,
+            false,
+            "Expected no retry for the first view while loading the first image"
+        )
+        XCTAssertEqual(
+            view1.isShowingRetryAction,
+            false,
+            "Expected no retry for the second view while loading the second image"
+        )
+        
+        loader.completeImageLoadingWithError(at: .zero)
+        XCTAssertEqual(
+            view0.isShowingRetryAction,
+            true,
+            "Expected retry for the first view after loading the first image fails"
+        )
+        XCTAssertEqual(
+            view1.isShowingRetryAction,
+            false,
+            "Expected no retry for the second view after loading the first image fails"
+        )
+        
+        loader.completeImageLoadingWithError(at: 1)
+        XCTAssertEqual(
+            view0.isShowingRetryAction,
+            true,
+            "Expected no retry change for the first view after loading the second image fails"
+        )
+        XCTAssertEqual(
+            view1.isShowingRetryAction,
+            true,
+            "Expected retry for the second view after loading the second image fails"
+        )
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
@@ -456,6 +501,10 @@ private extension FeedImageCell {
     var renderedImage: Data? {
         return feedImageView.image?.pngData()
     }
+    
+    var isShowingRetryAction: Bool {
+        return !feedImageRetryButton.isHidden
+    }
 }
 
 private extension UIImage {
@@ -473,4 +522,5 @@ private extension UIImage {
 
 // swiftlint:enable force_unwrapping
 // swiftlint:enable force_cast
+// swiftlint:enable type_body_length
 // swiftlint:enable file_length

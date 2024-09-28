@@ -79,13 +79,18 @@ public extension FeedViewController {
         cell.locationLabel.text = cellModel.location
         cell.descriptionLabel.text = cellModel.description
         cell.feedImageView.image = nil
+        cell.feedImageRetryButton.isHidden = true
         cell.feedImageContainer.startShimmering()
         
         imageLoaderTasks[indexPath] = imageLoader.loadImageData(from: cellModel.url) { [weak cell] result in
             cell?.feedImageContainer.stopShimmering()
             
-            if let data = try? result.get() {
+            switch result {
+            case .success(let data):
                 cell?.feedImageView.image = UIImage(data: data)
+                
+            case .failure:
+                cell?.feedImageRetryButton.isHidden = false
             }
         }
         
