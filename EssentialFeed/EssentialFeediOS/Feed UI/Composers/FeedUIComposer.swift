@@ -1,4 +1,5 @@
 import EssentialFeed
+import UIKit
 
 public enum FeedUIComposer {
     public static func feedComposedWith(
@@ -24,7 +25,8 @@ public enum FeedUIComposer {
                 return FeedImageCellController(
                     viewModel: FeedImageViewModel(
                         model: feedImage,
-                        imageLoader: loader
+                        imageLoader: loader, 
+                        imageTransformer: UIImage.init
                     )
                 )
             }
