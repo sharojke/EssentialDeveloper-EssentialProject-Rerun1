@@ -21,7 +21,12 @@ public enum FeedUIComposer {
     ) -> ([FeedImage]) -> Void {
         return { [weak controller] feed in
             controller?.tableModel = feed.map { feedImage in
-                return FeedImageCellController(model: feedImage, imageLoader: loader)
+                return FeedImageCellController(
+                    viewModel: FeedImageViewModel(
+                        model: feedImage,
+                        imageLoader: loader
+                    )
+                )
             }
         }
     }
