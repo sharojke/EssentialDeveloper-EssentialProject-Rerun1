@@ -23,6 +23,30 @@ private final class FeedViewAdapter: FeedView {
     }
 }
 
+private final class FeedLoadingPresentationAdapter {
+    private let feedPresenter: FeedPresenter
+    private let feedLoader: FeedLoader
+    
+    init(feedPresenter: FeedPresenter, feedLoader: FeedLoader) {
+        self.feedPresenter = feedPresenter
+        self.feedLoader = feedLoader
+    }
+    
+    func loadFeed() {
+        feedPresenter.didStartLoadingFeed()
+        
+        feedLoader.load { [weak feedPresenter] result in
+            switch result {
+            case .success(let feed):
+                feedPresenter?.didFinishLoadingFeed(with: feed)
+                
+            case .failure(let error):
+                feedPresenter?.didFinishLoadingWithError(with: error)
+            }
+        }
+    }
+}
+
 private final class WeakRefVirtualProxy<T: AnyObject> {
     private weak var object: T?
     
@@ -36,8 +60,12 @@ public enum FeedUIComposer {
         feedLoader: FeedLoader,
         imageLoader: FeedImageDataLoader
     ) -> FeedViewController {
-        let feedPresenter = FeedPresenter(feedLoader: feedLoader)
-        let refreshController = FeedRefreshViewController(loadFeed: feedPresenter.loadFeed)
+        let feedPresenter = FeedPresenter()
+        let presentationAdapter = FeedLoadingPresentationAdapter(
+            feedPresenter: feedPresenter,
+            feedLoader: feedLoader
+        )
+        let refreshController = FeedRefreshViewController(loadFeed: presentationAdapter.loadFeed)
         let feedController = FeedViewController(refreshController: refreshController)
         
         feedPresenter.loadingView = WeakRefVirtualProxy(refreshController)
