@@ -24,16 +24,15 @@ private final class FeedViewAdapter: FeedView {
 }
 
 private final class FeedLoadingPresentationAdapter: FeedRefreshViewControllerDelegate {
-    private let feedPresenter: FeedPresenter
     private let feedLoader: FeedLoader
+    var feedPresenter: FeedPresenter?
     
-    init(feedPresenter: FeedPresenter, feedLoader: FeedLoader) {
-        self.feedPresenter = feedPresenter
+    init(feedLoader: FeedLoader) {
         self.feedLoader = feedLoader
     }
     
     func didRequestFeedRefresh() {
-        feedPresenter.didStartLoadingFeed()
+        feedPresenter?.didStartLoadingFeed()
         
         feedLoader.load { [weak feedPresenter] result in
             switch result {
@@ -60,16 +59,14 @@ public enum FeedUIComposer {
         feedLoader: FeedLoader,
         imageLoader: FeedImageDataLoader
     ) -> FeedViewController {
-        let feedPresenter = FeedPresenter()
-        let presentationAdapter = FeedLoadingPresentationAdapter(
-            feedPresenter: feedPresenter,
-            feedLoader: feedLoader
-        )
+        let presentationAdapter = FeedLoadingPresentationAdapter(feedLoader: feedLoader)
         let refreshController = FeedRefreshViewController(delegate: presentationAdapter)
         let feedController = FeedViewController(refreshController: refreshController)
-        
-        feedPresenter.loadingView = WeakRefVirtualProxy(refreshController)
-        feedPresenter.feedView = FeedViewAdapter(controller: feedController, loader: imageLoader)
+        let feedPresenter = FeedPresenter(
+            feedView: FeedViewAdapter(controller: feedController, loader: imageLoader),
+            loadingView: WeakRefVirtualProxy(refreshController)
+        )
+        presentationAdapter.feedPresenter = feedPresenter
         return feedController
     }
 }
