@@ -85,14 +85,6 @@ where View.Image == Image {
     }
 }
 
-private final class WeakRefVirtualProxy<T: AnyObject> {
-    private weak var object: T?
-    
-    init(_ object: T) {
-        self.object = object
-    }
-}
-
 public enum FeedUIComposer {
     public static func feedComposedWith(
         feedLoader: FeedLoader,
@@ -127,18 +119,6 @@ private extension FeedViewController {
         }!
         controller.title = title
         return controller
-    }
-}
-
-extension WeakRefVirtualProxy: FeedLoadingView where T: FeedLoadingView {
-    func display(_ viewModel: FeedLoadingViewModel) {
-        object?.display(viewModel)
-    }
-}
-
-extension WeakRefVirtualProxy: FeedImageLoadingView where T: FeedImageLoadingView, T.Image == UIImage {
-    func display(_ viewModel: FeedImageLoadingViewModel<UIImage>) {
-        object?.display(viewModel)
     }
 }
 
