@@ -28,7 +28,7 @@ private final class FeedViewAdapter: FeedView {
     }
 }
 
-private final class FeedLoadingPresentationAdapter: FeedRefreshViewControllerDelegate {
+private final class FeedLoadingPresentationAdapter: FeedViewControllerDelegate {
     private let feedLoader: FeedLoader
     var feedPresenter: FeedPresenter?
     
@@ -99,23 +99,22 @@ public enum FeedUIComposer {
         imageLoader: FeedImageDataLoader
     ) -> FeedViewController {
         let presentationAdapter = FeedLoadingPresentationAdapter(feedLoader: feedLoader)
-        let refreshController = FeedRefreshViewController(delegate: presentationAdapter)
-        let feedController = feedController(refreshController: refreshController)
+        let feedController = feedController(delegate: presentationAdapter)
         
         let feedViewAdapter = FeedViewAdapter(controller: feedController, loader: imageLoader)
         let feedPresenter = FeedPresenter(
             feedView: feedViewAdapter,
-            loadingView: WeakRefVirtualProxy(refreshController)
+            loadingView: WeakRefVirtualProxy(feedController)
         )
         presentationAdapter.feedPresenter = feedPresenter
         return feedController
     }
     
-    private static func feedController(refreshController: FeedRefreshViewController) -> FeedViewController {
+    private static func feedController(delegate: FeedViewControllerDelegate) -> FeedViewController {
         let bundle = Bundle(for: FeedViewController.self)
         let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
         return storyboard.instantiateInitialViewController { coder in
-            return FeedViewController(coder: coder, refreshController: refreshController)
+            return FeedViewController(coder: coder, delegate: delegate)
         }!
     }
 }

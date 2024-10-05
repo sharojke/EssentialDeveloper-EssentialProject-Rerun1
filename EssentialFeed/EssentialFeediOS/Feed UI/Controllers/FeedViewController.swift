@@ -1,8 +1,18 @@
 import UIKit
 
+protocol FeedViewControllerDelegate {
+    func didRequestFeedRefresh()
+}
+
 public final class FeedViewController: UITableViewController {
-    private let refreshController: FeedRefreshViewController
+    private let delegate: FeedViewControllerDelegate
     private var onViewIsAppearing: ((FeedViewController) -> Void)?
+    
+    private lazy var _refreshControl: UIRefreshControl = {
+        let view = UIRefreshControl()
+        view.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        return view
+    }()
     
     var tableModel = [FeedImageCellController]() {
         didSet { tableView.reloadData() }
@@ -10,21 +20,21 @@ public final class FeedViewController: UITableViewController {
     
     override public var refreshControl: UIRefreshControl? {
         get {
-            return refreshController.view
+            return _refreshControl
         }
         set {
             guard let newValue else { return }
             
-            refreshController.view = newValue
+            _refreshControl = newValue
         }
     }
     
-    init?(coder: NSCoder, refreshController: FeedRefreshViewController) {
-        self.refreshController = refreshController
+    init?(coder: NSCoder, delegate: FeedViewControllerDelegate) {
+        self.delegate = delegate
         super.init(coder: coder)
         
         onViewIsAppearing = { viewController in
-            viewController.refreshController.refresh()
+            viewController.refresh()
             viewController.onViewIsAppearing = nil
         }
     }
@@ -37,7 +47,11 @@ public final class FeedViewController: UITableViewController {
         super.viewDidLoad()
         
         tableView.prefetchDataSource = self
-        refreshControl = refreshController.view
+        refreshControl = _refreshControl
+    }
+    
+    @IBAction private func refresh() {
+        delegate.didRequestFeedRefresh()
     }
     
     override public func viewIsAppearing(_ animated: Bool) {
@@ -95,5 +109,17 @@ private extension FeedViewController {
     
     func cellControllerForRow(at indexPath: IndexPath) -> FeedImageCellController {
         return tableModel[indexPath.row]
+    }
+}
+
+// MARK: - FeedLoadingView
+
+extension FeedViewController: FeedLoadingView {
+    func display(_ viewModel: FeedLoadingViewModel) {
+        if viewModel.isLoading {
+            refreshControl?.beginRefreshing()
+        } else {
+            refreshControl?.endRefreshing()
+        }
     }
 }
