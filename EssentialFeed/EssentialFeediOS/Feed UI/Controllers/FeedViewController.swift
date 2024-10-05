@@ -34,6 +34,7 @@ public final class FeedViewController: UITableViewController {
         super.init(coder: coder)
         
         onViewIsAppearing = { viewController in
+            viewController.title = "My Feed"
             viewController.refresh()
             viewController.onViewIsAppearing = nil
         }
