@@ -437,7 +437,7 @@ final class FeedViewControllerTests: XCTestCase {
         loader.completeFeedLoading(with: [makeImage()])
         
         let view0 = sut.simulateFeedImageViewNotVisible(at: .zero)
-        loader.completeImageLoading(with: anyImageData, at: .zero)
+        loader.completeImageLoading(with: anyImageData(), at: .zero)
         
         XCTAssertEqual(
             view0.renderedImage,

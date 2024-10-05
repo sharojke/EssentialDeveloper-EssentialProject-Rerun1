@@ -15,11 +15,10 @@ final class FeedImageCellController {
     }
     
     func view(in tableView: UITableView) -> UITableViewCell {
-        // swiftlint:disable:next force_cast
-        let cell = tableView.dequeueReusableCell(withIdentifier: "FeedImageCell") as! FeedImageCell
-        self.cell = cell
+        self.cell = tableView.dequeueReusableCell()
         delegate.didRequestImage()
-        return cell
+        // swiftlint:disable:next force_unwrapping
+        return cell!
     }
     
     func preload() {
