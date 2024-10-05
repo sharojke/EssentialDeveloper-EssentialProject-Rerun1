@@ -2,7 +2,7 @@ import EssentialFeediOS
 import Foundation
 import XCTest
 
-extension FeedViewControllerTests {
+extension FeedUIIntegrationTests {
     func assertThat(
         _ string: String?,
         isLocalizationForKey key: String,
