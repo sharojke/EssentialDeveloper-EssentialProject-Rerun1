@@ -1,6 +1,8 @@
 import EssentialFeed
 import UIKit
 
+// swiftlint:disable force_unwrapping
+
 private final class FeedViewAdapter: FeedView {
     private weak var controller: FeedViewController?
     private let loader: FeedImageDataLoader
@@ -98,7 +100,7 @@ public enum FeedUIComposer {
     ) -> FeedViewController {
         let presentationAdapter = FeedLoadingPresentationAdapter(feedLoader: feedLoader)
         let refreshController = FeedRefreshViewController(delegate: presentationAdapter)
-        let feedController = FeedViewController(refreshController: refreshController)
+        let feedController = feedController(refreshController: refreshController)
         
         let feedViewAdapter = FeedViewAdapter(controller: feedController, loader: imageLoader)
         let feedPresenter = FeedPresenter(
@@ -107,6 +109,14 @@ public enum FeedUIComposer {
         )
         presentationAdapter.feedPresenter = feedPresenter
         return feedController
+    }
+    
+    private static func feedController(refreshController: FeedRefreshViewController) -> FeedViewController {
+        let bundle = Bundle(for: FeedViewController.self)
+        let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
+        return storyboard.instantiateInitialViewController { coder in
+            return FeedViewController(coder: coder, refreshController: refreshController)
+        }!
     }
 }
 
@@ -121,3 +131,5 @@ extension WeakRefVirtualProxy: FeedImageLoadingView where T: FeedImageLoadingVie
         object?.display(viewModel)
     }
 }
+
+// swiftlint:enable force_unwrapping

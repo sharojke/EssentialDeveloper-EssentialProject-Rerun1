@@ -19,9 +19,9 @@ public final class FeedViewController: UITableViewController {
         }
     }
     
-    init(refreshController: FeedRefreshViewController) {
+    init?(coder: NSCoder, refreshController: FeedRefreshViewController) {
         self.refreshController = refreshController
-        super.init(nibName: nil, bundle: nil)
+        super.init(coder: coder)
         
         onViewIsAppearing = { viewController in
             viewController.refreshController.refresh()
