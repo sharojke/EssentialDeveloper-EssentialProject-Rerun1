@@ -99,9 +99,10 @@ public enum FeedUIComposer {
         imageLoader: FeedImageDataLoader
     ) -> FeedViewController {
         let presentationAdapter = FeedLoadingPresentationAdapter(feedLoader: feedLoader)
-        let feedController = feedController(delegate: presentationAdapter)
-        feedController.title = FeedPresenter.title
-        
+        let feedController = FeedViewController.makeWith(
+            delegate: presentationAdapter,
+            title: FeedPresenter.title
+        )
         let feedViewAdapter = FeedViewAdapter(controller: feedController, loader: imageLoader)
         let feedPresenter = FeedPresenter(
             feedView: feedViewAdapter,
@@ -110,13 +111,17 @@ public enum FeedUIComposer {
         presentationAdapter.feedPresenter = feedPresenter
         return feedController
     }
-    
-    private static func feedController(delegate: FeedViewControllerDelegate) -> FeedViewController {
+}
+
+private extension FeedViewController {
+    static func makeWith(delegate: FeedViewControllerDelegate, title: String) -> FeedViewController {
         let bundle = Bundle(for: FeedViewController.self)
         let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
-        return storyboard.instantiateInitialViewController { coder in
+        let controller = storyboard.instantiateInitialViewController { coder in
             return FeedViewController(coder: coder, delegate: delegate)
         }!
+        controller.title = title
+        return controller
     }
 }
 
