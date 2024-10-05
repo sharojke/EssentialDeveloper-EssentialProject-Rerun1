@@ -93,12 +93,27 @@ private final class WeakRefVirtualProxy<T: AnyObject> {
     }
 }
 
+final class MainQueueDispatchDecorator<T> {
+    private let decoratee: T
+    
+    init(decoratee: T) {
+        self.decoratee = decoratee
+    }
+    
+    func executeOnMainThread(_ completion: @escaping () -> Void) {
+        // swiftlint:disable:next void_function_in_ternary
+        Thread.isMainThread ? completion() : DispatchQueue.main.async(execute: completion)
+    }
+}
+
 public enum FeedUIComposer {
     public static func feedComposedWith(
         feedLoader: FeedLoader,
         imageLoader: FeedImageDataLoader
     ) -> FeedViewController {
-        let presentationAdapter = FeedLoadingPresentationAdapter(feedLoader: feedLoader)
+        let presentationAdapter = FeedLoadingPresentationAdapter(
+            feedLoader: MainQueueDispatchDecorator(decoratee: feedLoader)
+        )
         let feedController = FeedViewController.makeWith(
             delegate: presentationAdapter,
             title: FeedPresenter.title
@@ -134,6 +149,14 @@ extension WeakRefVirtualProxy: FeedLoadingView where T: FeedLoadingView {
 extension WeakRefVirtualProxy: FeedImageLoadingView where T: FeedImageLoadingView, T.Image == UIImage {
     func display(_ viewModel: FeedImageLoadingViewModel<UIImage>) {
         object?.display(viewModel)
+    }
+}
+
+extension MainQueueDispatchDecorator: FeedLoader where T == FeedLoader {
+    func load(completion: @escaping (LoadResult) -> Void) {
+        decoratee.load { [weak self] result in
+            self?.executeOnMainThread { completion(result) }
+        }
     }
 }
 

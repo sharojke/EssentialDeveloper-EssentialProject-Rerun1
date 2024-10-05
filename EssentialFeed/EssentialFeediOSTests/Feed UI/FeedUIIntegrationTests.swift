@@ -140,6 +140,19 @@ final class FeedUIIntegrationTests: XCTestCase {
         assertThat(sut, isRendering: [image0])
     }
     
+    func test_loadFeedCompletion_dispatchesFromBackgroundToMainThread() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        let exp = expectation(description: "Wait fro the load completion")
+        DispatchQueue.global().async { [weak loader] in
+            loader?.completeFeedLoading()
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1)
+    }
+    
     func test_feedImageView_loadsImageURLWhenVisible() {
         let image0 = makeImage(url: URL(string: "http://url-0.com")!)
         let image1 = makeImage(url: URL(string: "http://url-1.com")!)
