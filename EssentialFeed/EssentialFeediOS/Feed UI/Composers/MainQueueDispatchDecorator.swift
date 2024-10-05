@@ -1,5 +1,5 @@
-import Foundation
 import EssentialFeed
+import Foundation
 
 final class MainQueueDispatchDecorator<T> {
     private let decoratee: T
