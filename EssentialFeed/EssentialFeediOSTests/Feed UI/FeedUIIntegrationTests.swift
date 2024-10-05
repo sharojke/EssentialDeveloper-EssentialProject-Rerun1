@@ -144,7 +144,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         let (sut, loader) = makeSUT()
         sut.simulateAppearance()
         
-        let exp = expectation(description: "Wait fro the load completion")
+        let exp = expectation(description: "Wait for the feed loading completion")
         DispatchQueue.global().async { [weak loader] in
             loader?.completeFeedLoading()
             exp.fulfill()
@@ -500,6 +500,23 @@ final class FeedUIIntegrationTests: XCTestCase {
         loader.completeImageLoading(with: imageData, at: 1)
         
         XCTAssertEqual(newView.renderedImage, imageData)
+    }
+    
+    func test_loadImageDataCompletion_dispatchesFromBackgroundToMainThread() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoading(with: [makeImage()])
+        _ = sut.simulateFeedImageViewVisible(at: .zero)
+        
+        let imageData = anyImageData()
+        let exp = expectation(description: "Wait for the image data loading completion")
+        DispatchQueue.global().async { [weak loader] in
+            loader?.completeImageLoading(with: imageData, at: .zero)
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1)
     }
     
     // MARK: Helpers
