@@ -430,6 +430,22 @@ final class FeedViewControllerTests: XCTestCase {
         )
     }
     
+    func test_feedImageView_doesNotRenderLoadedImageWhenNoVisibleAnymore() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoading(with: [makeImage()])
+        
+        let view0 = sut.simulateFeedImageViewNotVisible(at: .zero)
+        loader.completeImageLoading(with: anyImageData, at: .zero)
+        
+        XCTAssertEqual(
+            view0.renderedImage,
+            nil,
+            "Expected no renderedImage when view is not visible"
+        )
+    }
+    
     func test_feedImageView_doesNotShowDataFromPreviousRequestWhenCellIsReused() throws {
         let (sut, loader) = makeSUT()
         
@@ -439,7 +455,7 @@ final class FeedViewControllerTests: XCTestCase {
         let view0 = sut.simulateFeedImageViewVisible(at: .zero)
         view0.prepareForReuse()
         
-        let imageData0 = UIImage.make(withColor: .red).pngData()!
+        let imageData0 = anyImageData()
         loader.completeImageLoading(with: imageData0, at: .zero)
         
         XCTAssertEqual(
@@ -459,7 +475,7 @@ final class FeedViewControllerTests: XCTestCase {
         let newView = sut.simulateFeedImageViewVisible(at: 0)
         previousView.prepareForReuse()
         
-        let imageData = UIImage.make(withColor: .red).pngData()!
+        let imageData = anyImageData()
         loader.completeImageLoading(with: imageData, at: 1)
         
         XCTAssertEqual(newView.renderedImage, imageData)
@@ -534,6 +550,10 @@ final class FeedViewControllerTests: XCTestCase {
             file: file,
             line: line
         )
+    }
+    
+    private func anyImageData() -> Data {
+        return UIImage.make(withColor: .green).pngData()!
     }
 }
 
