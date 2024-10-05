@@ -65,15 +65,11 @@ private final class LoaderSpy: FeedLoader, FeedImageDataLoader {
 
 final class FeedViewControllerTests: XCTestCase {
     func test_feedView_hasTitle() {
-        let bundle = Bundle(for: FeedViewController.self)
-        let key = "FEED_VIEW_TITLE"
-        let localizedTitle = bundle.localizedString(forKey: key, value: nil, table: "Feed")
         let (sut, _) = makeSUT()
         
         sut.simulateAppearance()
         
-        XCTAssertEqual(sut.title, localizedTitle)
-        XCTAssertNotEqual(sut.title, key, "Missing the localization value for key: \(key)")
+        assertThat(sut.title, isLocalizationForKey: "FEED_VIEW_TITLE")
     }
     
     func test_loadFeedActions_requestFeedFromLoader() {
