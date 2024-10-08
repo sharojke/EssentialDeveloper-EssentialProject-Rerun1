@@ -7,7 +7,6 @@ protocol FeedViewControllerDelegate {
 public final class FeedViewController: UITableViewController {
     private let delegate: FeedViewControllerDelegate
     private var onViewIsAppearing: ((FeedViewController) -> Void)?
-    public let errorView = ErrorView()
     
     private lazy var _refreshControl: UIRefreshControl = {
         let view = UIRefreshControl()
@@ -29,6 +28,8 @@ public final class FeedViewController: UITableViewController {
             _refreshControl = newValue
         }
     }
+    
+    @IBOutlet public weak var errorView: ErrorView!
     
     init?(coder: NSCoder, delegate: FeedViewControllerDelegate) {
         self.delegate = delegate
@@ -129,6 +130,10 @@ extension FeedViewController: FeedLoadingView {
 
 extension FeedViewController: FeedErrorView {
     func display(_ viewModel: FeedErrorViewModel) {
-        errorView.message = viewModel.message
+        if let message = viewModel.message {
+            errorView.show(message: message)
+        } else {
+            errorView.hideMessage()
+        }
     }
 }
