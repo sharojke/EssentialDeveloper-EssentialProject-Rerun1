@@ -7,6 +7,7 @@ protocol FeedViewControllerDelegate {
 public final class FeedViewController: UITableViewController {
     private let delegate: FeedViewControllerDelegate
     private var onViewIsAppearing: ((FeedViewController) -> Void)?
+    public let errorView = ErrorView()
     
     private lazy var _refreshControl: UIRefreshControl = {
         let view = UIRefreshControl()

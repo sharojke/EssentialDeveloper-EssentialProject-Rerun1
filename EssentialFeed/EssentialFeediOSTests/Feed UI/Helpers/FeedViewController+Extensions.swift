@@ -98,4 +98,12 @@ extension FeedViewController {
     }
 }
 
+// MARK: - FeedViewController+Error
+
+extension FeedViewController {
+    var errorMessage: String? {
+        return errorView.message
+    }
+}
+
 // swiftlint:enable force_cast
