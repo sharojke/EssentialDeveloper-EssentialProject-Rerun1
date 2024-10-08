@@ -40,7 +40,7 @@ private final class LoaderSpy: FeedLoader, FeedImageDataLoader {
         feedRequests[index](.success(feed))
     }
     
-    func completeFeedLoadingWithError(at index: Int) {
+    func completeFeedLoadingWithError(at index: Int = .zero) {
         feedRequests[index](.failure(anyNSError()))
     }
     
@@ -519,12 +519,14 @@ final class FeedUIIntegrationTests: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
     
-    func test_errorView_doesNotRenderErrorOnLoad() {
-        let (sut, _) = makeSUT()
+    func test_errorView_rendersErrorMessageOnError() {
+        let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
-        
         XCTAssertEqual(sut.errorMessage, nil)
+        
+        loader.completeFeedLoadingWithError()
+        assertThat(sut.errorMessage, isLocalizationForKey: "FEED_VIEW_CONNECTION_ERROR")
     }
     
     // MARK: Helpers
