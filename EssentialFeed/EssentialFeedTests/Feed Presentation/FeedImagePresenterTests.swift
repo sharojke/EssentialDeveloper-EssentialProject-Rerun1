@@ -34,6 +34,17 @@ final class FeedImagePresenter {
         )
         view.display(viewModel)
     }
+    
+    func didFinishLoadingImage(with error: Error, for model: FeedImage) {
+        let viewModel = FeedImageLoadingViewModel(
+            description: model.description,
+            location: model.location,
+            image: nil,
+            isLoading: false,
+            shouldRetry: true
+        )
+        view.display(viewModel)
+    }
 }
 
 // swiftlint:disable:next file_types_order
@@ -56,6 +67,21 @@ final class FeedImagePresenterTests: XCTestCase {
         XCTAssertEqual(message?.location, image.location)
         XCTAssertEqual(message?.isLoading, true)
         XCTAssertEqual(message?.shouldRetry, false)
+        XCTAssertNil(message?.image)
+    }
+    
+    func test_didStartLoadingImageWithError_displaysRetry() {
+        let (presenter, view) = makeSUT()
+        let image = uniqueImage()
+        
+        presenter.didFinishLoadingImage(with: anyNSError(), for: image)
+        
+        let message = view.messages.first
+        XCTAssertEqual(view.messages.count, 1)
+        XCTAssertEqual(message?.description, image.description)
+        XCTAssertEqual(message?.location, image.location)
+        XCTAssertEqual(message?.isLoading, false)
+        XCTAssertEqual(message?.shouldRetry, true)
         XCTAssertNil(message?.image)
     }
     
