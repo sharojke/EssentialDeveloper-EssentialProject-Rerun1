@@ -1,10 +1,38 @@
+import EssentialFeed
 import XCTest
 
-final class FeedImagePresenter {
-    private let view: Any
+protocol FeedImageLoadingView {
+    func display(_ viewModel: FeedImageLoadingViewModel)
+}
+
+struct FeedImageLoadingViewModel {
+    let description: String?
+    let location: String?
+    let image: Any?
+    let isLoading: Bool
+    let shouldRetry: Bool
     
-    init(view: Any) {
+    var hasLocation: Bool {
+        return location != nil
+    }
+}
+
+final class FeedImagePresenter {
+    private let view: FeedImageLoadingView
+    
+    init(view: FeedImageLoadingView) {
         self.view = view
+    }
+    
+    func didStartLoadingImage(for model: FeedImage) {
+        let viewModel = FeedImageLoadingViewModel(
+            description: model.description,
+            location: model.location,
+            image: nil,
+            isLoading: true,
+            shouldRetry: false
+        )
+        view.display(viewModel)
     }
 }
 
@@ -14,6 +42,21 @@ final class FeedImagePresenterTests: XCTestCase {
         let (_, view) = makeSUT()
         
         XCTAssertTrue(view.messages.isEmpty)
+    }
+    
+    func test_didStartLoadingImage_displaysLoadingImage() {
+        let (presenter, view) = makeSUT()
+        let image = uniqueImage()
+        
+        presenter.didStartLoadingImage(for: image)
+        
+        let message = view.messages.first
+        XCTAssertEqual(view.messages.count, 1)
+        XCTAssertEqual(message?.description, image.description)
+        XCTAssertEqual(message?.location, image.location)
+        XCTAssertEqual(message?.isLoading, true)
+        XCTAssertEqual(message?.shouldRetry, false)
+        XCTAssertNil(message?.image)
     }
     
     // MARK: Helpers
@@ -31,8 +74,11 @@ final class FeedImagePresenterTests: XCTestCase {
 }
 
 private final class ViewSpy {
-    enum Message: Hashable {
+    private(set) var messages = [FeedImageLoadingViewModel]()
+}
+
+extension ViewSpy: FeedImageLoadingView {
+    func display(_ viewModel: FeedImageLoadingViewModel) {
+        messages.append(viewModel)
     }
-    
-    private(set) var messages = Set<Message>()
 }
