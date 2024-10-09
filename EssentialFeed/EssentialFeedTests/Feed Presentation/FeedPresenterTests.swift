@@ -34,9 +34,14 @@ struct FeedErrorViewModel {
 }
 
 final class FeedPresenter {
-    private let feedView: FeedView
-    private let loadingView: FeedLoadingView
-    private let errorView: FeedErrorView
+    static var title: String {
+        return NSLocalizedString(
+            "FEED_VIEW_TITLE",
+            tableName: "Feed",
+            bundle: Bundle(for: Self.self),
+            comment: ""
+        )
+    }
     
     private var feedLoadError: String {
         return NSLocalizedString(
@@ -46,6 +51,10 @@ final class FeedPresenter {
             comment: ""
         )
     }
+    
+    private let feedView: FeedView
+    private let loadingView: FeedLoadingView
+    private let errorView: FeedErrorView
     
     init(feedView: FeedView, loadingView: FeedLoadingView, errorView: FeedErrorView) {
         self.feedView = feedView
@@ -71,6 +80,10 @@ final class FeedPresenter {
 
 // swiftlint:disable:next file_types_order
 final class FeedPresenterTests: XCTestCase {
+    func test_title_isLocalized() {
+        XCTAssertEqual(FeedPresenter.title, localized("FEED_VIEW_TITLE"))
+    }
+    
     func test_init_doesNotSendMessagesToView() {
         let (_, view) = makeSUT()
         
@@ -133,7 +146,7 @@ final class FeedPresenterTests: XCTestCase {
         return (presenter, view)
     }
     
-    private func localized(_ key: String, file: StaticString = #file, line: UInt = #line) -> String {
+    private func localized(_ key: String, file: StaticString = #filePath, line: UInt = #line) -> String {
         let table = "Feed"
         let bundle = Bundle(for: FeedPresenter.self)
         let value = bundle.localizedString(forKey: key, value: nil, table: table)
