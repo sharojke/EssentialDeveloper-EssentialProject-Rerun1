@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB59C0B92CB6F931000DBC0F /* FeedPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB59C0B82CB6F931000DBC0F /* FeedPresenterTests.swift */; };
 		BB900BE52CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB900BE42CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift */; };
 		BB900BE72CA20331005A4567 /* NSManagedObjectContext+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB900BE62CA20331005A4567 /* NSManagedObjectContext+Helpers.swift */; };
 		BB900BE92CA2042E005A4567 /* NSEntityDescription+Assertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB900BE82CA2042E005A4567 /* NSEntityDescription+Assertions.swift */; };
@@ -144,6 +145,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BB59C0B82CB6F931000DBC0F /* FeedPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPresenterTests.swift; sourceTree = "<group>"; };
 		BB900BE42CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSManagedObjectContext+Stub.swift"; sourceTree = "<group>"; };
 		BB900BE62CA20331005A4567 /* NSManagedObjectContext+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSManagedObjectContext+Helpers.swift"; sourceTree = "<group>"; };
 		BB900BE82CA2042E005A4567 /* NSEntityDescription+Assertions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSEntityDescription+Assertions.swift"; sourceTree = "<group>"; };
@@ -280,6 +282,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BB59C0B52CB6F8F5000DBC0F /* Feed Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				BB59C0B82CB6F931000DBC0F /* FeedPresenterTests.swift */,
+			);
+			path = "Feed Presentation";
+			sourceTree = "<group>";
+		};
 		BB900C0A2CA4AA33005A4567 /* EssentialFeediOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -554,6 +564,7 @@
 		BBDDD7512C8B91F000D6EF3F /* EssentialFeedTests */ = {
 			isa = PBXGroup;
 			children = (
+				BB59C0B52CB6F8F5000DBC0F /* Feed Presentation */,
 				BBBEEF642C8F8F12000663ED /* Helpers */,
 				BBB516F12C936CF600A080BF /* Feed Cache */,
 				BBF35D9C2C8E3052006AEC65 /* Feed API */,
@@ -953,6 +964,7 @@
 				BB900BE92CA2042E005A4567 /* NSEntityDescription+Assertions.swift in Sources */,
 				BBDDD7532C8B91F000D6EF3F /* EssentialFeedTests.swift in Sources */,
 				BBB516F32C936D0C00A080BF /* CacheFeedUseCaseTests.swift in Sources */,
+				BB59C0B92CB6F931000DBC0F /* FeedPresenterTests.swift in Sources */,
 				BB900BE72CA20331005A4567 /* NSManagedObjectContext+Helpers.swift in Sources */,
 				BBB517082C98CD7B00A080BF /* FeedStoreSpy.swift in Sources */,
 				BBA383152C99FCA100725349 /* FeedCache+TestHelpers.swift in Sources */,
