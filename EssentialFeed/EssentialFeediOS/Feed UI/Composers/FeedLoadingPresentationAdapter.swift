@@ -18,7 +18,7 @@ final class FeedLoadingPresentationAdapter: FeedViewControllerDelegate {
                 feedPresenter?.didFinishLoadingFeed(with: feed)
                 
             case .failure(let error):
-                feedPresenter?.didFinishLoadingWithError(with: error)
+                feedPresenter?.didFinishLoadingFeed(with: error)
             }
         }
     }

@@ -1,3 +1,4 @@
+import EssentialFeed
 import UIKit
 
 protocol FeedViewControllerDelegate {
@@ -117,7 +118,7 @@ private extension FeedViewController {
 // MARK: - FeedLoadingView
 
 extension FeedViewController: FeedLoadingView {
-    func display(_ viewModel: FeedLoadingViewModel) {
+    public func display(_ viewModel: FeedLoadingViewModel) {
         if viewModel.isLoading {
             refreshControl?.beginRefreshing()
         } else {
@@ -129,7 +130,7 @@ extension FeedViewController: FeedLoadingView {
 // MARK: - FeedErrorView
 
 extension FeedViewController: FeedErrorView {
-    func display(_ viewModel: FeedErrorViewModel) {
+    public func display(_ viewModel: FeedErrorViewModel) {
         if let message = viewModel.message {
             errorView.show(message: message)
         } else {
