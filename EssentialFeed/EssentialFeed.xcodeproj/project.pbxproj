@@ -17,6 +17,7 @@
 		BB59C0CD2CB70C59000DBC0F /* FeedErrorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB59C0CC2CB70C59000DBC0F /* FeedErrorViewModel.swift */; };
 		BB59C0CE2CB70CFC000DBC0F /* Feed.strings in Resources */ = {isa = PBXBuildFile; fileRef = BB59C0BA2CB709B1000DBC0F /* Feed.strings */; };
 		BB59C0CF2CB70E12000DBC0F /* FeedLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9320942CB19AA600CFB232 /* FeedLocalizationTests.swift */; };
+		BB59C0D12CB714B7000DBC0F /* FeedImagePresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB59C0D02CB714B7000DBC0F /* FeedImagePresenterTests.swift */; };
 		BB900BE52CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB900BE42CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift */; };
 		BB900BE72CA20331005A4567 /* NSManagedObjectContext+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB900BE62CA20331005A4567 /* NSManagedObjectContext+Helpers.swift */; };
 		BB900BE92CA2042E005A4567 /* NSEntityDescription+Assertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB900BE82CA2042E005A4567 /* NSEntityDescription+Assertions.swift */; };
@@ -158,6 +159,7 @@
 		BB59C0C82CB70C42000DBC0F /* FeedLoadingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedLoadingViewModel.swift; sourceTree = "<group>"; };
 		BB59C0CA2CB70C4E000DBC0F /* FeedErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedErrorView.swift; sourceTree = "<group>"; };
 		BB59C0CC2CB70C59000DBC0F /* FeedErrorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedErrorViewModel.swift; sourceTree = "<group>"; };
+		BB59C0D02CB714B7000DBC0F /* FeedImagePresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImagePresenterTests.swift; sourceTree = "<group>"; };
 		BB900BE42CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSManagedObjectContext+Stub.swift"; sourceTree = "<group>"; };
 		BB900BE62CA20331005A4567 /* NSManagedObjectContext+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSManagedObjectContext+Helpers.swift"; sourceTree = "<group>"; };
 		BB900BE82CA2042E005A4567 /* NSEntityDescription+Assertions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSEntityDescription+Assertions.swift"; sourceTree = "<group>"; };
@@ -293,6 +295,7 @@
 			children = (
 				BB9320942CB19AA600CFB232 /* FeedLocalizationTests.swift */,
 				BB59C0B82CB6F931000DBC0F /* FeedPresenterTests.swift */,
+				BB59C0D02CB714B7000DBC0F /* FeedImagePresenterTests.swift */,
 			);
 			path = "Feed Presentation";
 			sourceTree = "<group>";
@@ -965,6 +968,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB59C0D12CB714B7000DBC0F /* FeedImagePresenterTests.swift in Sources */,
 				BBC21F762C9F2C6E005901E8 /* XCTestCase+FeedStoreSpecs.swift in Sources */,
 				BBA383172C9A0B5000725349 /* ValidateFeedCacheUseCaseTests.swift in Sources */,
 				BBC21F7F2C9F4918005901E8 /* CoreDataFeedStoreTests.swift in Sources */,
