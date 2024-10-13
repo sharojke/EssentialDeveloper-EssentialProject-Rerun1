@@ -4,14 +4,20 @@ import XCTest
 // swiftlint:disable force_unwrapping
 
 private final class HTTPClientSpy: HTTPClient {
+    private struct Task: HTTPClientTask {
+        func cancel() {}
+    }
+    
     private var messages = [(url: URL, completion: (GetResult) -> Void)]()
+    private(set) var cancelledURLs = [URL]()
     
     var requestedURLs: [URL] {
         return messages.map { $0.url }
     }
     
-    func get(from url: URL, completion: @escaping (GetResult) -> Void) {
+    func get(from url: URL, completion: @escaping (GetResult) -> Void) -> HTTPClientTask {
         messages.append((url, completion))
+        return Task()
     }
     
     func complete(with error: Error, at index: Int = 0) {
@@ -30,7 +36,15 @@ private final class HTTPClientSpy: HTTPClient {
     }
 }
 
-final class RemoteFeedImageDataLoader {
+private struct HTTPTaskWrapper: FeedImageDataLoaderTask {
+    let wrapped: HTTPClientTask
+    
+    func cancel() {
+        wrapped.cancel()
+    }
+}
+
+final class RemoteFeedImageDataLoader: FeedImageDataLoader {
     public enum Error: Swift.Error {
         case invalidData
     }
@@ -41,11 +55,12 @@ final class RemoteFeedImageDataLoader {
         self.client = client
     }
     
+    @discardableResult
     func loadImageData(
         from url: URL,
-        completion: @escaping FeedImageDataLoader.LoadImageResultCompletion
-    ) {
-        client.get(from: url) { [weak self] result in
+        completion: @escaping LoadImageResultCompletion
+    ) -> FeedImageDataLoaderTask {
+        let task = client.get(from: url) { [weak self] result in
             guard self != nil else { return }
             
             switch result {
@@ -59,6 +74,7 @@ final class RemoteFeedImageDataLoader {
                 completion(.failure(error))
             }
         }
+        return HTTPTaskWrapper(wrapped: task)
     }
 }
 
@@ -196,7 +212,7 @@ final class RemoteFeedImageDataLoaderTests: XCTestCase {
         }
         
         action()
-        wait(for: [exp], timeout: 3)
+        wait(for: [exp], timeout: 1)
     }
     
     private func failure(_ error: RemoteFeedImageDataLoader.Error) -> FeedImageDataLoader.LoadImageResult {

@@ -2,6 +2,14 @@ import Foundation
 
 private struct UnexpectedValuesRepresentation: Error {}
 
+private struct URLSessionTaskWrapper: HTTPClientTask {
+    let wrapped: URLSessionTask
+    
+    func cancel() {
+        wrapped.cancel()
+    }
+}
+
 public final class URLSessionHTTPClient: HTTPClient {
     private let session: URLSession
     
@@ -9,8 +17,8 @@ public final class URLSessionHTTPClient: HTTPClient {
         self.session = session
     }
     
-    public func get(from url: URL, completion: @escaping (HTTPClient.GetResult) -> Void) {
-        session.dataTask(with: url) { data, response, error in
+    public func get(from url: URL, completion: @escaping (HTTPClient.GetResult) -> Void) -> HTTPClientTask {
+        let task = session.dataTask(with: url) { data, response, error in
             completion(
                 Result {
                     if let error {
@@ -23,6 +31,7 @@ public final class URLSessionHTTPClient: HTTPClient {
                 }
             )
         }
-        .resume()
+        task.resume()
+        return URLSessionTaskWrapper(wrapped: task)
     }
 }
