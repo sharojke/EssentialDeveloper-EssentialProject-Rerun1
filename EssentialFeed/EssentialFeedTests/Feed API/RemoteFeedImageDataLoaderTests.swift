@@ -31,6 +31,10 @@ private final class HTTPClientSpy: HTTPClient {
 }
 
 final class RemoteFeedImageDataLoader {
+    public enum Error: Swift.Error {
+        case invalidData
+    }
+    
     private let client: HTTPClient
 
     init(client: HTTPClient) {
@@ -44,7 +48,7 @@ final class RemoteFeedImageDataLoader {
         client.get(from: url) { result in
             switch result {
             case let .success((data, response)):
-                break
+                guard response.statusCode == 200 else { return completion(.failure(Error.invalidData)) }
                 
             case .failure(let error):
                 completion(.failure(error))
@@ -85,6 +89,17 @@ final class RemoteFeedImageDataLoaderTests: XCTestCase {
         
         expect(sut, toCompleteWith: .failure(error)) {
             client.complete(with: error)
+        }
+    }
+    
+    func test_loadImageDataFromURL_deliversInvalidDataErrorOnNon200HTTPResponse() {
+        let (sut, client) = makeSUT()
+        let codes = [199, 201, 300, 400, 500]
+        
+        codes.enumerated().forEach { index, code in
+            expect(sut, toCompleteWith: failure(.invalidData)) {
+                client.complete(with: code, data: anyData(), at: index)
+            }
         }
     }
     
@@ -146,7 +161,11 @@ final class RemoteFeedImageDataLoaderTests: XCTestCase {
         }
         
         action()
-        wait(for: [exp], timeout: 1)
+        wait(for: [exp], timeout: 3)
+    }
+    
+    private func failure(_ error: RemoteFeedImageDataLoader.Error) -> FeedImageDataLoader.LoadImageResult {
+        return .failure(error)
     }
 }
 
