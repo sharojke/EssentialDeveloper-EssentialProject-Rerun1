@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		BB5250DB2CBEEE1F00FFBBBA /* HTTPClientSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5250DA2CBEEE1F00FFBBBA /* HTTPClientSpy.swift */; };
+		BB5250DD2CBEEEA800FFBBBA /* RemoteFeedImageDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5250DC2CBEEEA800FFBBBA /* RemoteFeedImageDataLoader.swift */; };
 		BB59C0B92CB6F931000DBC0F /* FeedPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB59C0B82CB6F931000DBC0F /* FeedPresenterTests.swift */; };
 		BB59C0C12CB70BF0000DBC0F /* FeedPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB59C0C02CB70BF0000DBC0F /* FeedPresenter.swift */; };
 		BB59C0C32CB70C06000DBC0F /* FeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB59C0C22CB70C06000DBC0F /* FeedView.swift */; };
@@ -153,6 +154,7 @@
 
 /* Begin PBXFileReference section */
 		BB5250DA2CBEEE1F00FFBBBA /* HTTPClientSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClientSpy.swift; sourceTree = "<group>"; };
+		BB5250DC2CBEEEA800FFBBBA /* RemoteFeedImageDataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedImageDataLoader.swift; sourceTree = "<group>"; };
 		BB59C0B82CB6F931000DBC0F /* FeedPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPresenterTests.swift; sourceTree = "<group>"; };
 		BB59C0BB2CB709B1000DBC0F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Feed.strings; sourceTree = "<group>"; };
 		BB59C0BD2CB709B6000DBC0F /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Feed.strings"; sourceTree = "<group>"; };
@@ -601,6 +603,7 @@
 				BBDDD7982C8CA5B000D6EF3F /* HTTPClient.swift */,
 				BBBEEF692C8FA213000663ED /* URLSessionHTTPClient.swift */,
 				BBB516F92C94D37500A080BF /* RemoteFeedImage.swift */,
+				BB5250DC2CBEEEA800FFBBBA /* RemoteFeedImageDataLoader.swift */,
 			);
 			path = "Feed API";
 			sourceTree = "<group>";
@@ -962,6 +965,7 @@
 				BB59C0C52CB70C24000DBC0F /* FeedViewMode.swift in Sources */,
 				BBB516F82C938EFB00A080BF /* LocalFeedLoader.swift in Sources */,
 				BBBEEF6A2C8FA213000663ED /* URLSessionHTTPClient.swift in Sources */,
+				BB5250DD2CBEEEA800FFBBBA /* RemoteFeedImageDataLoader.swift in Sources */,
 				BBC21F842C9F4AEC005901E8 /* CoreDataFeedStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
