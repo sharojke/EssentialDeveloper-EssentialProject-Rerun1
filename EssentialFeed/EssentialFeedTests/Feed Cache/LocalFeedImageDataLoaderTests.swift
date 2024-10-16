@@ -30,8 +30,25 @@ private final class StoreSpy: FeedImageDataStore {
     }
 }
 
-private final class TaskWrapper: FeedImageDataLoaderTask {
-    func cancel() {}
+private final class Task: FeedImageDataLoaderTask {
+    private var completion: FeedImageDataLoader.LoadImageResultCompletion?
+
+    init(completion: @escaping FeedImageDataLoader.LoadImageResultCompletion) {
+        self.completion = completion
+    }
+    
+    func cancel() {
+        preventFurtherCompletions()
+    }
+    
+    func complete(with result: FeedImageDataLoader.LoadImageResult) {
+        completion?(result)
+        preventFurtherCompletions()
+    }
+    
+    private func preventFurtherCompletions() {
+        completion = nil
+    }
 }
 
 private final class LocalFeedImageDataLoader: FeedImageDataLoader {
@@ -50,14 +67,14 @@ private final class LocalFeedImageDataLoader: FeedImageDataLoader {
         from url: URL,
         completion: @escaping LoadImageResultCompletion
     ) -> FeedImageDataLoaderTask {
+        let task = Task(completion: completion)
         store.retrieveData(for: url) { result in
-            completion(
-                result
-                    .mapError { _ in LoadError.failed }
-                    .flatMap { $0.map(LoadImageResult.success) ?? .failure(LoadError.notFound) }
-            )
+            let mapped = result
+                .mapError { _ in LoadError.failed }
+                .flatMap { $0.map(LoadImageResult.success) ?? .failure(LoadError.notFound) }
+            task.complete(with: mapped)
         }
-        return TaskWrapper()
+        return task
     }
 }
 
@@ -100,6 +117,21 @@ final class LocalFeedImageDataLoaderTests: XCTestCase {
         expect(sut, toCompleteWith: .success(data)) {
             store.complete(with: data)
         }
+    }
+    
+    func test_loadImageDataFromURL_doesNotDeliverResultAfterCancellingTask() {
+        let (sut, store) = makeSUT()
+        let data = anyData()
+        
+        var receivedResults = [LocalFeedImageDataLoader.LoadImageResult]()
+        let task = sut.loadImageData(from: anyURL()) { receivedResults.append($0) }
+        
+        task.cancel()
+        store.complete(with: anyError())
+        store.complete(with: data)
+        store.complete(with: nil)
+        
+        XCTAssertTrue(receivedResults.isEmpty)
     }
     
     // MARK: Helpers
