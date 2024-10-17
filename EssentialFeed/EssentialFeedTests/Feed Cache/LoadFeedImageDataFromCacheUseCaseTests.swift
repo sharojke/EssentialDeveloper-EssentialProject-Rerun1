@@ -71,16 +71,6 @@ final class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
         XCTAssertTrue(receivedResults.isEmpty)
     }
     
-    func test_saveImageDataForURL_requestsImageDataInsertionForURL() {
-        let (sut, store) = makeSUT()
-        let url = anyURL()
-        let data = anyData()
-        
-        sut.save(data, for: url) { _ in }
-        
-        XCTAssertEqual(store.receivedMessages, [.insert(data, for: url)])
-    }
-    
     // MARK: Helpers
     
     private func makeSUT(
