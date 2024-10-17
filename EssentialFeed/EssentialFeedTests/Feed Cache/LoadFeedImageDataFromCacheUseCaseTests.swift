@@ -1,39 +1,6 @@
 import EssentialFeed
 import XCTest
 
-private final class StoreSpy: FeedImageDataStore {
-    enum Message: Equatable {
-        case retrieveData(for: URL)
-        case insert(Data, for: URL)
-    }
-    
-    private(set) var receivedMessages = [Message]()
-    private var retrieveCompletions = [RetrieveCompletion]()
-    private var insertCompletions = [InsertCompletion]()
-    
-    // MARK: Retrieve
-    
-    func retrieveData(for url: URL, completion: @escaping RetrieveCompletion) {
-        receivedMessages.append(.retrieveData(for: url))
-        retrieveCompletions.append(completion)
-    }
-    
-    func completeRetrieval(with error: Error, at index: Int = .zero) {
-        retrieveCompletions[index](.failure(error))
-    }
-    
-    func completeRetrieval(with data: Data?, at index: Int = .zero) {
-        retrieveCompletions[index](.success(data))
-    }
-    
-    // MARK: Insertion
-    
-    func insert(_ data: Data, for url: URL, completion: @escaping InsertCompletion) {
-        receivedMessages.append(.insert(data, for: url))
-        insertCompletions.append(completion)
-    }
-}
-
 final class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
     func test_init_doesNotMessageStoreUponCreation() {
         let (_, store) = makeSUT()
@@ -90,7 +57,7 @@ final class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
     }
     
     func test_loadImageDataFromURL_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
-        let store = StoreSpy()
+        let store = FeedImageDataStoreSpy()
         var sut: LocalFeedImageDataLoader? = LocalFeedImageDataLoader(store: store)
         
         var receivedResults = [LocalFeedImageDataLoader.LoadImageResult]()
@@ -119,8 +86,8 @@ final class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
     private func makeSUT(
         file: StaticString = #filePath,
         line: UInt = #line
-    ) -> (sut: LocalFeedImageDataLoader, store: StoreSpy) {
-        let store = StoreSpy()
+    ) -> (sut: LocalFeedImageDataLoader, store: FeedImageDataStoreSpy) {
+        let store = FeedImageDataStoreSpy()
         let sut = LocalFeedImageDataLoader(store: store)
         trackForMemoryLeaks(store, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
