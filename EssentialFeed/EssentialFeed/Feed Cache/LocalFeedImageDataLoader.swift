@@ -22,6 +22,9 @@ private final class Task: FeedImageDataLoaderTask {
 }
 
 public final class LocalFeedImageDataLoader: FeedImageDataLoader {
+    public typealias SaveImageResult = Result<Void, Error>
+    public typealias SaveImageResultCompletion = (SaveImageResult) -> Void
+    
     public enum LoadError: Error {
         case failed
         case notFound
@@ -47,5 +50,9 @@ public final class LocalFeedImageDataLoader: FeedImageDataLoader {
             task.complete(with: mapped)
         }
         return task
+    }
+    
+    public func save(_ data: Data, for url: URL, completion: @escaping SaveImageResultCompletion) {
+        store.insert(data, for: url) { _ in }
     }
 }

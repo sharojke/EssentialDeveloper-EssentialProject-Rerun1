@@ -4,22 +4,33 @@ import XCTest
 private final class StoreSpy: FeedImageDataStore {
     enum Message: Equatable {
         case retrieveData(for: URL)
+        case insert(Data, for: URL)
     }
     
     private(set) var receivedMessages = [Message]()
-    private var completions = [RetrieveCompletion]()
+    private var retrieveCompletions = [RetrieveCompletion]()
+    private var insertCompletions = [InsertCompletion]()
+    
+    // MARK: Retrieve
     
     func retrieveData(for url: URL, completion: @escaping RetrieveCompletion) {
         receivedMessages.append(.retrieveData(for: url))
-        completions.append(completion)
+        retrieveCompletions.append(completion)
     }
     
-    func complete(with error: Error, at index: Int = .zero) {
-        completions[index](.failure(error))
+    func completeRetrieval(with error: Error, at index: Int = .zero) {
+        retrieveCompletions[index](.failure(error))
     }
     
-    func complete(with data: Data?, at index: Int = .zero) {
-        completions[index](.success(data))
+    func completeRetrieval(with data: Data?, at index: Int = .zero) {
+        retrieveCompletions[index](.success(data))
+    }
+    
+    // MARK: Insertion
+    
+    func insert(_ data: Data, for url: URL, completion: @escaping InsertCompletion) {
+        receivedMessages.append(.insert(data, for: url))
+        insertCompletions.append(completion)
     }
 }
 
@@ -43,7 +54,7 @@ final class LocalFeedImageDataLoaderTests: XCTestCase {
         let (sut, store) = makeSUT()
         
         expect(sut, toCompleteWith: failure(.failed)) {
-            store.complete(with: anyError())
+            store.completeRetrieval(with: anyError())
         }
     }
     
@@ -51,7 +62,7 @@ final class LocalFeedImageDataLoaderTests: XCTestCase {
         let (sut, store) = makeSUT()
         
         expect(sut, toCompleteWith: failure(.notFound)) {
-            store.complete(with: nil)
+            store.completeRetrieval(with: nil)
         }
     }
     
@@ -60,7 +71,7 @@ final class LocalFeedImageDataLoaderTests: XCTestCase {
         let data = anyData()
         
         expect(sut, toCompleteWith: .success(data)) {
-            store.complete(with: data)
+            store.completeRetrieval(with: data)
         }
     }
     
@@ -71,9 +82,9 @@ final class LocalFeedImageDataLoaderTests: XCTestCase {
         let task = sut.loadImageData(from: anyURL()) { receivedResults.append($0) }
         
         task.cancel()
-        store.complete(with: anyError())
-        store.complete(with: anyData())
-        store.complete(with: nil)
+        store.completeRetrieval(with: anyError())
+        store.completeRetrieval(with: anyData())
+        store.completeRetrieval(with: nil)
         
         XCTAssertTrue(receivedResults.isEmpty)
     }
@@ -86,11 +97,21 @@ final class LocalFeedImageDataLoaderTests: XCTestCase {
         _ = sut?.loadImageData(from: anyURL()) { receivedResults.append($0) }
         
         sut = nil
-        store.complete(with: anyError())
-        store.complete(with: anyData())
-        store.complete(with: nil)
+        store.completeRetrieval(with: anyError())
+        store.completeRetrieval(with: anyData())
+        store.completeRetrieval(with: nil)
         
         XCTAssertTrue(receivedResults.isEmpty)
+    }
+    
+    func test_saveImageDataForURL_requestsImageDataInsertionForURL() {
+        let (sut, store) = makeSUT()
+        let url = anyURL()
+        let data = anyData()
+        
+        sut.save(data, for: url) { _ in }
+        
+        XCTAssertEqual(store.receivedMessages, [.insert(data, for: url)])
     }
     
     // MARK: Helpers
