@@ -1,6 +1,6 @@
 import Foundation
 
-private final class Task: FeedImageDataLoaderTask {
+private final class LoadImageDataTask: FeedImageDataLoaderTask {
     private var completion: FeedImageDataLoader.LoadImageResultCompletion?
 
     init(completion: @escaping FeedImageDataLoader.LoadImageResultCompletion) {
@@ -21,26 +21,25 @@ private final class Task: FeedImageDataLoaderTask {
     }
 }
 
-public final class LocalFeedImageDataLoader: FeedImageDataLoader {
-    public typealias SaveImageResult = Result<Void, Error>
-    public typealias SaveImageResultCompletion = (SaveImageResult) -> Void
-    
-    public enum LoadError: Error {
-        case failed
-        case notFound
-    }
-    
+public final class LocalFeedImageDataLoader {
     private let store: FeedImageDataStore
     
     public init(store: FeedImageDataStore) {
         self.store = store
+    }
+}
+
+extension LocalFeedImageDataLoader: FeedImageDataLoader {
+    public enum LoadError: Error {
+        case failed
+        case notFound
     }
     
     public func loadImageData(
         from url: URL,
         completion: @escaping LoadImageResultCompletion
     ) -> FeedImageDataLoaderTask {
-        let task = Task(completion: completion)
+        let task = LoadImageDataTask(completion: completion)
         store.retrieveData(for: url) { [weak self] result in
             guard self != nil else { return }
             
@@ -51,8 +50,13 @@ public final class LocalFeedImageDataLoader: FeedImageDataLoader {
         }
         return task
     }
+}
+
+public extension LocalFeedImageDataLoader {
+    typealias SaveImageResult = Result<Void, Error>
+    typealias SaveImageResultCompletion = (SaveImageResult) -> Void
     
-    public func save(_ data: Data, for url: URL, completion: @escaping SaveImageResultCompletion) {
+    func save(_ data: Data, for url: URL, completion: @escaping SaveImageResultCompletion) {
         store.insert(data, for: url) { _ in }
     }
 }
