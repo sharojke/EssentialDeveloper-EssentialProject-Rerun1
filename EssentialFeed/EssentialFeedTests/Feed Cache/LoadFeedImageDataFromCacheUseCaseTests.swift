@@ -34,7 +34,7 @@ private final class StoreSpy: FeedImageDataStore {
     }
 }
 
-final class LocalFeedImageDataLoaderTests: XCTestCase {
+final class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
     func test_init_doesNotMessageStoreUponCreation() {
         let (_, store) = makeSUT()
         

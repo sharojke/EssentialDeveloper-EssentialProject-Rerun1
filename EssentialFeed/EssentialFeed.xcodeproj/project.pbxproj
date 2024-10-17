@@ -29,7 +29,7 @@
 		BB745FD22CB869080032D014 /* LoadFeedImageDataFromRemoteUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB745FD12CB869080032D014 /* LoadFeedImageDataFromRemoteUseCaseTests.swift */; };
 		BB84424A2CBEF48400F80735 /* HTTPURLResponse+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8442492CBEF48400F80735 /* HTTPURLResponse+Extensions.swift */; };
 		BB84424C2CBEF50C00F80735 /* URLProtocolStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB84424B2CBEF50C00F80735 /* URLProtocolStub.swift */; };
-		BB84424E2CC049A000F80735 /* LocalFeedImageDataLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB84424D2CC049A000F80735 /* LocalFeedImageDataLoaderTests.swift */; };
+		BB84424E2CC049A000F80735 /* LoadFeedImageDataFromCacheUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB84424D2CC049A000F80735 /* LoadFeedImageDataFromCacheUseCaseTests.swift */; };
 		BB900BE52CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB900BE42CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift */; };
 		BB900BE72CA20331005A4567 /* NSManagedObjectContext+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB900BE62CA20331005A4567 /* NSManagedObjectContext+Helpers.swift */; };
 		BB900BE92CA2042E005A4567 /* NSEntityDescription+Assertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB900BE82CA2042E005A4567 /* NSEntityDescription+Assertions.swift */; };
@@ -179,7 +179,7 @@
 		BB745FD12CB869080032D014 /* LoadFeedImageDataFromRemoteUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadFeedImageDataFromRemoteUseCaseTests.swift; sourceTree = "<group>"; };
 		BB8442492CBEF48400F80735 /* HTTPURLResponse+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HTTPURLResponse+Extensions.swift"; sourceTree = "<group>"; };
 		BB84424B2CBEF50C00F80735 /* URLProtocolStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLProtocolStub.swift; sourceTree = "<group>"; };
-		BB84424D2CC049A000F80735 /* LocalFeedImageDataLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFeedImageDataLoaderTests.swift; sourceTree = "<group>"; };
+		BB84424D2CC049A000F80735 /* LoadFeedImageDataFromCacheUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadFeedImageDataFromCacheUseCaseTests.swift; sourceTree = "<group>"; };
 		BB900BE42CA1FC8A005A4567 /* NSManagedObjectContext+Stub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSManagedObjectContext+Stub.swift"; sourceTree = "<group>"; };
 		BB900BE62CA20331005A4567 /* NSManagedObjectContext+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSManagedObjectContext+Helpers.swift"; sourceTree = "<group>"; };
 		BB900BE82CA2042E005A4567 /* NSEntityDescription+Assertions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSEntityDescription+Assertions.swift"; sourceTree = "<group>"; };
@@ -386,7 +386,7 @@
 				BBB517042C98CCF200A080BF /* LoadFromCacheUseCaseTests.swift */,
 				BBA383162C9A0B5000725349 /* ValidateFeedCacheUseCaseTests.swift */,
 				BBC21F7E2C9F4918005901E8 /* CoreDataFeedStoreTests.swift */,
-				BB84424D2CC049A000F80735 /* LocalFeedImageDataLoaderTests.swift */,
+				BB84424D2CC049A000F80735 /* LoadFeedImageDataFromCacheUseCaseTests.swift */,
 			);
 			path = "Feed Cache";
 			sourceTree = "<group>";
@@ -1010,7 +1010,7 @@
 				BBF11CE62C8F6E03009A97E2 /* URLSessionHTTPClientTests.swift in Sources */,
 				BB900BE92CA2042E005A4567 /* NSEntityDescription+Assertions.swift in Sources */,
 				BBDDD7532C8B91F000D6EF3F /* EssentialFeedTests.swift in Sources */,
-				BB84424E2CC049A000F80735 /* LocalFeedImageDataLoaderTests.swift in Sources */,
+				BB84424E2CC049A000F80735 /* LoadFeedImageDataFromCacheUseCaseTests.swift in Sources */,
 				BBB516F32C936D0C00A080BF /* CacheFeedUseCaseTests.swift in Sources */,
 				BB59C0B92CB6F931000DBC0F /* FeedPresenterTests.swift in Sources */,
 				BB59C0CF2CB70E12000DBC0F /* FeedLocalizationTests.swift in Sources */,
