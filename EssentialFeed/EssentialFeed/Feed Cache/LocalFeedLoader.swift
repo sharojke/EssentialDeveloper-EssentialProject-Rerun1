@@ -47,7 +47,15 @@ public extension LocalFeedLoader {
                 completion(.success(Void()))
                 
             case .success, .failure:
-                store.deleteCachedFeed { _ in completion(.success(Void())) }
+                store.deleteCachedFeed { result in
+                    switch result {
+                    case .success:
+                        completion(.success(Void()))
+                        
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                }
             }
         }
     }
