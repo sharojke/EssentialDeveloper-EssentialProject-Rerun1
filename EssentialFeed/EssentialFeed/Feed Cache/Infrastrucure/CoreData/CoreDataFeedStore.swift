@@ -34,6 +34,7 @@ public final class CoreDataFeedStore {
         }
     }
     
+    /// Encapsulates the whole `CoreData` stack lifecycle within the `CoreDataStore` instance lifetime
     deinit {
         cleanUpReferencesToPersistentStores()
     }
