@@ -1,3 +1,4 @@
+import EssentialFeed
 import Foundation
 
 // swiftlint:disable force_unwrapping
@@ -16,6 +17,16 @@ func anyURL() -> URL {
 
 func anyData() -> Data {
     return Data("any data".utf8)
+}
+
+func uniqueFeed() -> [FeedImage] {
+    let image = FeedImage(
+        id: UUID(),
+        description: "a description",
+        location: "a location",
+        url: URL(string: "http://a-url.com")!
+    )
+    return [image]
 }
 
 // swiftlint:enable force_unwrapping
