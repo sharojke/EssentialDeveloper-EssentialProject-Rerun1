@@ -13,11 +13,13 @@ extension CoreDataFeedStore: FeedImageDataStore {
         completion: @escaping FeedImageDataStore.InsertCompletion
     ) {
         perform { context in
-            defer { completion(.success(Void())) }
-            guard let image = try? ManagedFeedImage.first(with: url, in: context) else { return }
-            
-            image.data = data
-//            try? context.save()
+            completion(
+                Result {
+                    let image = try ManagedFeedImage.first(with: url, in: context)
+                    image?.data = data
+//                    try context.save()
+                }
+            )
         }
     }
 }
