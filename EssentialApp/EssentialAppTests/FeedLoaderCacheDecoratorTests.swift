@@ -13,29 +13,17 @@ final class FeedLoaderCacheDecorator: FeedLoader {
     }
 }
 
-private final class FeedLoaderSpy: FeedLoader {
-    private let loadResult: LoadResult
-    
-    init(loadResult: LoadResult) {
-        self.loadResult = loadResult
-    }
-    
-    func load(completion: @escaping (LoadResult) -> Void) {
-        completion(loadResult)
-    }
-}
-
 final class FeedLoaderCacheDecoratorTests: XCTestCase {
     func test_load_deliversFeedOnLoaderSuccess() {
         let feed = uniqueFeed()
-        let sut = makeSUT(loadResult: .success(feed))
+        let sut = makeSUT(result: .success(feed))
         
         expect(sut, toCompleteWith: .success(feed))
     }
     
     func test_load_deliversErrorOnLoaderFailure() {
         let error = anyNSError()
-        let sut = makeSUT(loadResult: .failure(error))
+        let sut = makeSUT(result: .failure(error))
         
         expect(sut, toCompleteWith: .failure(error))
     }
@@ -43,13 +31,13 @@ final class FeedLoaderCacheDecoratorTests: XCTestCase {
     // MARK: Helpers
     
     private func makeSUT(
-        loadResult: FeedLoader.LoadResult,
+        result: FeedLoader.LoadResult,
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> FeedLoader {
-        let loaderSpy = FeedLoaderSpy(loadResult: loadResult)
-        let sut = FeedLoaderCacheDecorator(decoratee: loaderSpy)
-        trackForMemoryLeaks(loaderSpy, file: file, line: line)
+        let loaderStub = FeedLoaderStub(result: result)
+        let sut = FeedLoaderCacheDecorator(decoratee: loaderStub)
+        trackForMemoryLeaks(loaderStub, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
     }
