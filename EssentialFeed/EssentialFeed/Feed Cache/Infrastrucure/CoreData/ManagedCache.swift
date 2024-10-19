@@ -1,7 +1,5 @@
 import CoreData
 
-// swiftlint:disable force_unwrapping
-
 @objc(ManagedCache)
 class ManagedCache: NSManagedObject {
     @NSManaged var timestamp: Date
@@ -14,6 +12,7 @@ extension ManagedCache {
     }
     
     static func find(in context: NSManagedObjectContext) throws -> ManagedCache? {
+        // swiftlint:disable:next force_unwrapping
         let request = NSFetchRequest<ManagedCache>(entityName: entity().name!)
         request.returnsObjectsAsFaults = false
         return try context.fetch(request).first
@@ -24,5 +23,3 @@ extension ManagedCache {
         return ManagedCache(context: context)
     }
 }
-
-// swiftlint:enable force_unwrapping

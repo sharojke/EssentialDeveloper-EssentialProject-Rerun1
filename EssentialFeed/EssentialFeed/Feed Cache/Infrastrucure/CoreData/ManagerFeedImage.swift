@@ -25,4 +25,13 @@ extension ManagedFeedImage {
             return managed
         })
     }
+    
+    static func first(with url: URL, in context: NSManagedObjectContext) throws -> Self? {
+        // swiftlint:disable:next force_unwrapping
+        let request = NSFetchRequest<Self>(entityName: entity().name!)
+        request.predicate = NSPredicate(format: "%K = %@", argumentArray: [#keyPath(ManagedFeedImage.url), url])
+        request.returnsObjectsAsFaults = false
+        request.fetchLimit = 1
+        return try context.fetch(request).first
+    }
 }
