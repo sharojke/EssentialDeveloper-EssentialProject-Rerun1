@@ -33,6 +33,13 @@ final class FeedLoaderCacheDecoratorTests: XCTestCase {
         expect(sut, toCompleteWith: .success(feed))
     }
     
+    func test_load_deliversErrorOnLoaderFailure() {
+        let error = anyNSError()
+        let sut = makeSUT(loadResult: .failure(error))
+        
+        expect(sut, toCompleteWith: .failure(error))
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
