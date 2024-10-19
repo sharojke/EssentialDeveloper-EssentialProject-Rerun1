@@ -1,13 +1,6 @@
 import EssentialFeed
 import XCTest
 
-protocol FeedImageDataCache {
-    typealias SaveResult = Result<Void, Error>
-    typealias SaveCompletion = (SaveResult) -> Void
-
-    func save(_ data: Data, for url: URL, completion: @escaping SaveCompletion)
-}
-
 private final class FeedImageDataCacheSpy: FeedImageDataCache {
     enum Message: Equatable {
         case save(Data, for: URL)
