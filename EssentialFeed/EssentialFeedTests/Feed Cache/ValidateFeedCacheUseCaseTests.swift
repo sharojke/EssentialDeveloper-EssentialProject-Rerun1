@@ -95,6 +95,14 @@ final class ValidateFeedCacheUseCaseTests: XCTestCase {
         }
     }
     
+    func test_validateCache_succeedsOnEmptyCache() {
+        let (sut, store) = makeSUT()
+        
+        expect(sut, toCompleteWith: .success(Void())) {
+            store.completeRetrievalWithEmptyCache()
+        }
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(
