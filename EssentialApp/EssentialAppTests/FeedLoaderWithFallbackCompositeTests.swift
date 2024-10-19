@@ -1,6 +1,8 @@
 import EssentialFeed
 import XCTest
 
+// swiftlint:disable force_unwrapping
+
 private final class FeedLoaderWithFallbackComposite: FeedLoader {
     private let primary: FeedLoader
     private let fallback: FeedLoader
@@ -62,3 +64,5 @@ final class FeedLoaderWithFallbackCompositeTests: XCTestCase {
         return [image]
     }
 }
+
+// swiftlint:enable force_unwrapping
