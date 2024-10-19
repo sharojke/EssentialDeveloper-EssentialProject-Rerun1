@@ -92,15 +92,5 @@ final class CoreDataFeedImageDataStoreTests: XCTestCase {
     }
 }
 
-extension CoreDataFeedStore: @retroactive FeedImageDataStore {
-    public func retrieveData(for url: URL, completion: @escaping FeedImageDataStore.RetrieveCompletion) {
-        completion(.success(nil))
-    }
-    
-    public func insert(_ data: Data, for url: URL, completion: @escaping InsertCompletion) {
-        completion(.success(Void()))
-    }
-}
-
 // swiftlint:enable force_try
 // swiftlint:enable force_unwrapping
