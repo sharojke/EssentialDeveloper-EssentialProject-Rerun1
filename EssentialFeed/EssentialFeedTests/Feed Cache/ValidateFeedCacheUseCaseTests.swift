@@ -129,7 +129,6 @@ final class ValidateFeedCacheUseCaseTests: XCTestCase {
         let fixedCurrentDate = Date()
         let expiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(seconds: -1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
-        let deletionError = anyNSError()
         
         expect(sut, toCompleteWith: .success(Void())) {
             store.completeRetrieval(with: uniqueFeed().local, date: expiredTimestamp)
