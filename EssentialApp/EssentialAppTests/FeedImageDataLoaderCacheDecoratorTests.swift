@@ -1,3 +1,4 @@
+import EssentialApp
 import EssentialFeed
 import XCTest
 
@@ -20,43 +21,6 @@ private final class FeedImageDataCacheSpy: FeedImageDataCache {
     
     func completeSavingSuccessfully(at index: Int = .zero) {
         saveCompletions[index](.success(Void()))
-    }
-}
-
-final class FeedImageDataLoaderCacheDecorator: FeedImageDataLoader {
-    private final class TaskWrapper: FeedImageDataLoaderTask {
-        private var wrapped: FeedImageDataLoaderTask?
-        
-        init(wrapped: FeedImageDataLoaderTask) {
-            self.wrapped = wrapped
-        }
-        
-        func cancel() {
-            wrapped?.cancel()
-            wrapped = nil
-        }
-    }
-    
-    private let decoratee: FeedImageDataLoader
-    private let cache: FeedImageDataCache
-    
-    init(decoratee: FeedImageDataLoader, cache: FeedImageDataCache) {
-        self.decoratee = decoratee
-        self.cache = cache
-    }
-    
-    func loadImageData(
-        from url: URL,
-        completion: @escaping LoadImageResultCompletion
-    ) -> FeedImageDataLoaderTask {
-        let task = decoratee.loadImageData(from: url) { [weak self] result in
-            let mapped = result.map { data in
-                self?.cache.save(data, for: url) { _ in }
-                return data
-            }
-            completion(mapped)
-        }
-        return TaskWrapper(wrapped: task)
     }
 }
 
