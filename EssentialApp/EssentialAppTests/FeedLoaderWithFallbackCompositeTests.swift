@@ -1,29 +1,8 @@
+import EssentialApp
 import EssentialFeed
 import XCTest
 
 // swiftlint:disable force_unwrapping
-
-private final class FeedLoaderWithFallbackComposite: FeedLoader {
-    private let primary: FeedLoader
-    private let fallback: FeedLoader
-    
-    init(primary: FeedLoader, fallback: FeedLoader) {
-        self.primary = primary
-        self.fallback = fallback
-    }
-    
-    func load(completion: @escaping (LoadResult) -> Void) {
-        primary.load { [weak self] primaryResult in
-            switch primaryResult {
-            case .success(let feed):
-                completion(.success(feed))
-                
-            case .failure:
-                self?.fallback.load(completion: completion)
-            }
-        }
-    }
-}
 
 private final class LoaderStub: FeedLoader {
     private let result: LoadResult
@@ -53,7 +32,6 @@ final class FeedLoaderWithFallbackCompositeTests: XCTestCase {
     }
     
     func test_load_deliversErrorOnBothPrimaryAndFallbackLoadersFailure() {
-        let fallbackFeed = uniqueFeed()
         let sut = makeSUT(primaryResult: .failure(anyError()), fallbackResult: .failure(anyError()))
         
         expect(sut, toCompleteWith: .failure(anyError()))
