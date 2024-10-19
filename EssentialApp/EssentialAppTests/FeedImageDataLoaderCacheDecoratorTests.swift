@@ -64,6 +64,14 @@ final class FeedImageDataLoaderCacheDecoratorTests: XCTestCase, FeedImageDataLoa
             loader.completeLoading(with: data)
         }
     }
+    
+    func test_loadImageData_deliversErrorOnLoaderFailure() {
+        let (sut, loader) = makeSUT()
+        
+        expect(sut, toCompleteWith: .failure(anyError())) {
+            loader.completeLoading(with: anyError())
+        }
+    }
 
     // MARK: Helpers
     
