@@ -2,8 +2,6 @@ import EssentialApp
 import EssentialFeed
 import XCTest
 
-// swiftlint:disable force_unwrapping
-
 private final class LoaderStub: FeedLoader {
     private let result: LoadResult
     
@@ -77,16 +75,4 @@ final class FeedLoaderWithFallbackCompositeTests: XCTestCase {
         
         wait(for: [exp], timeout: 1)
     }
-    
-    private func uniqueFeed() -> [FeedImage] {
-        let image = FeedImage(
-            id: UUID(),
-            description: "a description",
-            location: "a location",
-            url: URL(string: "http://a-url.com")!
-        )
-        return [image]
-    }
 }
-
-// swiftlint:enable force_unwrapping
