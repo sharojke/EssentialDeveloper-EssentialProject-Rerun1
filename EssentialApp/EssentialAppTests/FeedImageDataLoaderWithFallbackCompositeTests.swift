@@ -93,7 +93,7 @@ final class FeedImageDataLoaderWithFallbackCompositeTests: XCTestCase {
     }
     
     func test_loadImageData_deliversPrimaryDataOnPrimaryLoaderSuccess() {
-        let (sut, primary, fallback) = makeSUT()
+        let (sut, primary, _) = makeSUT()
         let data = anyData()
         
         expect(sut, toCompleteWith: .success(data)) {
