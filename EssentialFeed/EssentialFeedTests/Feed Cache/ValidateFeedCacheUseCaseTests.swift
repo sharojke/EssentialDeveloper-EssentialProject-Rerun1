@@ -103,6 +103,16 @@ final class ValidateFeedCacheUseCaseTests: XCTestCase {
         }
     }
     
+    func test_validateCache_succeedsOnNonExpiredCache() {
+        let (sut, store) = makeSUT()
+        let fixedCurrentDate = Date()
+        let nonExpiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(seconds: 1)
+        
+        expect(sut, toCompleteWith: .success(Void())) {
+            store.completeRetrieval(with: uniqueFeed().local, date: nonExpiredTimestamp)
+        }
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(
