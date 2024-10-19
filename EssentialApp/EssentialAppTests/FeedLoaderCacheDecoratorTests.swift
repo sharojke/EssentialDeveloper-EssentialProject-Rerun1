@@ -33,14 +33,11 @@ final class FeedLoaderCacheDecorator: FeedLoader {
     
     func load(completion: @escaping (LoadResult) -> Void) {
         decoratee.load { [weak self] result in
-            switch result {
-            case .success(let feed):
+            let mapped = result.map { feed in
                 self?.cache.save(feed) { _ in }
-                completion(result)
-                
-            case .failure:
-                completion(result)
+                return feed
             }
+            completion(mapped)
         }
     }
 }
