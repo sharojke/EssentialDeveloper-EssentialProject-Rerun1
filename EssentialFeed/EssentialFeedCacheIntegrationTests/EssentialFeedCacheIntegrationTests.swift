@@ -1,8 +1,6 @@
 import EssentialFeed
 import XCTest
 
-// swiftlint:disable force_unwrapping
-
 final class EssentialFeedCacheIntegrationTests: XCTestCase {
     override func setUp() {
         super.setUp()
@@ -16,33 +14,35 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
         removeStoreArtifacts()
     }
     
-    func test_load_deliversNoItemsOnEmptyCache() throws {
-        let sut = try makeFeedLoader()
+    // MARK: LocalFeedLoader Tests
+    
+    func test_loadFeed_deliversNoItemsOnEmptyCache() throws {
+        let feedLoader = try makeFeedLoader()
         
-        expect(sut, toLoad: [])
+        expect(feedLoader, toLoad: [])
     }
     
-    func test_load_deliversItemsSavedOnASeparateInstance() throws {
-        let sutToPerformSave = try makeFeedLoader()
-        let sutToPerformLoad = try makeFeedLoader()
+    func test_loadFeed_deliversItemsSavedOnASeparateInstance() throws {
+        let feedLoaderToPerformSave = try makeFeedLoader()
+        let feedLoaderToPerformLoad = try makeFeedLoader()
         let feed = uniqueFeed().models
         
-        save(feed: feed, with: sutToPerformSave)
+        save(feed: feed, with: feedLoaderToPerformSave)
         
-        expect(sutToPerformLoad, toLoad: feed)
+        expect(feedLoaderToPerformLoad, toLoad: feed)
     }
     
-    func test_save_overridesItemsSavedOnASeparateInstance() throws {
-        let sutToPerformFirstSave = try makeFeedLoader()
-        let sutToPerformLastSave = try makeFeedLoader()
-        let sutToPerformLoad = try makeFeedLoader()
+    func test_saveFeed_overridesItemsSavedOnASeparateInstance() throws {
+        let feedLoaderToPerformFirstSave = try makeFeedLoader()
+        let feedLoaderToPerformLastSave = try makeFeedLoader()
+        let feedLoaderToPerformLoad = try makeFeedLoader()
         let firstFeed = uniqueFeed().models
         let lastFeed = uniqueFeed().models
         
-        save(feed: firstFeed, with: sutToPerformFirstSave)
-        save(feed: lastFeed, with: sutToPerformLastSave)
+        save(feed: firstFeed, with: feedLoaderToPerformFirstSave)
+        save(feed: lastFeed, with: feedLoaderToPerformLastSave)
         
-        expect(sutToPerformLoad, toLoad: lastFeed)
+        expect(feedLoaderToPerformLoad, toLoad: lastFeed)
     }
     
     // MARK: LocalFeedImageDataLoader Tests
@@ -88,13 +88,13 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
     }
     
     private func expect(
-        _ sut: LocalFeedLoader,
+        _ loader: LocalFeedLoader,
         toLoad expectedFeed: [FeedImage],
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
         let exp = expectation(description: "Wait for load")
-        sut.load { result in
+        loader.load { result in
             switch result {
             case .success(let receivedFeed):
                 XCTAssertEqual(receivedFeed, expectedFeed, file: file, line: line)
@@ -158,14 +158,14 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
     }
     
     private func expect(
-        _ sut: LocalFeedImageDataLoader,
+        _ loader: LocalFeedImageDataLoader,
         toLoad expectedData: Data,
         for url: URL,
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
         let exp = expectation(description: "Wait for load")
-        _ = sut.loadImageData(from: url) { result in
+        _ = loader.loadImageData(from: url) { result in
             switch result {
             case .success(let receivedData):
                 XCTAssertEqual(receivedData, expectedData, file: file, line: line)
@@ -185,6 +185,7 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
     }
     
     private func cachesDirectory() -> URL {
+        // swiftlint:disable:next force_unwrapping
         return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
     
@@ -192,5 +193,3 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
         try? FileManager.default.removeItem(at: testSpecificStoreURL())
     }
 }
-
-// swiftlint:enable force_unwrapping
