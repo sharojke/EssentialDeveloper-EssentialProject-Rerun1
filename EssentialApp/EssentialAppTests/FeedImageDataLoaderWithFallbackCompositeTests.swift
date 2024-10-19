@@ -69,6 +69,10 @@ private final class FeedImageDataLoaderSpy: FeedImageDataLoader {
     func completeLoading(with error: Error, at index: Int = .zero) {
         loadCompletions[index](.failure(error))
     }
+    
+    func completeLoading(with data: Data, at index: Int = .zero) {
+        loadCompletions[index](.success(data))
+    }
 }
 
 // swiftlint:disable:next type_name
@@ -124,6 +128,15 @@ final class FeedImageDataLoaderWithFallbackCompositeTests: XCTestCase {
         XCTAssertEqual(fallback.cancelledURLs, [url])
     }
     
+    func test_loadImageData_deliversPrimaryDataOnPrimaryLoaderSuccess() {
+        let (sut, primary, fallback) = makeSUT()
+        let data = anyData()
+        
+        expect(sut, toCompleteWith: .success(data)) {
+            primary.completeLoading(with: data)
+        }
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
@@ -138,5 +151,32 @@ final class FeedImageDataLoaderWithFallbackCompositeTests: XCTestCase {
         trackForMemoryLeaks(fallback, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, primary, fallback)
+    }
+    
+    private func expect(
+        _ sut: FeedImageDataLoader,
+        toCompleteWith expectedResult: FeedImageDataLoader.LoadImageResult,
+        when action: () -> Void,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let exp = expectation(description: "Wait for load")
+        _ = sut.loadImageData(from: anyURL()) { receivedResult in
+            switch (receivedResult, expectedResult) {
+            case let (.success(receivedData), .success(expectedData)):
+                XCTAssertEqual(receivedData, expectedData, file: file, line: line)
+                
+            case (.failure, .failure):
+                break
+                
+            default:
+                XCTFail("Expected \(expectedResult), got \(receivedResult) instead", file: file, line: line)
+            }
+            
+            exp.fulfill()
+        }
+        
+        action()
+        wait(for: [exp], timeout: 1)
     }
 }
