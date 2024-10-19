@@ -2,18 +2,6 @@ import EssentialApp
 import EssentialFeed
 import XCTest
 
-private final class LoaderStub: FeedLoader {
-    private let result: LoadResult
-    
-    init(result: LoadResult) {
-        self.result = result
-    }
-    
-    func load(completion: @escaping (LoadResult) -> Void) {
-        completion(result)
-    }
-}
-
 final class FeedLoaderWithFallbackCompositeTests: XCTestCase {
     func test_load_deliversPrimaryFeedOnPrimaryLoaderSuccess() {
         let primaryFeed = uniqueFeed()
@@ -43,8 +31,8 @@ final class FeedLoaderWithFallbackCompositeTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> FeedLoader {
-        let primary = LoaderStub(result: primaryResult)
-        let fallback = LoaderStub(result: fallbackResult)
+        let primary = FeedLoaderStub(result: primaryResult)
+        let fallback = FeedLoaderStub(result: fallbackResult)
         let sut = FeedLoaderWithFallbackComposite(primary: primary, fallback: fallback)
         trackForMemoryLeaks(primary, file: file, line: line)
         trackForMemoryLeaks(fallback, file: file, line: line)
