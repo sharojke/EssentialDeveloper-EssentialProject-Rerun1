@@ -1,5 +1,5 @@
-import Foundation
 import EssentialFeed
+import Foundation
 
 final class FeedLoaderStub: FeedLoader {
     private let result: LoadResult

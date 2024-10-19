@@ -1,12 +1,6 @@
+import EssentialApp
 import EssentialFeed
 import XCTest
-
-protocol FeedCache {
-    typealias SaveResult = Result<Void, Error>
-    typealias SaveCompletion = (SaveResult) -> Void
-    
-    func save(_ feed: [FeedImage], completion: @escaping SaveCompletion)
-}
 
 private final class FeedCacheSpy: FeedCache {
     enum Message: Equatable {
@@ -19,26 +13,6 @@ private final class FeedCacheSpy: FeedCache {
     func save(_ feed: [FeedImage], completion: @escaping SaveCompletion) {
         messages.append(.save(feed))
         saveCompletions.append(completion)
-    }
-}
-
-final class FeedLoaderCacheDecorator: FeedLoader {
-    private let decoratee: FeedLoader
-    private let cache: FeedCache
-    
-    init(decoratee: FeedLoader, cache: FeedCache) {
-        self.decoratee = decoratee
-        self.cache = cache
-    }
-    
-    func load(completion: @escaping (LoadResult) -> Void) {
-        decoratee.load { [weak self] result in
-            let mapped = result.map { feed in
-                self?.cache.save(feed) { _ in }
-                return feed
-            }
-            completion(mapped)
-        }
     }
 }
 
