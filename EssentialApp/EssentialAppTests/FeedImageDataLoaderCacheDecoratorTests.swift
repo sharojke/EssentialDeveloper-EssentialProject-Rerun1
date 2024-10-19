@@ -122,6 +122,16 @@ final class FeedImageDataLoaderCacheDecoratorTests: XCTestCase, FeedImageDataLoa
         XCTAssertEqual(cache.messages, [.save(data, for: url)])
     }
     
+    func test_loadImageData_doesNotCacheDataOnLoaderFailure() {
+        let cache = FeedImageDataCacheSpy()
+        let (sut, loader) = makeSUT(cache: cache)
+        
+        _ = sut.loadImageData(from: anyURL()) { _ in }
+        loader.completeLoading(with: anyError())
+        
+        XCTAssertTrue(cache.messages.isEmpty)
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
