@@ -1,0 +1,39 @@
+import EssentialFeed
+import Foundation
+
+public final class FeedImageDataLoaderCacheDecorator: FeedImageDataLoader {
+    private final class TaskWrapper: FeedImageDataLoaderTask {
+        private var wrapped: FeedImageDataLoaderTask?
+        
+        init(wrapped: FeedImageDataLoaderTask) {
+            self.wrapped = wrapped
+        }
+        
+        func cancel() {
+            wrapped?.cancel()
+            wrapped = nil
+        }
+    }
+    
+    private let decoratee: FeedImageDataLoader
+    private let cache: FeedImageDataCache
+    
+    public init(decoratee: FeedImageDataLoader, cache: FeedImageDataCache) {
+        self.decoratee = decoratee
+        self.cache = cache
+    }
+    
+    public func loadImageData(
+        from url: URL,
+        completion: @escaping LoadImageResultCompletion
+    ) -> FeedImageDataLoaderTask {
+        let task = decoratee.loadImageData(from: url) { [weak self] result in
+            let mapped = result.map { data in
+                self?.cache.save(data, for: url) { _ in }
+                return data
+            }
+            completion(mapped)
+        }
+        return TaskWrapper(wrapped: task)
+    }
+}
