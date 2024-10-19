@@ -33,7 +33,9 @@ public extension LocalFeedLoader {
 }
 
 public extension LocalFeedLoader {
-    func validateCache() {
+    typealias ValidateResult = Result<Void, Error>
+    
+    func validateCache(completion: @escaping (ValidateResult) -> Void) {
         store.retrieve { [weak self] result in
             guard let self else { return }
             
@@ -42,10 +44,10 @@ public extension LocalFeedLoader {
                 feed.timestamp,
                 against: currentDate()
             ):
-                break
+                completion(.success(Void()))
                 
             case .success, .failure:
-                store.deleteCachedFeed { _ in }
+                store.deleteCachedFeed { _ in completion(.success(Void())) }
             }
         }
     }
