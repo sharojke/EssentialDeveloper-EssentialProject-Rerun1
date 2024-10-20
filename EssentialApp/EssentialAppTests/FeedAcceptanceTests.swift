@@ -64,8 +64,7 @@ private final class InMemoryFeedStore: FeedStore, FeedImageDataStore {
 
 final class FeedAcceptanceTests: XCTestCase {
     func test_onLaunch_displaysRemoteFeedWhenCustomerHasConnectivity() {
-        let store = InMemoryFeedStore.empty
-        let feed = launch(httpClient: HTTPClientStub.online(response), store: store)
+        let feed = launch(httpClient: HTTPClientStub.online(response), store: InMemoryFeedStore.empty)
         
         XCTAssertEqual(feed.numberOfRenderedFeedImageViews(), 2)
         XCTAssertEqual(feed.renderedFeedImageData(at: 0), makeImageData())
@@ -83,6 +82,12 @@ final class FeedAcceptanceTests: XCTestCase {
         XCTAssertEqual(offlineFeed.numberOfRenderedFeedImageViews(), 2)
         XCTAssertEqual(offlineFeed.renderedFeedImageData(at: 0), makeImageData())
         XCTAssertEqual(offlineFeed.renderedFeedImageData(at: 1), makeImageData())
+    }
+    
+    func test_onLaunch_displaysEmptyFeedOnNoConnectivityAndNoCache() {
+        let feed = launch(httpClient: HTTPClientStub.offline(), store: InMemoryFeedStore.empty)
+        
+        XCTAssertEqual(feed.numberOfRenderedFeedImageViews(), 0)
     }
     
     // MARK: Helpers
