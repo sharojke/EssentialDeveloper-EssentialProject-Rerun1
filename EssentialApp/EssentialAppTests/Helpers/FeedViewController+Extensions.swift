@@ -60,6 +60,10 @@ extension FeedViewController {
 extension FeedViewController {
     var feedImagesSection: Int { .zero }
     
+    func renderedFeedImageData(at index: Int = .zero) -> Data? {
+        return simulateFeedImageViewVisible(at: index).renderedImage
+    }
+    
     func numberOfRenderedFeedImageViews() -> Int {
         return tableView.numberOfRows(inSection: feedImagesSection)
     }

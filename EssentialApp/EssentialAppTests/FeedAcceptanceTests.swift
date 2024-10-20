@@ -4,6 +4,7 @@ import EssentialFeediOS
 import XCTest
 
 // swiftlint:disable force_unwrapping
+// swiftlint:disable force_cast
 
 private final class HTTPClientStub: HTTPClient {
     private final class Task: HTTPClientTask {
@@ -63,22 +64,30 @@ private final class InMemoryFeedStore: FeedStore, FeedImageDataStore {
 
 final class FeedAcceptanceTests: XCTestCase {
     func test_onLaunch_displaysRemoteFeedWhenCustomerHasConnectivity() {
-        let store = InMemoryFeedStore.empty
         let httpClient = HTTPClientStub.online(response)
+        let store = InMemoryFeedStore.empty
+        let feed = launch(httpClient: httpClient, store: store)
+        
+        XCTAssertEqual(feed.numberOfRenderedFeedImageViews(), 2)
+        XCTAssertEqual(feed.renderedFeedImageData(at: 0), makeImageData())
+        XCTAssertEqual(feed.renderedFeedImageData(at: 1), makeImageData())
+    }
+    
+    // MARK: Helpers
+    
+    private func launch(
+        httpClient: HTTPClient = HTTPClientStub.offline(),
+        store: FeedStore & FeedImageDataStore = InMemoryFeedStore.empty
+    ) -> FeedViewController {
         let sut = SceneDelegate(httpClient: httpClient, store: store)
         sut.window = UIWindow()
         sut.configureWindow()
         
         let navigation = sut.window?.rootViewController as? UINavigationController
-        let feed = navigation?.topViewController as? FeedViewController
-        feed?.simulateAppearance()
-        
-        XCTAssertEqual(feed?.numberOfRenderedFeedImageViews(), 2)
-        XCTAssertNotNil(feed?.simulateFeedImageViewVisible(at: 0).renderedImage)
-        XCTAssertNotNil(feed?.simulateFeedImageViewVisible(at: 1).renderedImage)
+        let feed = navigation?.topViewController as! FeedViewController
+        feed.simulateAppearance()
+        return feed
     }
-    
-    // MARK: Helpers
     
     private func response(for url: URL) -> (Data, HTTPURLResponse) {
         let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
@@ -113,3 +122,4 @@ final class FeedAcceptanceTests: XCTestCase {
 }
 
 // swiftlint:enable force_unwrapping
+// swiftlint:enable force_cast
