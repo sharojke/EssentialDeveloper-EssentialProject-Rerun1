@@ -1,8 +1,6 @@
 import EssentialFeediOS
 import UIKit
 
-// swiftlint:disable force_cast
-
 private final class FakeRefreshControl: UIRefreshControl {
     private var _isRefreshing = false
     
@@ -61,27 +59,30 @@ extension FeedViewController {
     var feedImagesSection: Int { .zero }
     
     func renderedFeedImageData(at index: Int = .zero) -> Data? {
-        return simulateFeedImageViewVisible(at: index).renderedImage
+        return simulateFeedImageViewVisible(at: index)?.renderedImage
     }
     
     func numberOfRenderedFeedImageViews() -> Int {
         return tableView.numberOfRows(inSection: feedImagesSection)
     }
     
-    func feedImageView(at index: Int) -> FeedImageCell {
+    func feedImageView(at index: Int) -> FeedImageCell? {
+        guard numberOfRenderedFeedImageViews() > index else { return nil }
+        
         let ds = tableView.dataSource
         let indexPath = IndexPath(row: index, section: feedImagesSection)
-        return ds?.tableView(tableView, cellForRowAt: indexPath) as! FeedImageCell
+        return ds?.tableView(tableView, cellForRowAt: indexPath) as? FeedImageCell
     }
     
     @discardableResult
-    func simulateFeedImageViewVisible(at index: Int) -> FeedImageCell {
+    func simulateFeedImageViewVisible(at index: Int) -> FeedImageCell? {
         return feedImageView(at: index)
     }
     
     @discardableResult
-    func simulateFeedImageViewNotVisible(at index: Int) -> FeedImageCell {
-        let view = simulateFeedImageViewVisible(at: index)
+    func simulateFeedImageViewNotVisible(at index: Int) -> FeedImageCell? {
+        guard let view = simulateFeedImageViewVisible(at: index) else { return nil }
+        
         let indexPath = IndexPath(row: index, section: feedImagesSection)
         let delegate = tableView.delegate
         delegate?.tableView?(tableView, didEndDisplaying: view, forRowAt: indexPath)
@@ -113,5 +114,3 @@ extension FeedViewController {
         errorView?.button.simulateTap()
     }
 }
-
-// swiftlint:enable force_cast
