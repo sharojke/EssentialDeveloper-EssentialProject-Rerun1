@@ -10,6 +10,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         session: URLSession(configuration: .ephemeral)
     )
     
+    private lazy var localFeedLoader = LocalFeedLoader(store: store, currentDate: Date.init)
+    
     // swiftlint:disable:next force_try
     private lazy var store: FeedStore & FeedImageDataStore = try! CoreDataFeedStore(
         storeURL: NSPersistentContainer
@@ -35,8 +37,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let remoteFeedLoader = RemoteFeedLoader(url: remoteURL, client: httpClient)
         let remoteImageLoader = RemoteFeedImageDataLoader(client: httpClient)
-        
-        let localFeedLoader = LocalFeedLoader(store: store, currentDate: Date.init)
         let localImageLoader = LocalFeedImageDataLoader(store: store)
         
         window?.rootViewController = UINavigationController(
@@ -57,5 +57,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 )
             )
         )
+    }
+    
+    func sceneWillResignActive(_ scene: UIScene) {
+        localFeedLoader.validateCache { _ in }
     }
 }
