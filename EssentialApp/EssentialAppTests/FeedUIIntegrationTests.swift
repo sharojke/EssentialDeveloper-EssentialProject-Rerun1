@@ -226,36 +226,36 @@ final class FeedUIIntegrationTests: XCTestCase {
         let view0 = sut.simulateFeedImageViewVisible(at: .zero)
         let view1 = sut.simulateFeedImageViewVisible(at: 1)
         XCTAssertEqual(
-            view0.isShowingImageLoadingIndicator,
+            view0?.isShowingImageLoadingIndicator,
             true,
             "Expected loading indicator for the first view while loading the first image"
         )
         XCTAssertEqual(
-            view1.isShowingImageLoadingIndicator,
+            view1?.isShowingImageLoadingIndicator,
             true,
             "Expected loading indicator for the second view while loading the second image"
         )
         
         loader.completeImageLoading(at: .zero)
         XCTAssertEqual(
-            view0.isShowingImageLoadingIndicator,
+            view0?.isShowingImageLoadingIndicator,
             false,
             "Expected no loading indicator for the first view after the first image is loaded"
         )
         XCTAssertEqual(
-            view1.isShowingImageLoadingIndicator,
+            view1?.isShowingImageLoadingIndicator,
             true,
             "Expected loading indicator for the second view after the first image is loaded"
         )
         
         loader.completeImageLoading(at: 1)
         XCTAssertEqual(
-            view0.isShowingImageLoadingIndicator,
+            view0?.isShowingImageLoadingIndicator,
             false,
             "Expected no loading indicator for the first view after the second image is loaded"
         )
         XCTAssertEqual(
-            view1.isShowingImageLoadingIndicator,
+            view1?.isShowingImageLoadingIndicator,
             false,
             "Expected no loading indicator for the second view after the second image is loaded"
         )
@@ -270,12 +270,12 @@ final class FeedUIIntegrationTests: XCTestCase {
         let view0 = sut.simulateFeedImageViewVisible(at: .zero)
         let view1 = sut.simulateFeedImageViewVisible(at: 1)
         XCTAssertEqual(
-            view0.renderedImage,
+            view0?.renderedImage,
             nil,
             "Expected no image for the first view while loading the first image"
         )
         XCTAssertEqual(
-            view1.renderedImage,
+            view1?.renderedImage,
             nil,
             "Expected no image for the second view while loading the second image"
         )
@@ -283,12 +283,12 @@ final class FeedUIIntegrationTests: XCTestCase {
         let imageData0 = UIImage.make(withColor: .green).pngData()!
         loader.completeImageLoading(with: imageData0, at: .zero)
         XCTAssertEqual(
-            view0.renderedImage,
+            view0?.renderedImage,
             imageData0,
             "Expected image for the first view after the first image is loaded"
         )
         XCTAssertEqual(
-            view1.renderedImage,
+            view1?.renderedImage,
             nil,
             "Expected no image for the second view after the first image is loaded"
         )
@@ -296,12 +296,12 @@ final class FeedUIIntegrationTests: XCTestCase {
         let imageData1 = UIImage.make(withColor: .red).pngData()!
         loader.completeImageLoading(with: imageData1, at: 1)
         XCTAssertEqual(
-            view0.renderedImage,
+            view0?.renderedImage,
             imageData0,
             "Expected no image change for the first view after the second image is loaded"
         )
         XCTAssertEqual(
-            view1.renderedImage,
+            view1?.renderedImage,
             imageData1,
             "Expected image for the second view after the second image is loaded"
         )
@@ -316,36 +316,36 @@ final class FeedUIIntegrationTests: XCTestCase {
         let view0 = sut.simulateFeedImageViewVisible(at: .zero)
         let view1 = sut.simulateFeedImageViewVisible(at: 1)
         XCTAssertEqual(
-            view0.isShowingRetryAction,
+            view0?.isShowingRetryAction,
             false,
             "Expected no retry for the first view while loading the first image"
         )
         XCTAssertEqual(
-            view1.isShowingRetryAction,
+            view1?.isShowingRetryAction,
             false,
             "Expected no retry for the second view while loading the second image"
         )
         
         loader.completeImageLoadingWithError(at: .zero)
         XCTAssertEqual(
-            view0.isShowingRetryAction,
+            view0?.isShowingRetryAction,
             true,
             "Expected retry for the first view after loading the first image fails"
         )
         XCTAssertEqual(
-            view1.isShowingRetryAction,
+            view1?.isShowingRetryAction,
             false,
             "Expected no retry for the second view after loading the first image fails"
         )
         
         loader.completeImageLoadingWithError(at: 1)
         XCTAssertEqual(
-            view0.isShowingRetryAction,
+            view0?.isShowingRetryAction,
             true,
             "Expected no retry change for the first view after loading the second image fails"
         )
         XCTAssertEqual(
-            view1.isShowingRetryAction,
+            view1?.isShowingRetryAction,
             true,
             "Expected retry for the second view after loading the second image fails"
         )
@@ -362,7 +362,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         loader.completeImageLoading(with: invalidData)
         
         XCTAssertEqual(
-            view.isShowingRetryAction,
+            view?.isShowingRetryAction,
             true,
             "Expected retry when invalid image data"
         )
@@ -392,14 +392,14 @@ final class FeedUIIntegrationTests: XCTestCase {
             "Expected two image URLs before retry action"
         )
         
-        view0.simulateRetryAction()
+        view0?.simulateRetryAction()
         XCTAssertEqual(
             loader.loadedImageURLs,
             [image0.url, image1.url, image0.url],
             "Expected three image URLs after retry action for the first view"
         )
         
-        view1.simulateRetryAction()
+        view1?.simulateRetryAction()
         XCTAssertEqual(
             loader.loadedImageURLs,
             [image0.url, image1.url, image0.url, image1.url],
@@ -473,7 +473,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         loader.completeImageLoading(with: anyImageData(), at: .zero)
         
         XCTAssertEqual(
-            view0.renderedImage,
+            view0?.renderedImage,
             nil,
             "Expected no renderedImage when view is not visible"
         )
@@ -486,13 +486,13 @@ final class FeedUIIntegrationTests: XCTestCase {
         loader.completeFeedLoading(with: [makeImage(), makeImage()])
         
         let view0 = sut.simulateFeedImageViewVisible(at: .zero)
-        view0.prepareForReuse()
+        view0?.prepareForReuse()
         
         let imageData0 = anyImageData()
         loader.completeImageLoading(with: imageData0, at: .zero)
         
         XCTAssertEqual(
-            view0.renderedImage,
+            view0?.renderedImage,
             nil,
             "Expected no image state change for reused view once image loading completes successfully"
         )
@@ -506,12 +506,12 @@ final class FeedUIIntegrationTests: XCTestCase {
         
         let previousView = sut.simulateFeedImageViewNotVisible(at: 0)
         let newView = sut.simulateFeedImageViewVisible(at: 0)
-        previousView.prepareForReuse()
+        previousView?.prepareForReuse()
         
         let imageData = anyImageData()
         loader.completeImageLoading(with: imageData, at: 1)
         
-        XCTAssertEqual(newView.renderedImage, imageData)
+        XCTAssertEqual(newView?.renderedImage, imageData)
     }
     
     func test_loadImageDataCompletion_dispatchesFromBackgroundToMainThread() {
@@ -606,21 +606,21 @@ final class FeedUIIntegrationTests: XCTestCase {
         let shouldLocationBeVisible = image.location != nil
         let view = sut.feedImageView(at: index)
         XCTAssertEqual(
-            view.isShowingLocation,
+            view?.isShowingLocation,
             shouldLocationBeVisible,
             "Expected `isShowingLocation` to be \(shouldLocationBeVisible) for index at \(index)",
             file: file,
             line: line
         )
         XCTAssertEqual(
-            view.locationText,
+            view?.locationText,
             image.location,
             "Expected `locationText` to be \(image.location as Any) for index at \(index)",
             file: file,
             line: line
         )
         XCTAssertEqual(
-            view.descriptionText,
+            view?.descriptionText,
             image.description,
             "Expected `descriptionText` to be \(image.description as Any) for index at \(index)",
             file: file,
