@@ -238,8 +238,29 @@
 		BBF35D7B2C8DD3F5006AEC65 /* RemoteFeedImagesMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedImagesMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BB37E39C2CC6E86B00A25B8D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"UIImage+Extensions.swift",
+				"UIViewController+Snapshots.swift",
+				"XCTestCase+Snapshot.swift",
+			);
+			target = BB900C0F2CA4AA34005A4567 /* EssentialFeediOSTests */;
+		};
+		BB37E3A32CC6EA0000A25B8D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				FeedSnapshotTests.swift,
+			);
+			target = BB900C0F2CA4AA34005A4567 /* EssentialFeediOSTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		BB37E3962CC6D2DE00A25B8D /* Helpers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Helpers; sourceTree = "<group>"; };
+		BB37E3972CC6E7EA00A25B8D /* Feed UI */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BB37E3A32CC6EA0000A25B8D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Feed UI"; sourceTree = "<group>"; };
+		BB37E3992CC6E86200A25B8D /* Helpers */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BB37E39C2CC6E86B00A25B8D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Helpers; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -350,6 +371,8 @@
 		BB900C212CA4AC94005A4567 /* EssentialFeediOSTests */ = {
 			isa = PBXGroup;
 			children = (
+				BB37E3992CC6E86200A25B8D /* Helpers */,
+				BB37E3972CC6E7EA00A25B8D /* Feed UI */,
 			);
 			path = EssentialFeediOSTests;
 			sourceTree = "<group>";
