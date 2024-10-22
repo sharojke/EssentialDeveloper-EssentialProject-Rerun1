@@ -16,6 +16,7 @@ public final class FeedViewController: UITableViewController {
     }()
     
     private var tableModel = [FeedImageCellController]()
+    private var loadingControllers = [IndexPath: FeedImageCellController]()
     
     override public var refreshControl: UIRefreshControl? {
         get {
@@ -116,11 +117,14 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
 
 private extension FeedViewController {
     func cancelCellControllerLoad(at indexPath: IndexPath) {
-        cellControllerForRow(at: indexPath).cancelLoad()
+        loadingControllers[indexPath]?.cancelLoad()
+        loadingControllers[indexPath] = nil
     }
     
     func cellControllerForRow(at indexPath: IndexPath) -> FeedImageCellController {
-        return tableModel[indexPath.row]
+        let controller = tableModel[indexPath.row]
+        loadingControllers[indexPath] = controller
+        return controller
     }
 }
 
