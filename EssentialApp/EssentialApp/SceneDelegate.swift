@@ -7,6 +7,11 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
+    private var remoteURL: URL {
+        // swiftlint:disable:next force_unwrapping
+        return URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
+    }
+    
     private lazy var httpClient: HTTPClient = URLSessionHTTPClient(
         session: URLSession(configuration: .ephemeral)
     )
@@ -48,9 +53,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func makeRemoteFeedLoaderWithALocalFallback() -> FeedLoader.Publisher {
-        // swiftlint:disable:next force_unwrapping
-        let remoteURL = URL(string: "https://static1.squarespace.com/static/5891c5b8d1758ec68ef5dbc2/t/5db4155a4fbade21d17ecd28/1572083034355/essential_app_feed.json")!
-        
         let remoteFeedLoader = RemoteFeedLoader(url: remoteURL, client: httpClient)
         return remoteFeedLoader
             .loadPublisher()
