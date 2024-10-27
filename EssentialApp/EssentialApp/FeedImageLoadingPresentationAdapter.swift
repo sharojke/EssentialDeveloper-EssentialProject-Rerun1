@@ -1,3 +1,4 @@
+import Combine
 import EssentialFeed
 import EssentialFeediOS
 import Foundation
@@ -6,12 +7,12 @@ final class FeedImageLoadingPresentationAdapter
 <View: FeedImageLoadingView, Image>: FeedImageCellControllerDelegate
 where View.Image == Image {
     private let feedImage: FeedImage
-    private let imageLoader: FeedImageDataLoader
+    private let imageLoader: (URL) -> FeedImageDataLoader.Publisher
     var imagePresenter: FeedImagePresenter<View, Image>?
     
-    private var task: FeedImageDataLoaderTask?
+    private var cancellable: Cancellable?
     
-    init(feedImage: FeedImage, imageLoader: FeedImageDataLoader) {
+    init(feedImage: FeedImage, imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher) {
         self.feedImage = feedImage
         self.imageLoader = imageLoader
     }
@@ -19,19 +20,24 @@ where View.Image == Image {
     func didRequestImage() {
         imagePresenter?.didStartLoadingImage(for: feedImage)
         
-        task = imageLoader.loadImageData(from: feedImage.url) { [weak imagePresenter, feedImage] result in
-            switch result {
-            case .success(let data):
+        cancellable = imageLoader(feedImage.url).sink(
+            receiveCompletion: { [weak imagePresenter, feedImage] completion in
+                switch completion {
+                case .finished:
+                    break
+                    
+                case .failure(let error):
+                    imagePresenter?.didFinishLoadingImage(with: error, for: feedImage)
+                }
+            },
+            receiveValue: { [weak imagePresenter, feedImage] data in
                 imagePresenter?.didFinishLoadingImage(with: data, for: feedImage)
-                
-            case .failure(let error):
-                imagePresenter?.didFinishLoadingImage(with: error, for: feedImage)
             }
-        }
+        )
     }
     
     func didCancelImageRequest() {
-        task?.cancel()
-        task = nil
+        cancellable?.cancel()
+        cancellable = nil
     }
 }
