@@ -16,6 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         session: URLSession(configuration: .ephemeral)
     )
     
+    private lazy var remoteFeedLoader = RemoteFeedLoader(url: remoteURL, client: httpClient)
     private lazy var localFeedLoader = LocalFeedLoader(store: store, currentDate: Date.init)
     
     // swiftlint:disable:next force_try
@@ -53,7 +54,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func makeRemoteFeedLoaderWithALocalFallback() -> FeedLoader.Publisher {
-        let remoteFeedLoader = RemoteFeedLoader(url: remoteURL, client: httpClient)
         return remoteFeedLoader
             .loadPublisher()
             .caching(to: localFeedLoader)
