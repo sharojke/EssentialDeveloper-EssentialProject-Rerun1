@@ -43,6 +43,11 @@ extension DispatchQueue {
         // swiftlint:disable:next nesting
         typealias SchedulerOptions = DispatchQueue.SchedulerOptions
         
+        static let shared = Self()
+        
+        private static let key = DispatchSpecificKey<UInt8>()
+        private static let value = UInt8.max
+        
         var now: SchedulerTimeType {
             return DispatchQueue.main.now
         }
@@ -51,9 +56,13 @@ extension DispatchQueue {
             return DispatchQueue.main.minimumTolerance
         }
         
+        private init() {
+            DispatchQueue.main.setSpecific(key: Self.key, value: Self.value)
+        }
+        
         func schedule(options: SchedulerOptions?, _ action: @escaping () -> Void) {
             // swiftlint:disable:next void_function_in_ternary
-            Thread.isMainThread ? action() : DispatchQueue.main.schedule(options: options, action)
+            isMainQueue() ? action() : DispatchQueue.main.schedule(options: options, action)
         }
         
         func schedule(
@@ -80,10 +89,14 @@ extension DispatchQueue {
                 action
             )
         }
+        
+        private func isMainQueue() -> Bool {
+            return DispatchQueue.getSpecific(key: Self.key) == Self.value
+        }
     }
     
     static var immediateWhenOnMainScheduler: ImmediateWhenOnMainScheduler {
-        return ImmediateWhenOnMainScheduler()
+        return ImmediateWhenOnMainScheduler.shared
     }
 }
 
