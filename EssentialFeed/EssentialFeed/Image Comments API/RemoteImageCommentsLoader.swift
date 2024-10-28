@@ -27,8 +27,8 @@ public final class RemoteImageCommentsLoader {
     
     private func map(_ data: Data, from response: HTTPURLResponse) -> LoadResult {
         do {
-            let remote = try RemoteImageCommentsMapper.map(data, from: response)
-            return .success(remote)
+            let items = try RemoteImageCommentsMapper.map(data, from: response)
+            return .success(items)
         } catch {
             return .failure(error)
         }

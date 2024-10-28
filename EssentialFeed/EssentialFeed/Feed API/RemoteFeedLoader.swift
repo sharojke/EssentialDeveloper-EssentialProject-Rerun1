@@ -25,8 +25,8 @@ public final class RemoteFeedLoader: FeedLoader {
     
     private func map(_ data: Data, from response: HTTPURLResponse) -> LoadResult {
         do {
-            let remote = try RemoteFeedImagesMapper.map(data, from: response)
-            return .success(remote.toModels())
+            let items = try RemoteFeedImagesMapper.map(data, from: response)
+            return .success(items)
         } catch {
             return .failure(error)
         }
@@ -37,18 +37,5 @@ public extension RemoteFeedLoader {
     enum LoadError: Error {
         case connectivity
         case invalidData
-    }
-}
-
-private extension Array where Element == RemoteFeedImage {
-    func toModels() -> [FeedImage] {
-        return map { remote in
-            return FeedImage(
-                id: remote.id,
-                description: remote.description,
-                location: remote.location,
-                url: remote.image
-            )
-        }
     }
 }
