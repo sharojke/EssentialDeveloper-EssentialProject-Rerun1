@@ -1,7 +1,7 @@
 import Foundation
 
-public final class RemoteImageCommentsLoader: FeedLoader {
-    public typealias LoadResult = Result<[FeedImage], Error>
+public final class RemoteImageCommentsLoader {
+    public typealias LoadResult = Result<[ImageComment], Error>
     
     private let url: URL
     private let client: HTTPClient
@@ -28,7 +28,7 @@ public final class RemoteImageCommentsLoader: FeedLoader {
     private func map(_ data: Data, from response: HTTPURLResponse) -> LoadResult {
         do {
             let remote = try RemoteImageCommentsMapper.map(data, from: response)
-            return .success(remote.toModels())
+            return .success(remote)
         } catch {
             return .failure(error)
         }
@@ -39,18 +39,5 @@ public extension RemoteImageCommentsLoader {
     enum LoadError: Error {
         case connectivity
         case invalidData
-    }
-}
-
-private extension Array where Element == RemoteFeedImage {
-    func toModels() -> [FeedImage] {
-        return map { remote in
-            return FeedImage(
-                id: remote.id,
-                description: remote.description,
-                location: remote.location,
-                url: remote.image
-            )
-        }
     }
 }

@@ -3,6 +3,7 @@ import XCTest
 
 // swiftlint:disable force_unwrapping
 // swiftlint:disable force_try
+// swiftlint:disable number_separator
 
 final class LoadImageCommentsFromRemoteUseCaseTests: XCTestCase {
     func test_init_doesNotRequestDataFromURL() {
@@ -79,13 +80,15 @@ final class LoadImageCommentsFromRemoteUseCaseTests: XCTestCase {
         let (sut, client) = makeSUT()
         let item1 = makeItem(
             id: UUID(),
-            url: URL(string: "https://1.com")!
+            message: "a message",
+            createdAt: (Date(timeIntervalSince1970: 1598627222), "2020-08-28T15:07:02+00:00"),
+            username: "a username"
         )
         let item2 = makeItem(
             id: UUID(),
-            url: URL(string: "https://2.com")!,
-            description: "2",
-            location: "2"
+            message: "another message",
+            createdAt: (Date(timeIntervalSince1970: 1577881882), "2020-01-01T12:31:22+00:00"),
+            username: "another username"
         )
         let items = [item1, item2]
         
@@ -166,21 +169,21 @@ final class LoadImageCommentsFromRemoteUseCaseTests: XCTestCase {
     
     private func makeItem(
         id: UUID,
-        url: URL,
-        description: String? = nil,
-        location: String? = nil
-    ) -> (model: FeedImage, json: [String: Any]) {
-        let model = FeedImage(
+        message: String,
+        createdAt: (date: Date, iso8601String: String),
+        username: String
+    ) -> (model: ImageComment, json: [String: Any]) {
+        let model = ImageComment(
             id: id,
-            description: description,
-            location: location,
-            url: url
+            message: message,
+            createdAt: createdAt.date,
+            username: username
         )
         let json = [
-            "id": model.id.uuidString,
-            "description": model.description as Any,
-            "location": model.location as Any,
-            "image": model.url.absoluteString
+            "id": id.uuidString,
+            "message": model.message,
+            "created_at": createdAt.iso8601String,
+            "author": ["username": username]
         ].compactMapValues { $0 }
         return (model, json)
     }
@@ -197,3 +200,4 @@ final class LoadImageCommentsFromRemoteUseCaseTests: XCTestCase {
 
 // swiftlint:enable force_unwrapping
 // swiftlint:enable force_try
+// swiftlint:enable number_separator
