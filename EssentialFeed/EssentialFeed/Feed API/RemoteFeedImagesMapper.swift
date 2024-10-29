@@ -8,7 +8,6 @@ private struct Root: Decodable {
         let image: URL
     }
 
-    
     private let items: [RemoteFeedImage]
     
     var images: [FeedImage] {
