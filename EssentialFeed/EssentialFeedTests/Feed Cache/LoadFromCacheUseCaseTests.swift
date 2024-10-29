@@ -126,9 +126,9 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
     
     func test_load_doesNotDeliverResultAfterSUTHasBeenDeallocated() {
         let store = FeedStoreSpy()
-        var sut: FeedLoader? = LocalFeedLoader(store: store, currentDate: Date.init)
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: Date.init)
         
-        var receivedResults = [FeedLoader.LoadResult]()
+        var receivedResults = [LocalFeedLoader.LoadResult]()
         sut?.load { receivedResults.append($0) }
         
         sut = nil
@@ -143,7 +143,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         currentDate: @escaping () -> Date = Date.init,
         file: StaticString = #filePath,
         line: UInt = #line
-    ) -> (sut: FeedLoader, store: FeedStoreSpy) {
+    ) -> (sut: LocalFeedLoader, store: FeedStoreSpy) {
         let store = FeedStoreSpy()
         let sut = LocalFeedLoader(store: store, currentDate: currentDate)
         trackForMemoryLeaks(store, file: file, line: line)
@@ -152,8 +152,8 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
     }
     
     private func expect(
-        _ sut: FeedLoader,
-        toCompleteWith expectedResult: FeedLoader.LoadResult,
+        _ sut: LocalFeedLoader,
+        toCompleteWith expectedResult: LocalFeedLoader.LoadResult,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line

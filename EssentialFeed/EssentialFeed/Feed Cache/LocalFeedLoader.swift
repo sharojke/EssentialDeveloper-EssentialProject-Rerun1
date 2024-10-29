@@ -1,6 +1,6 @@
 import Foundation
 
-public final class LocalFeedLoader: FeedLoader {
+public final class LocalFeedLoader {
     private let store: FeedStore
     private let currentDate: () -> Date
     
@@ -11,6 +11,8 @@ public final class LocalFeedLoader: FeedLoader {
 }
 
 public extension LocalFeedLoader {
+    typealias LoadResult = Result<[FeedImage], Error>
+    
     func load(completion: @escaping (LoadResult) -> Void) {
         store.retrieve { [weak self] result in
             guard let self else { return }

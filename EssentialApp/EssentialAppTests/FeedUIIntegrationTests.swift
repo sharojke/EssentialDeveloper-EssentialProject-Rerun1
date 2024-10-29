@@ -1,3 +1,4 @@
+import Combine
 import EssentialApp
 import EssentialFeed
 import EssentialFeediOS
@@ -8,7 +9,9 @@ import XCTest
 // swiftlint:disable force_unwrapping
 // swiftlint:disable type_body_length
 
-private final class LoaderSpy: FeedLoader, FeedImageDataLoader {
+private final class LoaderSpy: FeedImageDataLoader {
+    typealias Publisher = AnyPublisher<[FeedImage], Error>
+    
     private final class TaskSpy: FeedImageDataLoaderTask {
         private let onCancel: () -> Void
         
@@ -21,7 +24,7 @@ private final class LoaderSpy: FeedLoader, FeedImageDataLoader {
         }
     }
     
-    private var feedRequests = [(LoadResult) -> Void]()
+    private var feedRequests = [PassthroughSubject<[FeedImage], Error>]()
     private var imageRequests = [(url: URL, completion: LoadImageResultCompletion)]()
     private(set) var cancelledImageURLs = [URL]()
     
@@ -33,16 +36,18 @@ private final class LoaderSpy: FeedLoader, FeedImageDataLoader {
         return feedRequests.count
     }
     
-    func load(completion: @escaping (LoadResult) -> Void) {
-        feedRequests.append(completion)
+    func loadPublisher() -> Publisher {
+        let publisher = PassthroughSubject<[FeedImage], Error>()
+        feedRequests.append(publisher)
+        return publisher.eraseToAnyPublisher()
     }
     
     func completeFeedLoading(with feed: [FeedImage] = [], at index: Int = .zero) {
-        feedRequests[index](.success(feed))
+        feedRequests[index].send(feed)
     }
     
     func completeFeedLoadingWithError(at index: Int = .zero) {
-        feedRequests[index](.failure(anyNSError()))
+        feedRequests[index].send(completion: .failure(anyNSError()))
     }
     
     func loadImageData(
