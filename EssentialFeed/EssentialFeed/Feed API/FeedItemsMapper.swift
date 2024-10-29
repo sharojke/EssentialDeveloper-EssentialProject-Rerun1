@@ -22,11 +22,15 @@ private struct Root: Decodable {
     }
 }
 
+private enum MapError: Error {
+    case invalidData
+}
+
 public enum FeedItemsMapper {
     public static func map(_ data: Data, from response: HTTPURLResponse) throws -> [FeedImage] {
         guard response.isOK,
               let root = try? JSONDecoder().decode(Root.self, from: data) else {
-            throw RemoteFeedLoader.LoadError.invalidData
+            throw MapError.invalidData
         }
         
         return root.images

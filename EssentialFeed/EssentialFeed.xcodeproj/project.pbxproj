@@ -86,7 +86,6 @@
 		BBDDD7902C8C90B400D6EF3F /* FeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDDD78F2C8C90B400D6EF3F /* FeedLoader.swift */; };
 		BBDDD7922C8C90D900D6EF3F /* FeedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDDD7912C8C90D900D6EF3F /* FeedItem.swift */; };
 		BBDDD7942C8C912400D6EF3F /* FeedItemsMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDDD7932C8C912400D6EF3F /* FeedItemsMapperTests.swift */; };
-		BBDDD7972C8CA59D00D6EF3F /* RemoteFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDDD7962C8CA59D00D6EF3F /* RemoteFeedLoader.swift */; };
 		BBF35D7C2C8DD3F5006AEC65 /* FeedItemsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF35D7B2C8DD3F5006AEC65 /* FeedItemsMapper.swift */; };
 /* End PBXBuildFile section */
 
@@ -222,7 +221,6 @@
 		BBDDD78F2C8C90B400D6EF3F /* FeedLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedLoader.swift; sourceTree = "<group>"; };
 		BBDDD7912C8C90D900D6EF3F /* FeedItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItem.swift; sourceTree = "<group>"; };
 		BBDDD7932C8C912400D6EF3F /* FeedItemsMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemsMapperTests.swift; sourceTree = "<group>"; };
-		BBDDD7962C8CA59D00D6EF3F /* RemoteFeedLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedLoader.swift; sourceTree = "<group>"; };
 		BBF35D7B2C8DD3F5006AEC65 /* FeedItemsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemsMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -590,7 +588,6 @@
 			children = (
 				BB8442482CBEF47D00F80735 /* Helpers */,
 				BBF35D7B2C8DD3F5006AEC65 /* FeedItemsMapper.swift */,
-				BBDDD7962C8CA59D00D6EF3F /* RemoteFeedLoader.swift */,
 				BB5250DC2CBEEEA800FFBBBA /* RemoteFeedImageDataLoader.swift */,
 			);
 			path = "Feed API";
@@ -932,7 +929,6 @@
 				BBC21F8D2C9F4DFD005901E8 /* FeedStore.xcdatamodeld in Sources */,
 				BB37E2AA2CC442A600A25B8D /* FeedCache.swift in Sources */,
 				BB59C0C92CB70C42000DBC0F /* FeedLoadingViewModel.swift in Sources */,
-				BBDDD7972C8CA59D00D6EF3F /* RemoteFeedLoader.swift in Sources */,
 				BB59C0D52CB72214000DBC0F /* FeedImageLoadingView.swift in Sources */,
 				BB99094D2CC3CDA8001D6530 /* CoreDataFeedStore+FeedStore.swift in Sources */,
 				BBB516FC2C94D38900A080BF /* LocalFeedImage.swift in Sources */,

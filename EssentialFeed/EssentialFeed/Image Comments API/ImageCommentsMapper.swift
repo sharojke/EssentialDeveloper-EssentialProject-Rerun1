@@ -26,6 +26,10 @@ private struct Item: Decodable {
     let author: Author
 }
 
+private enum MapError: Error {
+    case invalidData
+}
+
 public enum ImageCommentsMapper {
     public static func map(_ data: Data, from response: HTTPURLResponse) throws -> [ImageComment] {
         let decoder = JSONDecoder()
@@ -33,7 +37,7 @@ public enum ImageCommentsMapper {
         
         guard isOK(response),
               let root = try? decoder.decode(Root.self, from: data) else {
-            throw RemoteImageCommentsLoader.LoadError.invalidData
+            throw MapError.invalidData
         }
         
         return root.comments
