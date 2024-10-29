@@ -1,12 +1,17 @@
 import Foundation
 
-public final class RemoteLoader: FeedLoader {
+public final class RemoteLoader<Resource> {
+    public typealias LoadResult = Result<Resource, Error>
+    public typealias Mapper = (Data, HTTPURLResponse) throws -> Resource
+    
     private let url: URL
     private let client: HTTPClient
+    private let mapper: Mapper
     
-    public init(url: URL, client: HTTPClient) {
+    public init(url: URL, client: HTTPClient, mapper: @escaping Mapper) {
         self.url = url
         self.client = client
+        self.mapper = mapper
     }
     
     public func load(completion: @escaping (LoadResult) -> Void) {
@@ -25,8 +30,8 @@ public final class RemoteLoader: FeedLoader {
     
     private func map(_ data: Data, from response: HTTPURLResponse) -> LoadResult {
         do {
-            let items = try RemoteFeedImagesMapper.map(data, from: response)
-            return .success(items)
+            let mapped = try mapper(data, response)
+            return .success(mapped)
         } catch {
             return .failure(LoadError.invalidData)
         }
