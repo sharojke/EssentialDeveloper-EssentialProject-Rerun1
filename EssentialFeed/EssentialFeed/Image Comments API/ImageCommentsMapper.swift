@@ -26,8 +26,8 @@ private struct Item: Decodable {
     let author: Author
 }
 
-enum RemoteImageCommentsMapper {
-    static func map(_ data: Data, from response: HTTPURLResponse) throws -> [ImageComment] {
+public enum ImageCommentsMapper {
+    public static func map(_ data: Data, from response: HTTPURLResponse) throws -> [ImageComment] {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         
