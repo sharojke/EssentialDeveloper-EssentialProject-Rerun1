@@ -246,7 +246,6 @@
 		BBA1B4732CD028CA001E0C08 /* Image Comments */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Image Comments"; sourceTree = "<group>"; };
 		BBA1B48B2CD02D85001E0C08 /* Shared API */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Shared API"; sourceTree = "<group>"; };
 		BBA1B48C2CD02D92001E0C08 /* Shared API Infra */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Shared API Infra"; sourceTree = "<group>"; };
-		BBA1B48D2CD02DBA001E0C08 /* Shared API */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Shared API"; sourceTree = "<group>"; };
 		BBA1B48F2CD02DE3001E0C08 /* Shared API Infra */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Shared API Infra"; sourceTree = "<group>"; };
 		BBA1B4932CD02E6F001E0C08 /* Image Comments API */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Image Comments API"; sourceTree = "<group>"; };
 		BBA1B4942CD02EA0001E0C08 /* Image Comments API */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Image Comments API"; sourceTree = "<group>"; };
@@ -557,7 +556,6 @@
 			isa = PBXGroup;
 			children = (
 				BBBEEF642C8F8F12000663ED /* Helpers */,
-				BBA1B48D2CD02DBA001E0C08 /* Shared API */,
 				BBA1B48F2CD02DE3001E0C08 /* Shared API Infra */,
 				BBA1B4942CD02EA0001E0C08 /* Image Comments API */,
 				BB59C0B52CB6F8F5000DBC0F /* Feed Presentation */,
@@ -734,7 +732,6 @@
 				BBDDD7562C8B91F000D6EF3F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				BBA1B48D2CD02DBA001E0C08 /* Shared API */,
 				BBA1B48F2CD02DE3001E0C08 /* Shared API Infra */,
 				BBA1B4942CD02EA0001E0C08 /* Image Comments API */,
 			);
