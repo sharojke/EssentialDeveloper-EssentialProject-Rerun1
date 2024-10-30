@@ -249,6 +249,8 @@
 		BBA1B48F2CD02DE3001E0C08 /* Shared API Infra */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Shared API Infra"; sourceTree = "<group>"; };
 		BBA1B4932CD02E6F001E0C08 /* Image Comments API */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Image Comments API"; sourceTree = "<group>"; };
 		BBA1B4942CD02EA0001E0C08 /* Image Comments API */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Image Comments API"; sourceTree = "<group>"; };
+		BBA1B7832CD2C50D001E0C08 /* Shared Presentation */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Shared Presentation"; sourceTree = "<group>"; };
+		BBA1B7872CD2CEDF001E0C08 /* Shared Presentation */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Shared Presentation"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -541,6 +543,7 @@
 			children = (
 				BBA1B48B2CD02D85001E0C08 /* Shared API */,
 				BBA1B48C2CD02D92001E0C08 /* Shared API Infra */,
+				BBA1B7872CD2CEDF001E0C08 /* Shared Presentation */,
 				BBA1B4732CD028CA001E0C08 /* Image Comments */,
 				BBA1B4932CD02E6F001E0C08 /* Image Comments API */,
 				BB59C0BF2CB70BE7000DBC0F /* Feed Presentation */,
@@ -557,6 +560,7 @@
 			children = (
 				BBBEEF642C8F8F12000663ED /* Helpers */,
 				BBA1B48F2CD02DE3001E0C08 /* Shared API Infra */,
+				BBA1B7832CD2C50D001E0C08 /* Shared Presentation */,
 				BBA1B4942CD02EA0001E0C08 /* Image Comments API */,
 				BB59C0B52CB6F8F5000DBC0F /* Feed Presentation */,
 				BBB516F12C936CF600A080BF /* Feed Cache */,
@@ -712,6 +716,7 @@
 				BBA1B48B2CD02D85001E0C08 /* Shared API */,
 				BBA1B48C2CD02D92001E0C08 /* Shared API Infra */,
 				BBA1B4932CD02E6F001E0C08 /* Image Comments API */,
+				BBA1B7872CD2CEDF001E0C08 /* Shared Presentation */,
 			);
 			name = EssentialFeed;
 			productName = EssentialFeed;
@@ -734,6 +739,7 @@
 			fileSystemSynchronizedGroups = (
 				BBA1B48F2CD02DE3001E0C08 /* Shared API Infra */,
 				BBA1B4942CD02EA0001E0C08 /* Image Comments API */,
+				BBA1B7832CD2C50D001E0C08 /* Shared Presentation */,
 			);
 			name = EssentialFeedTests;
 			productName = EssentialFeedTests;
