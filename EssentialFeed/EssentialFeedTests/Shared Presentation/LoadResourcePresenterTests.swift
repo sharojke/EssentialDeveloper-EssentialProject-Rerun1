@@ -23,16 +23,17 @@ final class LoadResourcePresenterTests: XCTestCase {
         )
     }
     
-    func test_didFinishLoadingFeed_displaysFeedAndStopsLoading() {
-        let (presenter, view) = makeSUT()
-        let feed = [uniqueImage()]
+    func test_didFinishLoadingResource_displaysResourceAndStopsLoading() {
+        let (presenter, view) = makeSUT { resource in
+            return resource + " view model"
+        }
         
-        presenter.didFinishLoadingFeed(with: feed)
+        presenter.didFinishLoading(with: "resource")
                 
         XCTAssertEqual(
             view.messages,
             [
-                .displayFeed(feed),
+                .displayViewModel("resource view model"),
                 .displayIsLoading(false)
             ]
         )
@@ -55,11 +56,17 @@ final class LoadResourcePresenterTests: XCTestCase {
     // MARK: Helpers
     
     private func makeSUT(
+        mapper: @escaping LoadResourcePresenter.Mapper = { _ in "any" },
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> (sut: LoadResourcePresenter, view: ViewSpy) {
         let view = ViewSpy()
-        let presenter = LoadResourcePresenter(feedView: view, loadingView: view, errorView: view)
+        let presenter = LoadResourcePresenter(
+            resourceView: view,
+            loadingView: view,
+            errorView: view,
+            mapper: mapper
+        )
         trackForMemoryLeaks(view, file: file, line: line)
         trackForMemoryLeaks(presenter, file: file, line: line)
         return (presenter, view)
@@ -80,7 +87,7 @@ private final class ViewSpy {
     enum Message: Hashable {
         case displayErrorMessage(String?)
         case displayIsLoading(Bool)
-        case displayFeed([FeedImage])
+        case displayViewModel(String)
     }
     
     private(set) var messages = Set<Message>()
@@ -98,8 +105,8 @@ extension ViewSpy: FeedLoadingView {
     }
 }
 
-extension ViewSpy: FeedView {
-    func display(_ viewModel: FeedViewModel) {
-        messages.insert(.displayFeed(viewModel.feed))
+extension ViewSpy: ResourceView {
+    func display(_ viewModel: String) {
+        messages.insert(.displayViewModel(viewModel))
     }
 }
