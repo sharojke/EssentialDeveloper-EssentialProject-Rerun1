@@ -13,7 +13,7 @@ public final class FeedPresenter {
     private var feedLoadError: String {
         return NSLocalizedString(
             "GENERIC_VIEW_CONNECTION_ERROR",
-            tableName: "Feed",
+            tableName: "Shared",
             bundle: Bundle(for: Self.self),
             comment: ""
         )
