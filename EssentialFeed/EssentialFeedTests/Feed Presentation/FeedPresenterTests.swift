@@ -50,7 +50,7 @@ final class FeedPresenterTests: XCTestCase {
         XCTAssertEqual(
             view.messages,
             [
-                .displayErrorMessage(localized("FEED_VIEW_CONNECTION_ERROR")),
+                .displayErrorMessage(localized("GENERIC_VIEW_CONNECTION_ERROR")),
                 .displayIsLoading(false)
             ]
         )

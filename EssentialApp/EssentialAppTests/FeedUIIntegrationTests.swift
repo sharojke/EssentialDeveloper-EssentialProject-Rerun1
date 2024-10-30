@@ -559,7 +559,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         XCTAssertEqual(sut.errorMessage, nil)
         
         loader.completeFeedLoadingWithError()
-        assertThat(sut.errorMessage, isLocalizationForKey: "FEED_VIEW_CONNECTION_ERROR")
+        assertThat(sut.errorMessage, isLocalizationForKey: "GENERIC_VIEW_CONNECTION_ERROR")
         
         sut.simulateUserInitiatedFeedReload()
         XCTAssertEqual(sut.errorMessage, nil)
@@ -572,7 +572,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         XCTAssertEqual(sut.errorMessage, nil)
 
         loader.completeFeedLoadingWithError(at: 0)
-        assertThat(sut.errorMessage, isLocalizationForKey: "FEED_VIEW_CONNECTION_ERROR")
+        assertThat(sut.errorMessage, isLocalizationForKey: "GENERIC_VIEW_CONNECTION_ERROR")
 
         sut.simulateTapOnErrorMessage()
         XCTAssertEqual(sut.errorMessage, nil)
