@@ -7,7 +7,7 @@ final class FeedImageDataMapperTests: XCTestCase {
         
         try codes.forEach { code in
             XCTAssertThrowsError(
-                try FeedImageDataMapper.map(data: anyData(), response: HTTPURLResponse(statusCode: code))
+                try FeedImageDataMapper.map(data: anyData(), from: HTTPURLResponse(statusCode: code))
             )
         }
     }
@@ -16,17 +16,14 @@ final class FeedImageDataMapperTests: XCTestCase {
         let emptyData = Data()
         
         XCTAssertThrowsError(
-            try FeedImageDataMapper.map(data: emptyData, response: HTTPURLResponse(statusCode: 200))
+            try FeedImageDataMapper.map(data: emptyData, from: HTTPURLResponse(statusCode: 200))
         )
     }
     
     func test_map_throwsReceivedNonEmptyDataOn200HTTPResponse() throws {
         let nonEmptyData = anyData()
         
-        let result = try FeedImageDataMapper.map(
-            data: nonEmptyData,
-            response: HTTPURLResponse(statusCode: 200)
-        )
+        let result = try FeedImageDataMapper.map(data: nonEmptyData, from: HTTPURLResponse(statusCode: 200))
         
         XCTAssertEqual(result, nonEmptyData)
     }
