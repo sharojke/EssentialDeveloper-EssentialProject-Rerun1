@@ -1,15 +1,6 @@
 import Foundation
 
 public final class LoadResourcePresenter {
-    public static var title: String {
-        return NSLocalizedString(
-            "FEED_VIEW_TITLE",
-            tableName: "Feed",
-            bundle: Bundle(for: Self.self),
-            comment: ""
-        )
-    }
-    
     private var feedLoadError: String {
         return NSLocalizedString(
             "FEED_VIEW_CONNECTION_ERROR",
