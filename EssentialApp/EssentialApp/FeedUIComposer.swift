@@ -21,12 +21,13 @@ public enum FeedUIComposer {
             controller: feedController,
             loader: { imageLoader($0).dispatchOnMainQueue() }
         )
-        let feedPresenter = FeedPresenter(
-            feedView: feedViewAdapter,
+        let resourcePresenter = LoadResourcePresenter<[FeedImage], FeedViewAdapter>(
+            resourceView: feedViewAdapter,
             loadingView: WeakRefVirtualProxy(feedController),
-            errorView: WeakRefVirtualProxy(feedController)
+            errorView: WeakRefVirtualProxy(feedController),
+            mapper: FeedPresenter.map
         )
-        presentationAdapter.feedPresenter = feedPresenter
+        presentationAdapter.resourcePresenter = resourcePresenter
         return feedController
     }
     
