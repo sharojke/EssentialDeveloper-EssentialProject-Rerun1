@@ -99,8 +99,8 @@ extension ViewSpy: FeedErrorView {
     }
 }
 
-extension ViewSpy: FeedLoadingView {
-    func display(_ viewModel: FeedLoadingViewModel) {
+extension ViewSpy: ResourceLoadingView {
+    func display(_ viewModel: ResourceLoadingViewModel) {
         messages.insert(.displayIsLoading(viewModel.isLoading))
     }
 }
