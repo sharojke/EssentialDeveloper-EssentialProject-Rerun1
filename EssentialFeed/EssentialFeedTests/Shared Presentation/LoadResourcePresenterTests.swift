@@ -93,8 +93,8 @@ private final class ViewSpy {
     private(set) var messages = Set<Message>()
 }
 
-extension ViewSpy: FeedErrorView {
-    func display(_ viewModel: FeedErrorViewModel) {
+extension ViewSpy: ResourceErrorView {
+    func display(_ viewModel: ResourceErrorViewModel) {
         messages.insert(.displayErrorMessage(viewModel.message))
     }
 }
