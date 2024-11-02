@@ -6,7 +6,7 @@ private struct InvalidImageData: Error {}
 
 final class FeedViewAdapter: ResourceView {
     private typealias WeakFeedImageCellController = WeakRefVirtualProxy<FeedImageCellController>
-    private typealias PresentationAdapter = LoadResourcePresentationAdapter<Data, WeakFeedImageCellController>
+    private typealias ImageDataPresentationAdapter = LoadResourcePresentationAdapter<Data, WeakFeedImageCellController>
     
     private weak var controller: FeedViewController?
     private let loader: (URL) -> FeedImageDataLoader.Publisher
@@ -18,7 +18,7 @@ final class FeedViewAdapter: ResourceView {
     
     func display(_ viewModel: FeedViewModel) {
         let cellControllers = viewModel.feed.map { feedImage in
-            let adapter = PresentationAdapter { [loader] in
+            let adapter = ImageDataPresentationAdapter { [loader] in
                 loader(feedImage.url)
             }
             let view = FeedImageCellController(

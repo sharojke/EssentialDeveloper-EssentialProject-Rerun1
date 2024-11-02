@@ -6,13 +6,13 @@ import UIKit
 // swiftlint:disable force_unwrapping
 
 public enum FeedUIComposer {
+    private typealias PresentationAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>
+    
     public static func feedComposedWith(
         feedLoader: @escaping () -> AnyPublisher<[FeedImage], Error>,
         imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher
     ) -> FeedViewController {
-        let presentationAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>(
-            loader: { feedLoader().dispatchOnMainQueue() }
-        )
+        let presentationAdapter = PresentationAdapter(loader: { feedLoader().dispatchOnMainQueue() })
         let feedController = makeFeedViewController(
             delegate: presentationAdapter,
             title: FeedPresenter.title
