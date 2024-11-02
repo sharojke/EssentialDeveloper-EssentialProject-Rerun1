@@ -11,8 +11,8 @@ final class ImageCommentsPresenterTests: XCTestCase {
         let calendar = Calendar(identifier: .gregorian)
         let locale = Locale(identifier: "en_US_POSIX")
         
-        let comment1 = uniqueImageComment(createdAt: now.adding(minutes: -5))
-        let comment2 = uniqueImageComment(createdAt: now.adding(days: -1))
+        let comment1 = uniqueImageComment(createdAt: now.adding(minutes: -5, calendar: calendar))
+        let comment2 = uniqueImageComment(createdAt: now.adding(days: -1, calendar: calendar))
         let comments = [comment1, comment2]
         
         let viewModel = ImageCommentsPresenter.map(
