@@ -11,10 +11,18 @@ public final class ImageCommentsPresenter {
         )
     }
     
-    public static func map(_ imageComments: [ImageComment]) -> ImageCommentsViewModel {
+    public static func map(
+        _ imageComments: [ImageComment],
+        currentDate: Date = Date(),
+        calendar: Calendar = .current,
+        locale: Locale = .current
+    ) -> ImageCommentsViewModel {
         let formatter = RelativeDateTimeFormatter()
+        formatter.calendar = calendar
+        formatter.locale = locale
+        
         let comments = imageComments.map { comment in
-            let date = formatter.localizedString(for: comment.createdAt, relativeTo: Date())
+            let date = formatter.localizedString(for: comment.createdAt, relativeTo: currentDate)
             return ImageCommentViewModel(
                 message: comment.message,
                 date: date,
