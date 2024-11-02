@@ -5,21 +5,24 @@ import XCTest
 // swiftlint:disable force_unwrapping
 
 private final class ImageStub: FeedImageCellControllerDelegate {
-    private let viewModel: FeedImageLoadingViewModel<UIImage>
+    let viewModel: FeedImageViewModel
+    private let image: UIImage?
     weak var controller: FeedImageCellController?
     
     init(description: String?, location: String?, image: UIImage?) {
-        viewModel = FeedImageLoadingViewModel(
-            description: description,
-            location: location,
-            image: image,
-            isLoading: false,
-            shouldRetry: image == nil
-        )
+        viewModel = FeedImageViewModel(description: description, location: location)
+        self.image = image
     }
     
     func didRequestImage() {
-        controller?.display(viewModel)
+        controller?.display(ResourceLoadingViewModel(isLoading: false))
+        
+        if let image {
+            controller?.display(image)
+            controller?.display(ResourceErrorViewModel(message: nil))
+        } else {
+            controller?.display(ResourceErrorViewModel(message: "any"))
+        }
     }
     
     func didCancelImageRequest() {}
@@ -130,7 +133,7 @@ private extension FeedSnapshotTests {
 private extension FeedViewController {
     func display(_ stubs: [ImageStub]) {
         let cells = stubs.map { stub in
-            let cellController = FeedImageCellController(delegate: stub)
+            let cellController = FeedImageCellController(viewModel: stub.viewModel, delegate: stub)
             stub.controller = cellController
             return cellController
         }

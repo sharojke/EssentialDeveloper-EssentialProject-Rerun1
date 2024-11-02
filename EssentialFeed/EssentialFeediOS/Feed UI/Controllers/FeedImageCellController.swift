@@ -7,11 +7,11 @@ public protocol FeedImageCellControllerDelegate {
 }
 
 public final class FeedImageCellController {
-    private let viewModel: FeedImageLoadingViewModel<UIImage>
+    private let viewModel: FeedImageViewModel
     private let delegate: FeedImageCellControllerDelegate
     private var cell: FeedImageCell?
     
-    public init(viewModel: FeedImageLoadingViewModel<UIImage>, delegate: FeedImageCellControllerDelegate) {
+    public init(viewModel: FeedImageViewModel, delegate: FeedImageCellControllerDelegate) {
         self.viewModel = viewModel
         self.delegate = delegate
     }
@@ -45,10 +45,6 @@ public final class FeedImageCellController {
         cell?.onReuse = nil
         cell = nil
     }
-}
-
-extension FeedImageCellController: FeedImageLoadingView {
-    public func display(_ viewModel: FeedImageLoadingViewModel<UIImage>) {}
 }
 
 extension FeedImageCellController: ResourceView {
