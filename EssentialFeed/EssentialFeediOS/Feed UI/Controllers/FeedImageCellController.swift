@@ -16,7 +16,14 @@ public final class FeedImageCellController {
         self.delegate = delegate
     }
     
-    func view(in tableView: UITableView) -> UITableViewCell {
+    private func releaseCellForReuse() {
+        cell?.onReuse = nil
+        cell = nil
+    }
+}
+
+extension FeedImageCellController: CellController {
+    public func view(in tableView: UITableView) -> UITableViewCell {
         self.cell = tableView.dequeueReusableCell()
         cell?.locationContainer.isHidden = !viewModel.hasLocation
         cell?.locationLabel.text = viewModel.location
@@ -32,18 +39,13 @@ public final class FeedImageCellController {
         return cell!
     }
     
-    func preload() {
+    public func preload() {
         delegate.didRequestImage()
     }
     
-    func cancelLoad() {
+    public func cancelLoad() {
         releaseCellForReuse()
         delegate.didCancelImageRequest()
-    }
-    
-    private func releaseCellForReuse() {
-        cell?.onReuse = nil
-        cell = nil
     }
 }
 

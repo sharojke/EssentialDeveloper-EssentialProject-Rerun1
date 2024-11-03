@@ -5,6 +5,12 @@ public protocol FeedViewControllerDelegate {
     func didRequestFeedRefresh()
 }
 
+public protocol CellController {
+    func view(in tableView: UITableView) -> UITableViewCell
+    func preload()
+    func cancelLoad()
+}
+
 public final class FeedViewController: UITableViewController {
     private let delegate: FeedViewControllerDelegate
     private var onViewIsAppearing: ((FeedViewController) -> Void)?
@@ -15,8 +21,8 @@ public final class FeedViewController: UITableViewController {
         return view
     }()
     
-    private var tableModel = [FeedImageCellController]()
-    private var loadingControllers = [IndexPath: FeedImageCellController]()
+    private var tableModel = [CellController]()
+    private var loadingControllers = [IndexPath: CellController]()
     
     override public var refreshControl: UIRefreshControl? {
         get {
@@ -68,7 +74,7 @@ public final class FeedViewController: UITableViewController {
         onViewIsAppearing?(self)
     }
     
-    public func display(_ cellControllers: [FeedImageCellController]) {
+    public func display(_ cellControllers: [CellController]) {
         tableModel = cellControllers
         tableView.reloadData()
     }
@@ -121,7 +127,7 @@ private extension FeedViewController {
         loadingControllers[indexPath] = nil
     }
     
-    func cellControllerForRow(at indexPath: IndexPath) -> FeedImageCellController {
+    func cellControllerForRow(at indexPath: IndexPath) -> CellController {
         let controller = tableModel[indexPath.row]
         loadingControllers[indexPath] = controller
         return controller
