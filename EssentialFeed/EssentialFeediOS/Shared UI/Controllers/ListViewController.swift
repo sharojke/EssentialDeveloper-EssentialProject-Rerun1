@@ -111,20 +111,21 @@ public final class ListViewController: UITableViewController {
 public extension ListViewController {
     override func tableView(
         _ tableView: UITableView,
+        willDisplay cell: UITableViewCell,
+        forRowAt indexPath: IndexPath
+    ) {
+        let delegate = cellControllerForRow(at: indexPath)?.delegate
+        delegate?.tableView?(tableView, willDisplay: cell, forRowAt: indexPath)
+    }
+    
+    override func tableView(
+        _ tableView: UITableView,
         didEndDisplaying cell: UITableViewCell,
         forRowAt indexPath: IndexPath
     ) {
         let delegate = cellControllerForRow(at: indexPath)?.delegate
         delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
     }
-    
-//    override func tableView(
-//        _ tableView: UITableView,
-//        willDisplay cell: UITableViewCell,
-//        forRowAt indexPath: IndexPath
-//    ) {
-//        startImageLoaderTask(at: indexPath)
-//    }
 }
 
 extension ListViewController: UITableViewDataSourcePrefetching {

@@ -102,6 +102,16 @@ extension ListViewController {
         let indexPath = IndexPath(row: index, section: feedImagesSection)
         ds?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
     }
+    
+    @discardableResult
+    func simulateFeedImageBecomingVisibleAgain(at row: Int) -> FeedImageCell? {
+        guard let view = simulateFeedImageViewNotVisible(at: row) else { return nil }
+        
+        let delegate = tableView.delegate
+        let index = IndexPath(row: row, section: feedImagesSection)
+        delegate?.tableView?(tableView, willDisplay: view, forRowAt: index)
+        return view
+    }
 }
 
 // MARK: - FeedViewController+Error
