@@ -12,14 +12,14 @@ public enum FeedUIComposer {
         feedLoader: @escaping () -> AnyPublisher<[FeedImage], Error>,
         imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher
     ) -> ListViewController {
-        let presentationAdapter = PresentationAdapter(loader: { feedLoader().dispatchOnMainQueue() })
+        let presentationAdapter = PresentationAdapter(loader: { feedLoader().dispatchOnMainThread() })
         let feedController = makeFeedViewController(
             title: FeedPresenter.title,
             onRefresh: presentationAdapter.loadResource
         )
         let feedViewAdapter = FeedViewAdapter(
             controller: feedController,
-            loader: { imageLoader($0).dispatchOnMainQueue() }
+            loader: { imageLoader($0).dispatchOnMainThread() }
         )
         let resourcePresenter = LoadResourcePresenter<[FeedImage], FeedViewAdapter>(
             resourceView: feedViewAdapter,
