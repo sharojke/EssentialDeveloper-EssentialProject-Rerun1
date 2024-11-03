@@ -2,8 +2,6 @@ import EssentialFeed
 import EssentialFeediOS
 import XCTest
 
-// swiftlint:disable force_unwrapping
-
 final class ListSnapshotTests: XCTestCase {
     func test_emptyList() {
         let sut = makeSUT()
@@ -54,14 +52,11 @@ final class ListSnapshotTests: XCTestCase {
     // MARK: Helpers
     
     func makeSUT() -> ListViewController {
-        let bundle = Bundle(for: ListViewController.self)
-        let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
-        let controller = storyboard.instantiateInitialViewController { coder in
-            return ListViewController(coder: coder, onRefresh: {})
-        }!
+        let controller = ListViewController()
         controller.loadViewIfNeeded()
-        controller.tableView.showsVerticalScrollIndicator = false
-        controller.tableView.showsHorizontalScrollIndicator = false
+//        controller.tableView.separatorStyle = .none
+//        controller.tableView.showsVerticalScrollIndicator = false
+//        controller.tableView.showsHorizontalScrollIndicator = false
         return controller
     }
     
@@ -69,5 +64,3 @@ final class ListSnapshotTests: XCTestCase {
         return []
     }
 }
-
-// swiftlint:enable force_unwrapping

@@ -2,7 +2,7 @@ import EssentialFeed
 import UIKit
 
 public final class ListViewController: UITableViewController {
-    private let onRefresh: () -> Void
+    public var onRefresh: () -> Void = {}
     private var onViewIsAppearing: ((ListViewController) -> Void)?
     
     private lazy var _refreshControl: UIRefreshControl = {
@@ -27,22 +27,13 @@ public final class ListViewController: UITableViewController {
     
     public let errorView = ErrorView()
     
-    public init?(coder: NSCoder, onRefresh: @escaping () -> Void) {
-        self.onRefresh = onRefresh
-        super.init(coder: coder)
+    override public func viewDidLoad() {
+        super.viewDidLoad()
         
         onViewIsAppearing = { viewController in
             viewController.refresh()
             viewController.onViewIsAppearing = nil
         }
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override public func viewDidLoad() {
-        super.viewDidLoad()
         
         configureErrorView()
         tableView.prefetchDataSource = self

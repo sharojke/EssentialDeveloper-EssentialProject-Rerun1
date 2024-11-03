@@ -81,7 +81,7 @@ private extension FeedSnapshotTests {
         let bundle = Bundle(for: ListViewController.self)
         let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
         let controller = storyboard.instantiateInitialViewController { coder in
-            return ListViewController(coder: coder, onRefresh: {})
+            return ListViewController(coder: coder)
         }!
         controller.loadViewIfNeeded()
         controller.tableView.showsVerticalScrollIndicator = false

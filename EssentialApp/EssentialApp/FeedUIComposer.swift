@@ -38,8 +38,9 @@ public enum FeedUIComposer {
         let bundle = Bundle(for: ListViewController.self)
         let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
         let controller = storyboard.instantiateInitialViewController { coder in
-            return ListViewController(coder: coder, onRefresh: onRefresh)
+            return ListViewController(coder: coder)
         }!
+        controller.onRefresh = onRefresh
         controller.title = title
         return controller
     }
