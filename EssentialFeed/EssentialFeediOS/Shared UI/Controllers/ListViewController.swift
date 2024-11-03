@@ -77,7 +77,7 @@ public extension ListViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let controller = cellControllerForRow(at: indexPath)
-        return controller.view(in: tableView)
+        return controller.tableView(tableView, cellForRowAt: indexPath)
     }
     
     override func tableView(
@@ -85,7 +85,8 @@ public extension ListViewController {
         didEndDisplaying cell: UITableViewCell,
         forRowAt indexPath: IndexPath
     ) {
-        cancelCellControllerLoad(at: indexPath)
+        let controller = removeLoadingController(at: indexPath)
+        controller?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
     }
     
 //    override func tableView(
@@ -100,21 +101,26 @@ public extension ListViewController {
 extension ListViewController: UITableViewDataSourcePrefetching {
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
-            cellControllerForRow(at: indexPath).preload()
+            let controller = cellControllerForRow(at: indexPath)
+            controller.tableView(tableView, prefetchRowsAt: [indexPath])
         }
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        indexPaths.forEach(cancelCellControllerLoad)
+        indexPaths.forEach { indexPath in
+            let controller = removeLoadingController(at: indexPath)
+            controller?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
+        }
     }
 }
 
 // MARK: - Helpers
 
 private extension ListViewController {
-    func cancelCellControllerLoad(at indexPath: IndexPath) {
-        loadingControllers[indexPath]?.cancelLoad()
+    func removeLoadingController(at indexPath: IndexPath) -> CellController? {
+        let controller = loadingControllers[indexPath]
         loadingControllers[indexPath] = nil
+        return controller
     }
     
     func cellControllerForRow(at indexPath: IndexPath) -> CellController {
