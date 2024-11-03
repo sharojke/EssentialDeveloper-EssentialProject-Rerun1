@@ -24,19 +24,20 @@ public final class FeedImageCellController {
 
 extension FeedImageCellController: CellController {
     public func view(in tableView: UITableView) -> UITableViewCell {
-        self.cell = tableView.dequeueReusableCell()
-        cell?.locationContainer.isHidden = !viewModel.hasLocation
-        cell?.locationLabel.text = viewModel.location
-        cell?.descriptionLabel.text = viewModel.description
-        cell?.onRetry = { [weak self] in
+        let cell: FeedImageCell = tableView.dequeueReusableCell()
+        self.cell = cell
+        
+        cell.locationContainer.isHidden = !viewModel.hasLocation
+        cell.locationLabel.text = viewModel.location
+        cell.descriptionLabel.text = viewModel.description
+        cell.onRetry = { [weak self] in
             self?.delegate.didRequestImage()
         }
-        cell?.onReuse = { [weak self] in
+        cell.onReuse = { [weak self] in
             self?.releaseCellForReuse()
         }
         delegate.didRequestImage()
-        // swiftlint:disable:next force_unwrapping
-        return cell!
+        return cell
     }
     
     public func preload() {
