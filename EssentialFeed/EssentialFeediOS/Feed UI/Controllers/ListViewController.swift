@@ -1,10 +1,6 @@
 import EssentialFeed
 import UIKit
 
-public protocol FeedViewControllerDelegate {
-    func didRequestFeedRefresh()
-}
-
 public protocol CellController {
     func view(in tableView: UITableView) -> UITableViewCell
     func preload()
@@ -12,7 +8,7 @@ public protocol CellController {
 }
 
 public final class ListViewController: UITableViewController {
-    private let delegate: FeedViewControllerDelegate
+    private let onRefresh: () -> Void
     private var onViewIsAppearing: ((ListViewController) -> Void)?
     
     private lazy var _refreshControl: UIRefreshControl = {
@@ -37,8 +33,8 @@ public final class ListViewController: UITableViewController {
     
     @IBOutlet public weak var errorView: ErrorView!
     
-    public init?(coder: NSCoder, delegate: FeedViewControllerDelegate) {
-        self.delegate = delegate
+    public init?(coder: NSCoder, onRefresh: @escaping () -> Void) {
+        self.onRefresh = onRefresh
         super.init(coder: coder)
         
         onViewIsAppearing = { viewController in
@@ -65,7 +61,7 @@ public final class ListViewController: UITableViewController {
     }
     
     @IBAction private func refresh() {
-        delegate.didRequestFeedRefresh()
+        onRefresh()
     }
     
     override public func viewIsAppearing(_ animated: Bool) {
