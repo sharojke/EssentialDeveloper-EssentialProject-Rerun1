@@ -29,4 +29,8 @@ func uniqueFeed() -> [FeedImage] {
     return [image]
 }
 
+func executeRunLoopToCleanUpReferences() {
+    RunLoop.current.run(until: Date())
+}
+
 // swiftlint:enable force_unwrapping

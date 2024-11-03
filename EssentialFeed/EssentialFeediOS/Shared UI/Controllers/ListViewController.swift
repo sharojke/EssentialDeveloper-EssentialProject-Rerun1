@@ -25,7 +25,7 @@ public final class ListViewController: UITableViewController {
         }
     }
     
-    @IBOutlet public weak var errorView: ErrorView!
+    public let errorView = ErrorView()
     
     public init?(coder: NSCoder, onRefresh: @escaping () -> Void) {
         self.onRefresh = onRefresh
@@ -44,6 +44,7 @@ public final class ListViewController: UITableViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         
+        configureErrorView()
         tableView.prefetchDataSource = self
         refreshControl = _refreshControl
     }
@@ -67,6 +68,27 @@ public final class ListViewController: UITableViewController {
     public func display(_ cellControllers: [CellController]) {
         tableModel = cellControllers
         tableView.reloadData()
+    }
+    
+    private func configureErrorView() {
+        let containerView = UIView()
+        containerView.backgroundColor = .clear
+        containerView.addSubview(errorView)
+        
+        errorView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            errorView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            errorView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            errorView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            errorView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
+        ])
+        
+        tableView.tableHeaderView = containerView
+        errorView.onHide = { [weak self] in
+            self?.tableView.beginUpdates()
+            self?.tableView.sizeHeaderToFit()
+            self?.tableView.endUpdates()
+        }
     }
 }
 
@@ -146,10 +168,6 @@ extension ListViewController: ResourceLoadingView {
 
 extension ListViewController: ResourceErrorView {
     public func display(_ viewModel: ResourceErrorViewModel) {
-        if let message = viewModel.message {
-            errorView.show(message: message)
-        } else {
-            errorView.hideMessage()
-        }
+        errorView.message = viewModel.message
     }
 }

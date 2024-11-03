@@ -565,6 +565,17 @@ final class FeedUIIntegrationTests: XCTestCase {
         XCTAssertEqual(sut.errorMessage, nil)
     }
     
+    func test_tapOnErrorView_hidesErrorMessage() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoadingWithError()
+        XCTAssertEqual(sut.errorMessage, loadError)
+        
+        sut.simulateTapOnErrorMessage()
+        XCTAssertEqual(sut.errorMessage, nil)
+    }
+    
     func test_errorView_dismissesErrorMessageOnTap() {
         let (sut, loader) = makeSUT()
 
@@ -608,8 +619,15 @@ final class FeedUIIntegrationTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        sut.tableView.layoutIfNeeded()
-        RunLoop.main.run(until: Date())
+        sut.view.enforceLayoutCycle()
+        
+        guard sut.numberOfRenderedFeedImageViews() == feed.count else {
+            return XCTFail(
+                "Expected \(feed.count) images, got \(sut.numberOfRenderedFeedImageViews()) instead",
+                file: file,
+                line: line
+            )
+        }
         
         XCTAssertEqual(
             sut.numberOfRenderedFeedImageViews(),
@@ -621,6 +639,8 @@ final class FeedUIIntegrationTests: XCTestCase {
         feed.enumerated().forEach { index, image in
             assertThat(sut, hasConfiguredFor: image, at: index, file: file, line: line)
         }
+        
+        executeRunLoopToCleanUpReferences()
     }
     
     private func assertThat(
