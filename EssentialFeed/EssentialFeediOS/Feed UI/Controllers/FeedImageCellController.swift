@@ -31,7 +31,7 @@ public final class FeedImageCellController: NSObject {
     }
 }
 
-extension FeedImageCellController: CellController {
+extension FeedImageCellController: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }
@@ -52,7 +52,9 @@ extension FeedImageCellController: CellController {
         delegate.didRequestImage()
         return cell
     }
-    
+}
+
+extension FeedImageCellController: UITableViewDelegate {
     public func tableView(
         _ tableView: UITableView,
         didEndDisplaying cell: UITableViewCell,
@@ -60,7 +62,9 @@ extension FeedImageCellController: CellController {
     ) {
         cancelLoad()
     }
-    
+}
+
+extension FeedImageCellController: UITableViewDataSourcePrefetching {
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         preload()
     }

@@ -76,8 +76,8 @@ public extension ListViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let controller = cellControllerForRow(at: indexPath)
-        return controller.tableView(tableView, cellForRowAt: indexPath)
+        let dataSource = cellControllerForRow(at: indexPath).dataSource
+        return dataSource.tableView(tableView, cellForRowAt: indexPath)
     }
     
     override func tableView(
@@ -85,8 +85,8 @@ public extension ListViewController {
         didEndDisplaying cell: UITableViewCell,
         forRowAt indexPath: IndexPath
     ) {
-        let controller = removeLoadingController(at: indexPath)
-        controller?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+        let delegate = removeLoadingController(at: indexPath)?.delegate
+        delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
     }
     
 //    override func tableView(
@@ -101,15 +101,15 @@ public extension ListViewController {
 extension ListViewController: UITableViewDataSourcePrefetching {
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
-            let controller = cellControllerForRow(at: indexPath)
-            controller.tableView(tableView, prefetchRowsAt: [indexPath])
+            let dataSourcePrefetching = cellControllerForRow(at: indexPath).dataSourcePrefetching
+            dataSourcePrefetching?.tableView(tableView, prefetchRowsAt: [indexPath])
         }
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
-            let controller = removeLoadingController(at: indexPath)
-            controller?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
+            let dataSourcePrefetching = removeLoadingController(at: indexPath)?.dataSourcePrefetching
+            dataSourcePrefetching?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
         }
     }
 }

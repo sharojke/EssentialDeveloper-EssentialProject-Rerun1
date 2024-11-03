@@ -21,10 +21,10 @@ final class ImageCommentsSnapshotTests: XCTestCase {
 //            named: "IMAGE_COMMENTS_DARK_EXTRA_EXTRA_EXTRA_LARGE"
 //        )
     }
-}
-
-private extension ImageCommentsSnapshotTests {
-    func makeSUT() -> ListViewController {
+    
+    // MARK: Helpers
+    
+    private func makeSUT() -> ListViewController {
         let bundle = Bundle(for: ListViewController.self)
         let storyboard = UIStoryboard(name: "ImageComments", bundle: bundle)
         let controller = storyboard.instantiateInitialViewController { coder in
@@ -36,7 +36,11 @@ private extension ImageCommentsSnapshotTests {
         return controller
     }
     
-    func comments() -> [CellController] {
+    private func comments() -> [CellController] {
+        return commentControllers().map(CellController.init)
+    }
+    
+    private func commentControllers() -> [ImageCommentCellController] {
         return [
             ImageCommentCellController(
                 viewModel: ImageCommentViewModel(

@@ -9,7 +9,7 @@ public final class ImageCommentCellController: NSObject {
     }
 }
 
-extension ImageCommentCellController: CellController {
+extension ImageCommentCellController: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }
@@ -21,6 +21,4 @@ extension ImageCommentCellController: CellController {
         cell.dateLabel.text = viewModel.date
         return cell
     }
-    
-    public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {}
 }
