@@ -119,9 +119,8 @@ private extension ListViewController {
             .map { stub in
                 let cellController = FeedImageCellController(viewModel: stub.viewModel, delegate: stub)
                 stub.controller = cellController
-                return cellController
+                return CellController(id: UUID(), dataSource: cellController)
             }
-            .map(CellController.init)
         display(cells)
     }
 }

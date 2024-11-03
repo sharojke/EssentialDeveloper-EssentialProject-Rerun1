@@ -30,9 +30,8 @@ final class FeedViewAdapter: ResourceView {
                     errorView: WeakRefVirtualProxy(view),
                     mapper: UIImage.tryToMakeFromData
                 )
-                return view
+                return CellController(id: feedImage, dataSource: view)
             }
-            .map(CellController.init)
         controller?.display(cellControllers)
     }
 }
