@@ -16,14 +16,10 @@ final class ListSnapshotTests: XCTestCase {
             snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark)),
             named: "LIST_EMPTY_DARK"
         )
-//        record(
-//            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
-//            named: "LIST_EMPTY_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
-//        )
-//        record(
-//            snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark, contentSize: .extraExtraExtraLarge)),
-//            named: "LIST_EMPTY_DARK_EXTRA_EXTRA_EXTRA_LARGE"
-//        )
+        assert(
+            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
+            named: "LIST_EMPTY_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
+        )
     }
     
     func test_listWithErrorMessage() {
@@ -39,14 +35,10 @@ final class ListSnapshotTests: XCTestCase {
             snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark)),
             named: "LIST_WITH_ERROR_MESSAGE_DARK"
         )
-//        record(
-//            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
-//            named: "LIST_EMPTY_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
-//        )
-//        record(
-//            snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark, contentSize: .extraExtraExtraLarge)),
-//            named: "LIST_EMPTY_DARK_EXTRA_EXTRA_EXTRA_LARGE"
-//        )
+        assert(
+            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
+            named: "LIST_WITH_ERROR_MESSAGE_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
+        )
     }
     
     // MARK: Helpers

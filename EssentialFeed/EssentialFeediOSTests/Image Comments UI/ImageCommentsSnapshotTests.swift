@@ -12,14 +12,10 @@ final class ImageCommentsSnapshotTests: XCTestCase {
         
         assert(snapshot: sut.snapshot(for: .iPhone16Pro(style: .light)), named: "IMAGE_COMMENTS_LIGHT")
         assert(snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark)), named: "IMAGE_COMMENTS_DARK")
-//        record(
-//            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
-//            named: "IMAGE_COMMENTS_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
-//        )
-//        record(
-//            snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark, contentSize: .extraExtraExtraLarge)),
-//            named: "IMAGE_COMMENTS_DARK_EXTRA_EXTRA_EXTRA_LARGE"
-//        )
+        assert(
+            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
+            named: "IMAGE_COMMENTS_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
+        )
     }
     
     // MARK: Helpers

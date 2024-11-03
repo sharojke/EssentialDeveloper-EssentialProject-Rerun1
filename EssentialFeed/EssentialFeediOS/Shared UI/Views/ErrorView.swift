@@ -22,16 +22,6 @@ public final class ErrorView: UIButton {
         ])
     }
     
-    public private(set) lazy var button: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.textAlignment = .center
-        button.titleLabel?.numberOfLines = .zero
-        button.titleLabel?.font = .systemFont(ofSize: 17)
-        button.addTarget(self, action: #selector(hideMessageAnimated), for: .touchUpInside)
-        return button
-    }()
-    
     override public init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -52,17 +42,6 @@ public final class ErrorView: UIButton {
         self.configuration = configuration
         addTarget(self, action: #selector(hideMessageAnimated), for: .touchUpInside)
         hideMessage()
-    }
-    
-    private func configureButton() {
-        addSubview(button)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-            button.centerXAnchor.constraint(equalTo: centerXAnchor),
-            button.topAnchor.constraint(equalTo: topAnchor, constant: 8),
-            button.centerYAnchor.constraint(equalTo: centerYAnchor)
-        ])
     }
     
     private func setMessageAnimated(_ message: String?) {

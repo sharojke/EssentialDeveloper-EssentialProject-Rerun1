@@ -42,14 +42,10 @@ final class FeedSnapshotTests: XCTestCase {
             snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark)),
             named: "FEED_WITH_CONTENT_DARK"
         )
-//        record(
-//            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
-//            named: "FEED_WITH_CONTENT_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
-//        )
-//        record(
-//            snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark, contentSize: .extraExtraExtraLarge)),
-//            named: "FEED_WITH_CONTENT_DARK_EXTRA_EXTRA_EXTRA_LARGE"
-//        )
+        assert(
+            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
+            named: "FEED_WITH_CONTENT_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
+        )
     }
     
     func test_feedWithFailedImageLoading() {
@@ -65,14 +61,10 @@ final class FeedSnapshotTests: XCTestCase {
             snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark)),
             named: "FEED_WITH_FAILED_IMAGE_LOADING_DARK"
         )
-//        record(
-//            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
-//            named: "FEED_WITH_FAILED_IMAGE_LOADING_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
-//        )
-//        record(
-//            snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark, contentSize: .extraExtraExtraLarge)),
-//            named: "FEED_WITH_FAILED_IMAGE_LOADING_DARK_EXTRA_EXTRA_EXTRA_LARGE
-//        )
+        assert(
+            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
+            named: "FEED_WITH_FAILED_IMAGE_LOADING_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
+        )
     }
 }
 
