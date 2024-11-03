@@ -17,7 +17,7 @@ private final class FakeRefreshControl: UIRefreshControl {
 
 // MARK: - FeedViewController+Appearance
 
-extension FeedViewController {
+extension ListViewController {
     func simulateAppearance() {
         if !isViewLoaded {
             loadViewIfNeeded()
@@ -43,7 +43,7 @@ extension FeedViewController {
 
 // MARK: - FeedViewController+RefreshUIAndLogic
 
-extension FeedViewController {
+extension ListViewController {
     func simulateUserInitiatedFeedReload() {
         refreshControl?.simulatePullToRefresh()
     }
@@ -55,7 +55,7 @@ extension FeedViewController {
 
 // MARK: - FeedViewController+Items
 
-extension FeedViewController {
+extension ListViewController {
     var feedImagesSection: Int { .zero }
     
     func renderedFeedImageData(at index: Int = .zero) -> Data? {
@@ -105,7 +105,7 @@ extension FeedViewController {
 
 // MARK: - FeedViewController+Error
 
-extension FeedViewController {
+extension ListViewController {
     var errorMessage: String? {
         return errorView.message
     }

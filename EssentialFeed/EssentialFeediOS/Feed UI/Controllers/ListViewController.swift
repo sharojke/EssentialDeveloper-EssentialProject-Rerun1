@@ -11,9 +11,9 @@ public protocol CellController {
     func cancelLoad()
 }
 
-public final class FeedViewController: UITableViewController {
+public final class ListViewController: UITableViewController {
     private let delegate: FeedViewControllerDelegate
-    private var onViewIsAppearing: ((FeedViewController) -> Void)?
+    private var onViewIsAppearing: ((ListViewController) -> Void)?
     
     private lazy var _refreshControl: UIRefreshControl = {
         let view = UIRefreshControl()
@@ -80,7 +80,7 @@ public final class FeedViewController: UITableViewController {
     }
 }
 
-public extension FeedViewController {
+public extension ListViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableModel.count
     }
@@ -107,7 +107,7 @@ public extension FeedViewController {
 //    }
 }
 
-extension FeedViewController: UITableViewDataSourcePrefetching {
+extension ListViewController: UITableViewDataSourcePrefetching {
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
             cellControllerForRow(at: indexPath).preload()
@@ -121,7 +121,7 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
 
 // MARK: - Helpers
 
-private extension FeedViewController {
+private extension ListViewController {
     func cancelCellControllerLoad(at indexPath: IndexPath) {
         loadingControllers[indexPath]?.cancelLoad()
         loadingControllers[indexPath] = nil
@@ -136,7 +136,7 @@ private extension FeedViewController {
 
 // MARK: - FeedLoadingView
 
-extension FeedViewController: ResourceLoadingView {
+extension ListViewController: ResourceLoadingView {
     public func display(_ viewModel: ResourceLoadingViewModel) {
         if viewModel.isLoading {
             refreshControl?.beginRefreshing()
@@ -148,7 +148,7 @@ extension FeedViewController: ResourceLoadingView {
 
 // MARK: - FeedErrorView
 
-extension FeedViewController: ResourceErrorView {
+extension ListViewController: ResourceErrorView {
     public func display(_ viewModel: ResourceErrorViewModel) {
         if let message = viewModel.message {
             errorView.show(message: message)
