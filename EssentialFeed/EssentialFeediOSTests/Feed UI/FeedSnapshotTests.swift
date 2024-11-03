@@ -36,19 +36,19 @@ final class FeedSnapshotTests: XCTestCase {
         
         assert(
             snapshot: sut.snapshot(for: .iPhone16Pro(style: .light)),
-            named: "FEED_WITH_CONTENT_light"
+            named: "FEED_WITH_CONTENT_LIGHT"
         )
         assert(
             snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark)),
-            named: "FEED_WITH_CONTENT_dark"
+            named: "FEED_WITH_CONTENT_DARK"
         )
-//        assert(
+//        record(
 //            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
-//            named: "FEED_WITH_CONTENT_light_extraExtraExtraLarge"
+//            named: "FEED_WITH_CONTENT_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
 //        )
-//        assert(
+//        record(
 //            snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark, contentSize: .extraExtraExtraLarge)),
-//            named: "FEED_WITH_CONTENT_dark_extraExtraExtraLarge"
+//            named: "FEED_WITH_CONTENT_DARK_EXTRA_EXTRA_EXTRA_LARGE"
 //        )
     }
     
@@ -59,19 +59,19 @@ final class FeedSnapshotTests: XCTestCase {
         
         assert(
             snapshot: sut.snapshot(for: .iPhone16Pro(style: .light)),
-            named: "FEED_WITH_FAILED_IMAGE_LOADING_light"
+            named: "FEED_WITH_FAILED_IMAGE_LOADING_LIGHT"
         )
         assert(
             snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark)),
-            named: "FEED_WITH_FAILED_IMAGE_LOADING_dark"
+            named: "FEED_WITH_FAILED_IMAGE_LOADING_DARK"
         )
-//        assert(
+//        record(
 //            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
-//            named: "FEED_WITH_FAILED_IMAGE_LOADING_light_extraExtraExtraLarge"
+//            named: "FEED_WITH_FAILED_IMAGE_LOADING_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
 //        )
-//        assert(
+//        record(
 //            snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark, contentSize: .extraExtraExtraLarge)),
-//            named: "FEED_WITH_FAILED_IMAGE_LOADING_dark_extraExtraExtraLarge"
+//            named: "FEED_WITH_FAILED_IMAGE_LOADING_DARK_EXTRA_EXTRA_EXTRA_LARGE
 //        )
     }
 }
