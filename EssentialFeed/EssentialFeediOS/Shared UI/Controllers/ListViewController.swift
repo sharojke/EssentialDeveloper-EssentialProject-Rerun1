@@ -38,6 +38,7 @@ public final class ListViewController: UITableViewController {
             viewController.onViewIsAppearing = nil
         }
         
+//        configureTraitCollectionObservers() // it's commented since there is code for iOS15+
         refreshControl = _refreshControl
         configureTableView()
     }
@@ -94,6 +95,15 @@ public final class ListViewController: UITableViewController {
             self?.tableView.beginUpdates()
             self?.tableView.sizeHeaderToFit()
             self?.tableView.endUpdates()
+        }
+    }
+    
+    private func configureTraitCollectionObservers() {
+        if #available(iOS 17.0, *) {
+            // swiftlint:disable:next all
+            registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) { (self: Self, previous: UITraitCollection) in
+                self.tableView.reloadData()
+            }
         }
     }
 }
