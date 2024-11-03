@@ -28,10 +28,6 @@ private final class ImageStub: FeedImageCellControllerDelegate {
     func didCancelImageRequest() {}
 }
 
-private final class DummyFeedViewControllerDelegate: FeedViewControllerDelegate {
-    func didRequestFeedRefresh() {}
-}
-
 final class FeedSnapshotTests: XCTestCase {
     func test_feedWithContent() {
         let sut = makeSUT()
@@ -84,18 +80,13 @@ private extension FeedSnapshotTests {
     func makeSUT() -> ListViewController {
         let bundle = Bundle(for: ListViewController.self)
         let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
-        let delegate = DummyFeedViewControllerDelegate()
         let controller = storyboard.instantiateInitialViewController { coder in
-            return ListViewController(coder: coder, delegate: delegate)
+            return ListViewController(coder: coder, onRefresh: {})
         }!
         controller.loadViewIfNeeded()
         controller.tableView.showsVerticalScrollIndicator = false
         controller.tableView.showsHorizontalScrollIndicator = false
         return controller
-    }
-    
-    func emptyFeed() -> [FeedImageCellController] {
-        return []
     }
     
     func feedWithContent() -> [ImageStub] {

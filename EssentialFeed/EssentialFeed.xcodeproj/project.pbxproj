@@ -226,6 +226,13 @@
 			);
 			target = BB900C0F2CA4AA34005A4567 /* EssentialFeediOSTests */;
 		};
+		BBA1BE982CD783F4001E0C08 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ListSnapshotTests.swift,
+			);
+			target = BB900C0F2CA4AA34005A4567 /* EssentialFeediOSTests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -243,6 +250,7 @@
 		BBA1BD792CD69F26001E0C08 /* Image Comments Presentation */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Image Comments Presentation"; sourceTree = "<group>"; };
 		BBA1BD802CD69FAD001E0C08 /* Image Comments Presentation  */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Image Comments Presentation "; sourceTree = "<group>"; };
 		BBA1BE912CD781B6001E0C08 /* Shared UI */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Shared UI"; sourceTree = "<group>"; };
+		BBA1BE952CD782A4001E0C08 /* Shared UI */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BBA1BE982CD783F4001E0C08 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Shared UI"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -339,6 +347,7 @@
 		BB900C212CA4AC94005A4567 /* EssentialFeediOSTests */ = {
 			isa = PBXGroup;
 			children = (
+				BBA1BE952CD782A4001E0C08 /* Shared UI */,
 				BB37E3992CC6E86200A25B8D /* Helpers */,
 				BB37E3972CC6E7EA00A25B8D /* Feed UI */,
 			);
