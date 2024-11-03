@@ -38,11 +38,8 @@ public final class ListViewController: UITableViewController {
             viewController.onViewIsAppearing = nil
         }
         
-        configureErrorView()
-        dataSource.defaultRowAnimation = .fade
-        tableView.dataSource = dataSource
-        tableView.prefetchDataSource = self
         refreshControl = _refreshControl
+        configureTableView()
     }
     
     override public func viewDidLayoutSubviews() {
@@ -87,8 +84,12 @@ public final class ListViewController: UITableViewController {
         }
     }
     
-    private func configureErrorView() {
+    private func configureTableView() {
+        dataSource.defaultRowAnimation = .fade
+        tableView.dataSource = dataSource
+        tableView.prefetchDataSource = self
         tableView.tableHeaderView = errorView.makeContainer()
+        
         errorView.onHide = { [weak self] in
             self?.tableView.beginUpdates()
             self?.tableView.sizeHeaderToFit()
