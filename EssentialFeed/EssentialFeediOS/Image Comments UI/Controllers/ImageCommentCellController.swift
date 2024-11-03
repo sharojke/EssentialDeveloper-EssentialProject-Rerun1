@@ -17,7 +17,4 @@ extension ImageCommentCellController: CellController {
         cell.dateLabel.text = viewModel.date
         return cell
     }
-    
-    public func preload() {}
-    public func cancelLoad() {}
 }
