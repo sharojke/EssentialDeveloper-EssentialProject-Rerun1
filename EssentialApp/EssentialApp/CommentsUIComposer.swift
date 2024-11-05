@@ -13,7 +13,7 @@ public enum CommentsUIComposer {
     ) -> ListViewController {
         let presentationAdapter = PresentationAdapter(loader: { feedLoader().dispatchOnMainThread() })
         let feedController = makeFeedViewController(
-            title: FeedPresenter.title,
+            title: ImageCommentsPresenter.title,
             onRefresh: presentationAdapter.loadResource
         )
         let feedViewAdapter = FeedViewAdapter(
