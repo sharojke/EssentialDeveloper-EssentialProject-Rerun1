@@ -5,10 +5,8 @@ import EssentialFeediOS
 import UIKit
 import XCTest
 
-// swiftlint:disable force_unwrapping
-
 private final class LoaderSpy {
-    typealias Publisher = AnyPublisher<[FeedImage], Error>
+    typealias Publisher = AnyPublisher<[ImageComment], Error>
     
     private final class TaskSpy: FeedImageDataLoaderTask {
         private let onCancel: () -> Void
@@ -22,20 +20,20 @@ private final class LoaderSpy {
         }
     }
     
-    private var requests = [PassthroughSubject<[FeedImage], Error>]()
+    private var requests = [PassthroughSubject<[ImageComment], Error>]()
     
     var loadCallCount: Int {
         return requests.count
     }
     
     func loadPublisher() -> Publisher {
-        let publisher = PassthroughSubject<[FeedImage], Error>()
+        let publisher = PassthroughSubject<[ImageComment], Error>()
         requests.append(publisher)
         return publisher.eraseToAnyPublisher()
     }
     
-    func completeLoading(with feed: [FeedImage] = [], at index: Int = .zero) {
-        requests[index].send(feed)
+    func completeLoading(with comments: [ImageComment] = [], at index: Int = .zero) {
+        requests[index].send(comments)
     }
     
     func completeLoadingWithError(at index: Int = .zero) {
@@ -100,54 +98,51 @@ final class CommentsUIIntegrationTests: FeedUIIntegrationTests {
         XCTAssertFalse(sut.isShowingLoadingIndicator(), "Expected hidden after the loading is completed with an error")
     }
     
-    override func test_loadFeedCompletion_rendersSuccessfullyLoadedFeed() {
-        let image0 = makeImage(description: "a description", location: "a location")
-        let image1 = makeImage(description: nil, location: "another location")
-        let image2 = makeImage(description: "another description", location: nil)
-        let image3 = makeImage(description: nil, location: nil)
+    func test_loadCommentsCompletion_rendersSuccessfullyLoadedComments() {
+        let comment0 = makeComment(message: "mo0", username: "u0")
+        let comment1 = makeComment(message: "mo1", username: "u1")
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
         assertThat(sut, isRendering: [])
         
-        loader.completeLoading(with: [image0], at: .zero)
-        assertThat(sut, isRendering: [image0])
+        loader.completeLoading(with: [comment0], at: .zero)
+        assertThat(sut, isRendering: [comment0])
         
         sut.simulateUserInitiatedReload()
-        loader.completeLoading(with: [image0, image1, image2, image3], at: 1)
-        assertThat(sut, isRendering: [image0, image1, image2, image3])
+        loader.completeLoading(with: [comment0, comment1], at: 1)
+        assertThat(sut, isRendering: [comment0, comment1])
     }
     
-    override func test_loadFeedCompletion_rendersSuccessfullyLoadedEmptyFeedAfterNonEmptyFeed() {
-        let image0 = makeImage()
-        let image1 = makeImage()
+    func test_loadCommentsCompletion_rendersSuccessfullyLoadedEmptyCommentsAfterNonEmptyComments() {
+        let comment0 = makeComment()
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
         assertThat(sut, isRendering: [])
         
-        loader.completeLoading(with: [image0, image1], at: .zero)
-        assertThat(sut, isRendering: [image0, image1])
+        loader.completeLoading(with: [comment0], at: .zero)
+        assertThat(sut, isRendering: [comment0])
         
         sut.simulateUserInitiatedReload()
         loader.completeLoading(with: [], at: 1)
         assertThat(sut, isRendering: [])
     }
     
-    override func test_loadFeedCompletion_doesNotAlterCurrentRenderingStateOnError() {
-        let image0 = makeImage()
+    func test_loadCommentsCompletion_doesNotAlterCurrentRenderingStateOnError() {
+        let comment0 = makeComment()
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
-        loader.completeLoading(with: [image0], at: .zero)
-        assertThat(sut, isRendering: [image0])
+        loader.completeLoading(with: [comment0], at: .zero)
+        assertThat(sut, isRendering: [comment0])
         
         sut.simulateUserInitiatedReload()
         loader.completeLoadingWithError(at: 1)
-        assertThat(sut, isRendering: [image0])
+        assertThat(sut, isRendering: [comment0])
     }
     
-    override func test_loadFeedCompletion_dispatchesFromBackgroundToMainThread() {
+    func test_loadCommentsCompletion_dispatchesFromBackgroundToMainThread() {
         let (sut, loader) = makeSUT()
         sut.simulateAppearance()
         
@@ -210,75 +205,48 @@ final class CommentsUIIntegrationTests: FeedUIIntegrationTests {
         return (sut, loader)
     }
     
-    private func makeImage(
-        description: String? = nil,
-        location: String? = nil,
-        url: URL = URL(string: "http://any-url.com)")!
-    ) -> FeedImage {
-        return FeedImage(id: UUID(), description: description, location: location, url: url)
+    private func makeComment(
+        message: String = "any message",
+        username: String = "any username"
+    ) -> ImageComment {
+        return ImageComment(
+            id: UUID(),
+            message: message,
+            createdAt: Date(),
+            username: username
+        )
     }
     
     private func assertThat(
         _ sut: ListViewController,
-        isRendering feed: [FeedImage],
+        isRendering comments: [ImageComment],
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
         sut.view.enforceLayoutCycle()
         
-        guard sut.numberOfRenderedFeedImageViews() == feed.count else {
+        guard sut.numberOfRenderedFeedImageViews() == comments.count else {
             return XCTFail(
-                "Expected \(feed.count) images, got \(sut.numberOfRenderedFeedImageViews()) instead",
+                "Expected \(comments.count) comments, got \(sut.numberOfRenderedCommentsViews()) instead",
                 file: file,
                 line: line
             )
         }
         
         XCTAssertEqual(
-            sut.numberOfRenderedFeedImageViews(),
-            feed.count,
-            "Expected \(feed.count) image, got \(sut.numberOfRenderedFeedImageViews()) instead",
+            sut.numberOfRenderedCommentsViews(),
+            comments.count,
+            "Expected \(comments.count) comments, got \(sut.numberOfRenderedCommentsViews()) instead",
             file: file,
             line: line
         )
-        feed.enumerated().forEach { index, image in
-            assertThat(sut, hasConfiguredFor: image, at: index, file: file, line: line)
+        let viewModel = ImageCommentsPresenter.map(comments)
+        viewModel.comments.enumerated().forEach { index, comment in
+            XCTAssertEqual(sut.commentMessage(at: index), comment.message, "Message at \(index)", file: file, line: line)
+            XCTAssertEqual(sut.commentDate(at: index), comment.date, "Date at \(index)", file: file, line: line)
+            XCTAssertEqual(sut.commentUsername(at: index), comment.username, "Username at \(index)", file: file, line: line)
         }
         
         executeRunLoopToCleanUpReferences()
     }
-    
-    private func assertThat(
-        _ sut: ListViewController,
-        hasConfiguredFor image: FeedImage,
-        at index: Int,
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) {
-        let shouldLocationBeVisible = image.location != nil
-        let view = sut.feedImageView(at: index)
-        XCTAssertEqual(
-            view?.isShowingLocation,
-            shouldLocationBeVisible,
-            "Expected `isShowingLocation` to be \(shouldLocationBeVisible) for index at \(index)",
-            file: file,
-            line: line
-        )
-        XCTAssertEqual(
-            view?.locationText,
-            image.location,
-            "Expected `locationText` to be \(image.location as Any) for index at \(index)",
-            file: file,
-            line: line
-        )
-        XCTAssertEqual(
-            view?.descriptionText,
-            image.description,
-            "Expected `descriptionText` to be \(image.description as Any) for index at \(index)",
-            file: file,
-            line: line
-        )
-    }
 }
-
-// swiftlint:enable force_unwrapping

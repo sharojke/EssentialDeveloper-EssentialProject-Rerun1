@@ -6,36 +6,33 @@ import UIKit
 // swiftlint:disable force_unwrapping
 
 public enum CommentsUIComposer {
-    private typealias PresentationAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>
+    private typealias PresentationAdapter = LoadResourcePresentationAdapter<[ImageComment], CommentsViewAdapter>
     
     public static func feedComposedWith(
-        feedLoader: @escaping () -> AnyPublisher<[FeedImage], Error>
+        feedLoader: @escaping () -> AnyPublisher<[ImageComment], Error>
     ) -> ListViewController {
         let presentationAdapter = PresentationAdapter(loader: { feedLoader().dispatchOnMainThread() })
-        let feedController = makeFeedViewController(
+        let commentsController = makeCommentsViewController(
             title: ImageCommentsPresenter.title,
             onRefresh: presentationAdapter.loadResource
         )
-        let feedViewAdapter = FeedViewAdapter(
-            controller: feedController,
-            loader: { _ in Empty<Data, Error>().eraseToAnyPublisher() }
-        )
-        let resourcePresenter = LoadResourcePresenter<[FeedImage], FeedViewAdapter>(
-            resourceView: feedViewAdapter,
-            loadingView: WeakRefVirtualProxy(feedController),
-            errorView: WeakRefVirtualProxy(feedController),
-            mapper: FeedPresenter.map
+        let commentsViewAdapter = CommentsViewAdapter(controller: commentsController)
+        let resourcePresenter = LoadResourcePresenter<[ImageComment], CommentsViewAdapter>(
+            resourceView: commentsViewAdapter,
+            loadingView: WeakRefVirtualProxy(commentsController),
+            errorView: WeakRefVirtualProxy(commentsController),
+            mapper: { ImageCommentsPresenter.map($0) }
         )
         presentationAdapter.resourcePresenter = resourcePresenter
-        return feedController
+        return commentsController
     }
     
-    private static func makeFeedViewController(
+    private static func makeCommentsViewController(
         title: String,
         onRefresh: @escaping () -> Void
     ) -> ListViewController {
         let bundle = Bundle(for: ListViewController.self)
-        let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
+        let storyboard = UIStoryboard(name: "ImageComments", bundle: bundle)
         let controller = storyboard.instantiateInitialViewController { coder in
             return ListViewController(coder: coder)
         }!

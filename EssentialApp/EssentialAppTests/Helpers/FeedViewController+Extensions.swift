@@ -15,7 +15,7 @@ private final class FakeRefreshControl: UIRefreshControl {
     }
 }
 
-// MARK: - FeedViewController+Appearance
+// MARK: - ListViewController+Appearance
 
 extension ListViewController {
     func simulateAppearance() {
@@ -41,7 +41,7 @@ extension ListViewController {
     }
 }
 
-// MARK: - FeedViewController+RefreshUIAndLogic
+// MARK: - ListViewController+RefreshUIAndLogic
 
 extension ListViewController {
     func simulateUserInitiatedReload() {
@@ -53,7 +53,7 @@ extension ListViewController {
     }
 }
 
-// MARK: - FeedViewController+Items
+// MARK: - ListViewController+Items
 
 extension ListViewController {
     var feedImagesSection: Int { .zero }
@@ -114,7 +114,7 @@ extension ListViewController {
     }
 }
 
-// MARK: - FeedViewController+Error
+// MARK: - ListViewController+Error
 
 extension ListViewController {
     var errorMessage: String? {
@@ -123,5 +123,35 @@ extension ListViewController {
     
     func simulateTapOnErrorMessage() {
         errorView.simulateTap()
+    }
+}
+
+// MARK: - ListViewController+Items
+extension ListViewController {
+    var commentsSection: Int { .zero }
+    
+    func numberOfRenderedCommentsViews() -> Int {
+        lazy var numberOfRows = tableView.numberOfRows(inSection: commentsSection)
+        return tableView.numberOfSections == .zero ? .zero : numberOfRows
+    }
+    
+    func imageCommentView(at index: Int) -> ImageCommentCell? {
+        guard numberOfRenderedCommentsViews() > index else { return nil }
+        
+        let ds = tableView.dataSource
+        let indexPath = IndexPath(row: index, section: commentsSection)
+        return ds?.tableView(tableView, cellForRowAt: indexPath) as? ImageCommentCell
+    }
+    
+    func commentMessage(at index: Int) -> String? {
+        return imageCommentView(at: index)?.messageLabel.text
+    }
+    
+    func commentDate(at index: Int) -> String? {
+        return imageCommentView(at: index)?.dateLabel.text
+    }
+    
+    func commentUsername(at index: Int) -> String? {
+        return imageCommentView(at: index)?.usernameLabel.text
     }
 }
