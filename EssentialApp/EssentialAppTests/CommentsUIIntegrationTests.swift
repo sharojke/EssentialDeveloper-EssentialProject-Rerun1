@@ -77,7 +77,7 @@ final class CommentsUIIntegrationTests: FeedUIIntegrationTests {
         XCTAssertEqual(loader.loadCallCount, 3, "Expected another request after initiating another load")
     }
     
-    override func test_loadingFeedIndicator_isVisibleWhileLoadingFeed() {
+    func test_loadingFeedIndicator_isVisibleWhileLoadingComments() {
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
