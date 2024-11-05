@@ -3,6 +3,10 @@ import Foundation
 
 // swiftlint:disable force_unwrapping
 
+final class DummyView: ResourceView {
+    func display(_ viewModel: Any) {}
+}
+
 func anyNSError() -> NSError {
     return NSError(domain: "", code: .zero)
 }
@@ -31,6 +35,18 @@ func uniqueFeed() -> [FeedImage] {
 
 func executeRunLoopToCleanUpReferences() {
     RunLoop.current.run(until: Date())
+}
+
+var loadError: String {
+    return LoadResourcePresenter<Any, DummyView>.loadError
+}
+
+var feedTitle: String {
+    return FeedPresenter.title
+}
+
+var commentsTitle: String {
+    return ImageCommentsPresenter.title
 }
 
 // swiftlint:enable force_unwrapping
