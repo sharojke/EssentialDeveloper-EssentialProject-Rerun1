@@ -44,7 +44,7 @@ extension ListViewController {
 // MARK: - FeedViewController+RefreshUIAndLogic
 
 extension ListViewController {
-    func simulateUserInitiatedFeedReload() {
+    func simulateUserInitiatedReload() {
         refreshControl?.simulatePullToRefresh()
     }
     
