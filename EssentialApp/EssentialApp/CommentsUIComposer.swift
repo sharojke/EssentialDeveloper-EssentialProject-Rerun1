@@ -8,10 +8,10 @@ import UIKit
 public enum CommentsUIComposer {
     private typealias PresentationAdapter = LoadResourcePresentationAdapter<[ImageComment], CommentsViewAdapter>
     
-    public static func feedComposedWith(
-        feedLoader: @escaping () -> AnyPublisher<[ImageComment], Error>
+    public static func commentsComposedWith(
+        commentsLoader: @escaping () -> AnyPublisher<[ImageComment], Error>
     ) -> ListViewController {
-        let presentationAdapter = PresentationAdapter(loader: { feedLoader().dispatchOnMainThread() })
+        let presentationAdapter = PresentationAdapter(loader: { commentsLoader().dispatchOnMainThread() })
         let commentsController = makeCommentsViewController(
             title: ImageCommentsPresenter.title,
             onRefresh: presentationAdapter.loadResource

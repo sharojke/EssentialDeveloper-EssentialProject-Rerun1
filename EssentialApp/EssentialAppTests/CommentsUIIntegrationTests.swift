@@ -197,7 +197,7 @@ final class CommentsUIIntegrationTests: XCTestCase {
         var sut: ListViewController?
         
         autoreleasepool {
-            sut = CommentsUIComposer.feedComposedWith {
+            sut = CommentsUIComposer.commentsComposedWith {
                 PassthroughSubject<[ImageComment], Error>()
                     .handleEvents(receiveCancel: {
                         cancelCallCount += 1
@@ -220,7 +220,7 @@ final class CommentsUIIntegrationTests: XCTestCase {
         line: UInt = #line
     ) -> (sut: ListViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = CommentsUIComposer.feedComposedWith(feedLoader: loader.loadPublisher)
+        let sut = CommentsUIComposer.commentsComposedWith(commentsLoader: loader.loadPublisher)
         trackForMemoryLeaks(loader, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, loader)

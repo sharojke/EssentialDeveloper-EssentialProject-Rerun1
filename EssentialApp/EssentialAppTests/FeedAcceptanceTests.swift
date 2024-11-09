@@ -3,6 +3,7 @@ import EssentialFeed
 import EssentialFeediOS
 import XCTest
 
+// swiftlint:disable force_try
 // swiftlint:disable force_unwrapping
 // swiftlint:disable force_cast
 
@@ -50,6 +51,13 @@ final class FeedAcceptanceTests: XCTestCase {
         XCTAssertNotNil(store.feedCache, "Expected to keep non-expired cache")
     }
     
+    func test_onFeedImageSelection_displaysComments() throws {
+        let comments = try showCommentsForFirstImage()
+        
+        XCTAssertEqual(comments.numberOfRenderedCommentsViews(), 1)
+        XCTAssertEqual(comments.commentMessage(at: .zero), makeCommentMessage())
+    }
+    
     // MARK: Helpers
     
     private func launch(
@@ -77,12 +85,18 @@ final class FeedAcceptanceTests: XCTestCase {
     }
     
     private func makeData(for url: URL) -> Data {
-        switch url.absoluteString {
-        case "http://image.com":
+        switch url.path {
+        case "/image-1", "/image-2":
             return makeImageData()
             
-        default:
+        case "/essential-feed/v1/feed":
             return makeFeedData()
+            
+        case "/essential-feed/v1/image/2AB2AE66-A4B7-4A16-B374-51BBAC8DB086/comments":
+            return makeCommentsData()
+            
+        default:
+            return Data()
         }
     }
     
@@ -91,17 +105,55 @@ final class FeedAcceptanceTests: XCTestCase {
     }
     
     private func makeFeedData() -> Data {
-        // swiftlint:disable:next force_try
         return try! JSONSerialization.data(
             withJSONObject: [
                 "items": [
-                    ["id": UUID().uuidString, "image": "http://image.com"],
-                    ["id": UUID().uuidString, "image": "http://image.com"]
+                    ["id": "2AB2AE66-A4B7-4A16-B374-51BBAC8DB086", "image": "http://feed.com/image-1"],
+                    ["id": "A28F5FE3-27A7-44E9-8DF5-53742D0E4A5A", "image": "http://feed.com/image-2"]
                 ]
             ]
         )
     }
+    
+    private func showCommentsForFirstImage(
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws -> ListViewController {
+        let feed = launch(httpClient: HTTPClientStub.online(response), store: InMemoryFeedStore.empty)
+        
+        feed.simulateTapOnFeedImage(at: .zero)
+        RunLoop.current.run(until: Date())
+        
+        let navigation = feed.navigationController
+        let comments = try XCTUnwrap(
+            navigation?.topViewController as? ListViewController,
+            file: file,
+            line: line
+        )
+        comments.simulateAppearance()
+        return comments
+    }
+    
+    private func makeCommentsData() -> Data {
+        return try! JSONSerialization.data(
+            withJSONObject: [
+                "items": [
+                    [
+                        "id": UUID().uuidString,
+                        "message": makeCommentMessage(),
+                        "created_at": "2020-05-20T11:24:59+0000",
+                        "author": ["username": "a username"]
+                    ]
+                ]
+            ]
+        )
+    }
+    
+    private func makeCommentMessage() -> String {
+        return "a message"
+    }
 }
 
+// swiftlint:enable force_try
 // swiftlint:enable force_unwrapping
 // swiftlint:enable force_cast

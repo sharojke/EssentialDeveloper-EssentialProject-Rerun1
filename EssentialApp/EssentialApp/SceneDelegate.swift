@@ -7,11 +7,6 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
-    private var remoteURL: URL {
-        // swiftlint:disable:next force_unwrapping
-        return URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
-    }
-    
     private lazy var httpClient: HTTPClient = URLSessionHTTPClient(
         session: URLSession(configuration: .ephemeral)
     )
@@ -23,6 +18,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         storeURL: NSPersistentContainer
             .defaultDirectoryURL()
             .appendingPathComponent("feed-store.sqlite")
+    )
+    
+    // swiftlint:disable:next force_unwrapping
+    private lazy var baseURL = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed")!
+
+    private lazy var navigationController = UINavigationController(
+        rootViewController: FeedUIComposer.feedComposedWith(
+            feedLoader: makeRemoteFeedLoaderWithLocalFallback,
+            imageLoader: makeLocalImageLoaderWithRemoteFallback,
+            onSelectFeedImage: showComments
+        )
     )
     
     convenience init(httpClient: HTTPClient, store: FeedStore & FeedImageDataStore) {
@@ -39,13 +45,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func configureWindow() {
-        window?.rootViewController = UINavigationController(
-            rootViewController: FeedUIComposer.feedComposedWith(
-                feedLoader: makeRemoteFeedLoaderWithALocalFallback,
-                imageLoader: makeLocalImageLoaderWithRemoteFallback,
-                onSelectFeedImage: { _ in }
-            )
-        )
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
     
@@ -53,7 +53,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         localFeedLoader.validateCache { _ in }
     }
     
-    private func makeRemoteFeedLoaderWithALocalFallback() -> AnyPublisher<[FeedImage], Error> {
+    private func makeRemoteFeedLoaderWithLocalFallback() -> AnyPublisher<[FeedImage], Error> {
+        let remoteURL = baseURL.appendingPathComponent("/v1/feed")
+
         return httpClient
             .getPublisher(url: remoteURL)
             .tryMap(FeedItemsMapper.map)
@@ -72,5 +74,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     .tryMap(FeedImageDataMapper.map)
                     .caching(to: localImageLoader, using: url)
             }
+    }
+    
+    private func showComments(for image: FeedImage) {
+        let url = baseURL.appendingPathComponent("/v1/image/\(image.id)/comments")
+        let comments = CommentsUIComposer.commentsComposedWith(
+            commentsLoader: makeRemoteCommentsLoader(url: url)
+        )
+        navigationController.pushViewController(comments, animated: true)
+    }
+    
+    private func makeRemoteCommentsLoader(url: URL) -> () -> AnyPublisher<[ImageComment], Error> {
+        return { [httpClient] in
+            return httpClient
+                .getPublisher(url: url)
+                .tryMap(ImageCommentsMapper.map)
+                .eraseToAnyPublisher()
+        }
     }
 }
