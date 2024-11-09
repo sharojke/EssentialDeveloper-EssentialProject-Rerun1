@@ -9,11 +9,17 @@ public protocol FeedImageCellControllerDelegate {
 public final class FeedImageCellController: NSObject {
     private let viewModel: FeedImageViewModel
     private let delegate: FeedImageCellControllerDelegate
+    private let onSelect: () -> Void
     private var cell: FeedImageCell?
     
-    public init(viewModel: FeedImageViewModel, delegate: FeedImageCellControllerDelegate) {
+    public init(
+        viewModel: FeedImageViewModel,
+        delegate: FeedImageCellControllerDelegate,
+        onSelect: @escaping () -> Void
+    ) {
         self.viewModel = viewModel
         self.delegate = delegate
+        self.onSelect = onSelect
     }
     
     private func preload() {
@@ -70,6 +76,10 @@ extension FeedImageCellController: UITableViewDelegate {
         forRowAt indexPath: IndexPath
     ) {
         cancelLoad()
+    }
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        onSelect()
     }
 }
 

@@ -42,7 +42,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = UINavigationController(
             rootViewController: FeedUIComposer.feedComposedWith(
                 feedLoader: makeRemoteFeedLoaderWithALocalFallback,
-                imageLoader: makeLocalImageLoaderWithRemoteFallback
+                imageLoader: makeLocalImageLoaderWithRemoteFallback,
+                onSelectFeedImage: { _ in }
             )
         )
         window?.makeKeyAndVisible()

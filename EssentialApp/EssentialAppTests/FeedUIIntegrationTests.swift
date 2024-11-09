@@ -78,16 +78,32 @@ final class FeedUIIntegrationTests: XCTestCase {
         XCTAssertEqual(sut.title, feedTitle)
     }
     
+    func test_imageSelection_notifiesHandler() {
+        let image0 = makeImage()
+        let image1 = makeImage()
+        var selectedImages = [FeedImage]()
+        let (sut, loader) = makeSUT { selectedImages.append($0) }
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoading(with: [image0, image1])
+        
+        sut.simulateTapOnFeedImage(at: .zero)
+        XCTAssertEqual(selectedImages, [image0])
+        
+        sut.simulateTapOnFeedImage(at: 1)
+        XCTAssertEqual(selectedImages, [image0, image1])
+    }
+    
     func test_loadFeedActions_runsAutomaticallyOnlyOnFirstAppearance() {
-            let (sut, loader) = makeSUT()
-            XCTAssertEqual(loader.loadFeedCallCount, 0, "Expected no loading requests before view appears")
+        let (sut, loader) = makeSUT()
+        XCTAssertEqual(loader.loadFeedCallCount, 0, "Expected no loading requests before view appears")
         
-            sut.simulateAppearance()
-            XCTAssertEqual(loader.loadFeedCallCount, 1, "Expected a loading request once view appears")
+        sut.simulateAppearance()
+        XCTAssertEqual(loader.loadFeedCallCount, 1, "Expected a loading request once view appears")
         
-            sut.simulateAppearance()
-            XCTAssertEqual(loader.loadFeedCallCount, 1, "Expected no loading request the second time view appears")
-        }
+        sut.simulateAppearance()
+        XCTAssertEqual(loader.loadFeedCallCount, 1, "Expected no loading request the second time view appears")
+    }
     
     func test_loadFeedActions_requestFeedFromLoader() {
         let (sut, loader) = makeSUT()
@@ -702,13 +718,15 @@ final class FeedUIIntegrationTests: XCTestCase {
     // MARK: Helpers
     
     private func makeSUT(
+        onSelectFeedImage: @escaping (FeedImage) -> Void = { _ in },
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> (sut: ListViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
         let sut = FeedUIComposer.feedComposedWith(
             feedLoader: loader.loadPublisher,
-            imageLoader: loader.loadImageDataPublisher
+            imageLoader: loader.loadImageDataPublisher,
+            onSelectFeedImage: onSelectFeedImage
         )
         trackForMemoryLeaks(loader, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)

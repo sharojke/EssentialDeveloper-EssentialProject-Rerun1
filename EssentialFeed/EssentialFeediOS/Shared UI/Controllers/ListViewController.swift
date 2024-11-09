@@ -126,6 +126,11 @@ public extension ListViewController {
         let delegate = cellControllerForRow(at: indexPath)?.delegate
         delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
     }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let delegate = cellControllerForRow(at: indexPath)?.delegate
+        delegate?.tableView?(tableView, didSelectRowAt: indexPath)
+    }
 }
 
 extension ListViewController: UITableViewDataSourcePrefetching {
