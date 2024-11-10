@@ -5,28 +5,11 @@ public final class ListViewController: UITableViewController {
     public var onRefresh: () -> Void = {}
     private var onViewIsAppearing: ((ListViewController) -> Void)?
     
-    private lazy var _refreshControl: UIRefreshControl = {
-        let view = UIRefreshControl()
-        view.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        return view
-    }()
-    
     private lazy var dataSource: UITableViewDiffableDataSource<Int, CellController> = {
         return UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, controller in
             return controller.dataSource.tableView(tableView, cellForRowAt: indexPath)
         }
     }()
-    
-    override public var refreshControl: UIRefreshControl? {
-        get {
-            return _refreshControl
-        }
-        set {
-            guard let newValue else { return }
-            
-            _refreshControl = newValue
-        }
-    }
     
     public let errorView = ErrorView()
     
@@ -39,7 +22,6 @@ public final class ListViewController: UITableViewController {
         }
         
 //        configureTraitCollectionObservers() // it's commented since there is code for iOS15+
-        refreshControl = _refreshControl
         configureTableView()
     }
     
