@@ -204,9 +204,8 @@ final class CommentsUIIntegrationTests: XCTestCase {
                     })
                     .eraseToAnyPublisher()
             }
+            sut?.simulateAppearance()
         }
-        
-        sut?.simulateAppearance()
         XCTAssertEqual(cancelCallCount, .zero)
         
         sut = nil
