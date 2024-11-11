@@ -66,6 +66,21 @@ final class FeedSnapshotTests: XCTestCase {
             named: "FEED_WITH_FAILED_IMAGE_LOADING_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
         )
     }
+    
+    func test_feedWithLoadMoreIndicator() {
+        let sut = makeSUT()
+
+        sut.display(feedWithLoadMoreIndicator())
+
+        assert(
+            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light)),
+            named: "FEED_WITH_LOAD_MORE_INDICATOR_LIGHT"
+        )
+        assert(
+            snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark)),
+            named: "FEED_WITH_LOAD_MORE_INDICATOR_DARK"
+        )
+    }
 }
 
 private extension FeedSnapshotTests {
@@ -109,6 +124,24 @@ private extension FeedSnapshotTests {
                 location: "At home",
                 image: nil
             )
+        ]
+    }
+    
+    private func feedWithLoadMoreIndicator() -> [CellController] {
+        let stub = feedWithContent().last!
+        let feedImageCellController = FeedImageCellController(
+            viewModel: stub.viewModel,
+            delegate: stub,
+            onSelect: {}
+        )
+        stub.controller = feedImageCellController
+        
+        let loadMoreCellController = LoadMoreCellController()
+        loadMoreCellController.display(ResourceLoadingViewModel(isLoading: true))
+        
+        return [
+            CellController(id: UUID(), dataSource: feedImageCellController),
+            CellController(id: UUID(), dataSource: loadMoreCellController)
         ]
     }
 }
