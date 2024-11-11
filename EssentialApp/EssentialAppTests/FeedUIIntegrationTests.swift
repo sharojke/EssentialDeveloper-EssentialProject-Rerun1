@@ -10,7 +10,7 @@ import XCTest
 // swiftlint:disable type_body_length
 
 private final class LoaderSpy: FeedImageDataLoader {
-    typealias Publisher = AnyPublisher<[FeedImage], Error>
+    typealias Publisher = AnyPublisher<Paginated<FeedImage>, Error>
     
     private final class TaskSpy: FeedImageDataLoaderTask {
         private let onCancel: () -> Void
@@ -24,7 +24,7 @@ private final class LoaderSpy: FeedImageDataLoader {
         }
     }
     
-    private var feedRequests = [PassthroughSubject<[FeedImage], Error>]()
+    private var feedRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
     private var imageRequests = [(url: URL, completion: LoadImageResultCompletion)]()
     private(set) var cancelledImageURLs = [URL]()
     
@@ -37,13 +37,13 @@ private final class LoaderSpy: FeedImageDataLoader {
     }
     
     func loadPublisher() -> Publisher {
-        let publisher = PassthroughSubject<[FeedImage], Error>()
+        let publisher = PassthroughSubject<Paginated<FeedImage>, Error>()
         feedRequests.append(publisher)
         return publisher.eraseToAnyPublisher()
     }
     
     func completeFeedLoading(with feed: [FeedImage] = [], at index: Int = .zero) {
-        feedRequests[index].send(feed)
+        feedRequests[index].send(Paginated(items: feed))
     }
     
     func completeFeedLoadingWithError(at index: Int = .zero) {

@@ -6,10 +6,10 @@ import UIKit
 // swiftlint:disable force_unwrapping
 
 public enum FeedUIComposer {
-    private typealias PresentationAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>
+    private typealias PresentationAdapter = LoadResourcePresentationAdapter<Paginated<FeedImage>, FeedViewAdapter>
     
     public static func feedComposedWith(
-        feedLoader: @escaping () -> AnyPublisher<[FeedImage], Error>,
+        feedLoader: @escaping () -> AnyPublisher<Paginated<FeedImage>, Error>,
         imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher,
         onSelectFeedImage: @escaping (FeedImage) -> Void
     ) -> ListViewController {
@@ -23,11 +23,11 @@ public enum FeedUIComposer {
             loader: { imageLoader($0).dispatchOnMainThread() },
             onSelectFeedImage: onSelectFeedImage
         )
-        let resourcePresenter = LoadResourcePresenter<[FeedImage], FeedViewAdapter>(
+        let resourcePresenter = LoadResourcePresenter<Paginated<FeedImage>, FeedViewAdapter>(
             resourceView: feedViewAdapter,
             loadingView: WeakRefVirtualProxy(feedController),
             errorView: WeakRefVirtualProxy(feedController),
-            mapper: FeedPresenter.map
+            mapper: { $0 }
         )
         presentationAdapter.resourcePresenter = resourcePresenter
         return feedController
