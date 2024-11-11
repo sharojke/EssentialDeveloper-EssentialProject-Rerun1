@@ -81,6 +81,25 @@ final class FeedSnapshotTests: XCTestCase {
             named: "FEED_WITH_LOAD_MORE_INDICATOR_DARK"
         )
     }
+    
+    func test_feedWithLoadMoreError() {
+        let sut = makeSUT()
+        
+        sut.display(feedWithLoadMoreError())
+        
+        assert(
+            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light)),
+            named: "FEED_WITH_LOAD_MORE_ERROR_LIGHT"
+        )
+        assert(
+            snapshot: sut.snapshot(for: .iPhone16Pro(style: .dark)),
+            named: "FEED_WITH_LOAD_MORE_ERROR_DARK"
+        )
+        assert(
+            snapshot: sut.snapshot(for: .iPhone16Pro(style: .light, contentSize: .extraExtraExtraLarge)),
+            named: "FEED_WITH_LOAD_MORE_ERROR_LIGHT_EXTRA_EXTRA_EXTRA_LARGE"
+        )
+    }
 }
 
 private extension FeedSnapshotTests {
@@ -128,20 +147,25 @@ private extension FeedSnapshotTests {
     }
     
     private func feedWithLoadMoreIndicator() -> [CellController] {
-        let stub = feedWithContent().last!
-        let feedImageCellController = FeedImageCellController(
-            viewModel: stub.viewModel,
-            delegate: stub,
-            onSelect: {}
-        )
-        stub.controller = feedImageCellController
-        
         let loadMoreCellController = LoadMoreCellController()
         loadMoreCellController.display(ResourceLoadingViewModel(isLoading: true))
+        return feedWith(loadMore: loadMoreCellController)
+    }
+    
+    private func feedWithLoadMoreError() -> [CellController] {
+        let loadMoreCellController = LoadMoreCellController()
+        loadMoreCellController.display(ResourceErrorViewModel(message: "This is a multiline\nerror message"))
+        return feedWith(loadMore: loadMoreCellController)
+    }
+    
+    private func feedWith(loadMore: LoadMoreCellController) -> [CellController] {
+        let stub = feedWithContent().last!
+        let cellController = FeedImageCellController(viewModel: stub.viewModel, delegate: stub, onSelect: {})
+        stub.controller = cellController
         
         return [
-            CellController(id: UUID(), dataSource: feedImageCellController),
-            CellController(id: UUID(), dataSource: loadMoreCellController)
+            CellController(id: UUID(), dataSource: cellController),
+            CellController(id: UUID(), dataSource: loadMore)
         ]
     }
 }
