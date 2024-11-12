@@ -62,12 +62,15 @@ extension ListViewController {
         return tableView.numberOfSections > section ? tableView.numberOfRows(inSection: section) : .zero
     }
     
-    private func cell(row: Int, section: Int) -> UITableViewCell? {
-        guard numberOfRows(in: section) > row else { return nil }
+    private func cell(at indexPath: IndexPath) -> UITableViewCell? {
+        guard numberOfRows(in: indexPath.section) > indexPath.row else { return nil }
         
         let dataSource = tableView.dataSource
-        let index = IndexPath(row: row, section: section)
-        return dataSource?.tableView(tableView, cellForRowAt: index)
+        return dataSource?.tableView(tableView, cellForRowAt: indexPath)
+    }
+    
+    private func cell(row: Int, section: Int) -> UITableViewCell? {
+        return cell(at: IndexPath(row: row, section: section))
     }
     
     func renderedFeedImageData(at index: Int = .zero) -> Data? {
@@ -161,5 +164,16 @@ extension ListViewController {
     
     func commentUsername(at index: Int) -> String? {
         return imageCommentView(at: index)?.usernameLabel.text
+    }
+}
+
+extension ListViewController {
+    private var feedLoadMoreSection: Int { 1 }
+    
+    func simulateLoadMoreFeedAction() {
+        let index = IndexPath(row: .zero, section: feedLoadMoreSection)
+        guard let view = cell(at: index) else { return }
+
+        tableView.delegate?.tableView?(tableView, willDisplay: view, forRowAt: index)
     }
 }

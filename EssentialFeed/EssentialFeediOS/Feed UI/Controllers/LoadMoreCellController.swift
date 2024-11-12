@@ -3,6 +3,11 @@ import UIKit
 
 public class LoadMoreCellController: NSObject {
     private let cell = LoadMoreCell()
+    private let callback: () -> Void
+    
+    public init(callback: @escaping () -> Void) {
+        self.callback = callback
+    }
 }
 
 extension LoadMoreCellController: UITableViewDataSource {
@@ -12,6 +17,16 @@ extension LoadMoreCellController: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         return cell
+    }
+}
+
+extension LoadMoreCellController: UITableViewDelegate {
+    public func tableView(
+        _ tableView: UITableView,
+        willDisplay cell: UITableViewCell,
+        forRowAt indexPath: IndexPath
+    ) {
+        callback()
     }
 }
 

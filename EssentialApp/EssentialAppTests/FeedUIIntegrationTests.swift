@@ -27,6 +27,7 @@ private final class LoaderSpy: FeedImageDataLoader {
     private var feedRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
     private var imageRequests = [(url: URL, completion: LoadImageResultCompletion)]()
     private(set) var cancelledImageURLs = [URL]()
+    private(set) var loadMoreCallCount = Int.zero
     
     var loadedImageURLs: [URL] {
         return imageRequests.map(\.url)
@@ -43,7 +44,9 @@ private final class LoaderSpy: FeedImageDataLoader {
     }
     
     func completeFeedLoading(with feed: [FeedImage] = [], at index: Int = .zero) {
-        feedRequests[index].send(Paginated(items: feed))
+        feedRequests[index].send(Paginated(items: feed) { [weak self] _ in
+            self?.loadMoreCallCount += 1
+        })
     }
     
     func completeFeedLoadingWithError(at index: Int = .zero) {
@@ -117,6 +120,16 @@ final class FeedUIIntegrationTests: XCTestCase {
         
         sut.simulateUserInitiatedReload()
         XCTAssertEqual(loader.loadFeedCallCount, 3, "Expected another request after initiating another load")
+    }
+    
+    func test_loadMoreActions_requestMoreFromLoader() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        loader.completeFeedLoading()
+        XCTAssertEqual(loader.loadMoreCallCount, 0)
+        
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertEqual(loader.loadMoreCallCount, 1)
     }
     
     func test_loadingFeedIndicator_isVisibleWhileLoadingFeed() {
