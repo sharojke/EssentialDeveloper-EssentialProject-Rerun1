@@ -10,8 +10,4 @@ public final class FeedPresenter {
             comment: ""
         )
     }
-    
-    public static func map(_ feed: [FeedImage]) -> FeedViewModel {
-        return FeedViewModel(feed: feed)
-    }
 }
