@@ -26,6 +26,8 @@ extension LoadMoreCellController: UITableViewDelegate {
         willDisplay cell: UITableViewCell,
         forRowAt indexPath: IndexPath
     ) {
+        guard !self.cell.isLoading else { return }
+        
         callback()
     }
 }

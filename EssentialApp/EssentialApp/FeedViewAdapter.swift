@@ -5,6 +5,8 @@ import UIKit
 final class FeedViewAdapter: ResourceView {
     private typealias WeakFeedImageCellController = WeakRefVirtualProxy<FeedImageCellController>
     private typealias ImageDataPresentationAdapter = LoadResourcePresentationAdapter<Data, WeakFeedImageCellController>
+    // swiftlint:disable:next line_length
+    private typealias LoadMorePresentationAdapter = LoadResourcePresentationAdapter<Paginated<FeedImage>, FeedViewAdapter>
     
     private weak var controller: ListViewController?
     private let loader: (URL) -> FeedImageDataLoader.Publisher
@@ -42,11 +44,19 @@ final class FeedViewAdapter: ResourceView {
                 return CellController(id: feedImage, dataSource: view)
             }
         
-        let loadMore = LoadMoreCellController {
-            viewModel.loadMore? { _ in }
+        guard let loadMorePublisher = viewModel.loadMorePublisher else {
+            controller?.display(feedSection)
+            return
         }
-        let loadMoreSection = [CellController(id: UUID(), dataSource: loadMore)]
         
+        let loadMoreAdapter = LoadMorePresentationAdapter(loader: loadMorePublisher)
+        let loadMore = LoadMoreCellController(callback: loadMoreAdapter.loadResource)
+        loadMoreAdapter.resourcePresenter = LoadResourcePresenter(
+            resourceView: self,
+            loadingView: WeakRefVirtualProxy(loadMore),
+            errorView: WeakRefVirtualProxy(loadMore)
+        )
+        let loadMoreSection = [CellController(id: UUID(), dataSource: loadMore)]
         controller?.display(feedSection, loadMoreSection)
     }
 }
