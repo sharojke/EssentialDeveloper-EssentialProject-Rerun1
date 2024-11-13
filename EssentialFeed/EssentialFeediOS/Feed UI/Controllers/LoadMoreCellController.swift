@@ -2,7 +2,7 @@ import EssentialFeed
 import UIKit
 
 public class LoadMoreCellController: NSObject {
-    private let cell = LoadMoreCell()
+    private lazy var cell = LoadMoreCell()
     private let callback: () -> Void
     
     public init(callback: @escaping () -> Void) {
