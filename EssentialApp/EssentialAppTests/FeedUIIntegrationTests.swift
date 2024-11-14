@@ -145,31 +145,6 @@ final class FeedUIIntegrationTests: XCTestCase {
         XCTAssertEqual(loader.loadFeedCallCount, 3, "Expected another request after initiating another load")
     }
     
-    func test_loadMoreActions_requestMoreFromLoader() {
-        let (sut, loader) = makeSUT()
-        sut.simulateAppearance()
-        loader.completeFeedLoading()
-        XCTAssertEqual(loader.loadMoreCallCount, 0)
-        
-        sut.simulateLoadMoreFeedAction()
-        XCTAssertEqual(loader.loadMoreCallCount, 1)
-        
-        sut.simulateLoadMoreFeedAction()
-        XCTAssertEqual(loader.loadMoreCallCount, 1, "Expected no request while loading more")
-        
-        loader.completeLoadMore(lastPage: false, at: .zero)
-        sut.simulateLoadMoreFeedAction()
-        XCTAssertEqual(loader.loadMoreCallCount, 2)
-        
-        loader.completeLoadMoreWithError(at: 1)
-        sut.simulateLoadMoreFeedAction()
-        XCTAssertEqual(loader.loadMoreCallCount, 3)
-        
-        loader.completeLoadMore(lastPage: true, at: 2)
-        sut.simulateLoadMoreFeedAction()
-        XCTAssertEqual(loader.loadMoreCallCount, 3)
-    }
-    
     func test_loadingFeedIndicator_isVisibleWhileLoadingFeed() {
         let (sut, loader) = makeSUT()
         
@@ -191,28 +166,6 @@ final class FeedUIIntegrationTests: XCTestCase {
         sut.simulateUserInitiatedReload()
         loader.completeFeedLoadingWithError(at: 2)
         XCTAssertFalse(sut.isShowingLoadingIndicator(), "Expected hidden after the loading is completed with an error")
-    }
-    
-    func test_loadingMoreIndicator_isVisibleWhileLoadingMore() {
-        let (sut, loader) = makeSUT()
-        
-        sut.simulateAppearance()
-        XCTAssertFalse(sut.isShowingLoadingMoreIndicator())
-        
-        loader.completeFeedLoading(at: 0)
-        XCTAssertFalse(sut.isShowingLoadingMoreIndicator())
-        
-        sut.simulateLoadMoreFeedAction()
-        XCTAssertTrue(sut.isShowingLoadingMoreIndicator())
-        
-        loader.completeLoadMore(at: .zero)
-        XCTAssertFalse(sut.isShowingLoadingMoreIndicator())
-        
-        sut.simulateLoadMoreFeedAction()
-        XCTAssertTrue(sut.isShowingLoadingMoreIndicator())
-        
-        loader.completeLoadMoreWithError(at: 1)
-        XCTAssertFalse(sut.isShowingLoadingMoreIndicator())
     }
     
     func test_loadFeedCompletion_rendersSuccessfullyLoadedFeed() {
@@ -281,21 +234,6 @@ final class FeedUIIntegrationTests: XCTestCase {
         let exp = expectation(description: "Wait for the feed loading completion")
         DispatchQueue.global().async { [weak loader] in
             loader?.completeFeedLoading()
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1)
-    }
-    
-    func test_loadMoreCompletion_dispatchesFromBackgroundToMainThread() {
-        let (sut, loader) = makeSUT()
-        sut.simulateAppearance()
-        loader.completeFeedLoading()
-        sut.simulateLoadMoreFeedAction()
-        
-        let exp = expectation(description: "Wait for the more loading completion")
-        DispatchQueue.global().async { [weak loader] in
-            loader?.completeLoadMore()
             exp.fulfill()
         }
         
@@ -844,6 +782,70 @@ final class FeedUIIntegrationTests: XCTestCase {
 
         sut.simulateTapOnErrorMessage()
         XCTAssertEqual(sut.errorMessage, nil)
+    }
+    
+    // MARK: Load More Tests
+    
+    func test_loadMoreActions_requestMoreFromLoader() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        loader.completeFeedLoading()
+        XCTAssertEqual(loader.loadMoreCallCount, 0)
+        
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertEqual(loader.loadMoreCallCount, 1)
+        
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertEqual(loader.loadMoreCallCount, 1, "Expected no request while loading more")
+        
+        loader.completeLoadMore(lastPage: false, at: .zero)
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertEqual(loader.loadMoreCallCount, 2)
+        
+        loader.completeLoadMoreWithError(at: 1)
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertEqual(loader.loadMoreCallCount, 3)
+        
+        loader.completeLoadMore(lastPage: true, at: 2)
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertEqual(loader.loadMoreCallCount, 3)
+    }
+    
+    func test_loadingMoreIndicator_isVisibleWhileLoadingMore() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        XCTAssertFalse(sut.isShowingLoadingMoreIndicator())
+        
+        loader.completeFeedLoading(at: 0)
+        XCTAssertFalse(sut.isShowingLoadingMoreIndicator())
+        
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertTrue(sut.isShowingLoadingMoreIndicator())
+        
+        loader.completeLoadMore(at: .zero)
+        XCTAssertFalse(sut.isShowingLoadingMoreIndicator())
+        
+        sut.simulateLoadMoreFeedAction()
+        XCTAssertTrue(sut.isShowingLoadingMoreIndicator())
+        
+        loader.completeLoadMoreWithError(at: 1)
+        XCTAssertFalse(sut.isShowingLoadingMoreIndicator())
+    }
+    
+    func test_loadMoreCompletion_dispatchesFromBackgroundToMainThread() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        loader.completeFeedLoading()
+        sut.simulateLoadMoreFeedAction()
+        
+        let exp = expectation(description: "Wait for the more loading completion")
+        DispatchQueue.global().async { [weak loader] in
+            loader?.completeLoadMore()
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1)
     }
     
     // MARK: Helpers
