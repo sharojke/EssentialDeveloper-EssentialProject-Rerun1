@@ -137,6 +137,10 @@ extension ListViewController {
         return errorView.message
     }
     
+    var loadMoreFeedErrorMessage: String? {
+        return loadMoreFeedCell().cell?.message
+    }
+    
     func simulateTapOnErrorMessage() {
         errorView.simulateTap()
     }
