@@ -2,8 +2,13 @@ import EssentialFeed
 import UIKit
 
 public class LoadMoreCellController: NSObject {
-    private lazy var cell = LoadMoreCell()
     private let callback: () -> Void
+    
+    private lazy var cell: LoadMoreCell = {
+        let cell = LoadMoreCell()
+        cell.selectionStyle = .none
+        return cell
+    }()
     
     public init(callback: @escaping () -> Void) {
         self.callback = callback
