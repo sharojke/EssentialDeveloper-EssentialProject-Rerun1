@@ -3,7 +3,7 @@ import Foundation
 extension CoreDataFeedStore: FeedImageDataStore {
     public func retrieveData(for url: URL, completion: @escaping FeedImageDataStore.RetrieveCompletion) {
         perform { context in
-            completion(Result { try ManagedFeedImage.first(with: url, in: context)?.data })
+            completion(Result { try ManagedFeedImage.data(with: url, in: context) })
         }
     }
     
