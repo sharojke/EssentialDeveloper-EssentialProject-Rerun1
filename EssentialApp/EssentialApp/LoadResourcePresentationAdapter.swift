@@ -6,6 +6,7 @@ import Foundation
 public final class LoadResourcePresentationAdapter<Resource, View: ResourceView> {
     private let loader: () -> AnyPublisher<Resource, Error>
     private var cancellable: Cancellable?
+    private var isLoading = false
     var resourcePresenter: LoadResourcePresenter<Resource, View>?
     
     init(loader: @escaping () -> AnyPublisher<Resource, Error>) {
@@ -13,22 +14,30 @@ public final class LoadResourcePresentationAdapter<Resource, View: ResourceView>
     }
     
     func loadResource() {
-        resourcePresenter?.didStartLoading()
+        guard !isLoading else { return }
         
-        cancellable = loader().sink(
-            receiveCompletion: { [weak resourcePresenter] completion in
-                switch completion {
-                case .finished:
-                    break
-                    
-                case .failure(let error):
-                    resourcePresenter?.didFinishLoading(with: error)
+        resourcePresenter?.didStartLoading()
+        isLoading = true
+        
+        cancellable = loader()
+            .handleEvents(receiveCancel: { [weak self] in
+                self?.isLoading = false
+            })
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    switch completion {
+                    case .finished:
+                        break
+                        
+                    case .failure(let error):
+                        self?.resourcePresenter?.didFinishLoading(with: error)
+                    }
+                    self?.isLoading = false
+                },
+                receiveValue: { [weak resourcePresenter] resource in
+                    resourcePresenter?.didFinishLoading(with: resource)
                 }
-            },
-            receiveValue: { [weak resourcePresenter] resource in
-                resourcePresenter?.didFinishLoading(with: resource)
-            }
-        )
+            )
     }
 }
 

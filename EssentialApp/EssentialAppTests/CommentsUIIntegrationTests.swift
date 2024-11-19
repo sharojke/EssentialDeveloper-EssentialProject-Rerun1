@@ -34,6 +34,7 @@ private final class LoaderSpy {
     
     func completeLoading(with comments: [ImageComment] = [], at index: Int = .zero) {
         requests[index].send(comments)
+        requests[index].send(completion: .finished)
     }
     
     func completeLoadingWithError(at index: Int = .zero) {
@@ -69,8 +70,13 @@ final class CommentsUIIntegrationTests: XCTestCase {
         XCTAssertEqual(loader.loadCallCount, 1, "Expected a request after view is appeared")
         
         sut.simulateUserInitiatedReload()
+        XCTAssertEqual(loader.loadCallCount, 1, "Expected no request until previous completes")
+        
+        loader.completeLoading(at: .zero)
+        sut.simulateUserInitiatedReload()
         XCTAssertEqual(loader.loadCallCount, 2, "Expected another request after initiating a load")
         
+        loader.completeLoading(at: 1)
         sut.simulateUserInitiatedReload()
         XCTAssertEqual(loader.loadCallCount, 3, "Expected another request after initiating another load")
     }

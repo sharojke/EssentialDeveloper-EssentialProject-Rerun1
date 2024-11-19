@@ -13,7 +13,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         category: "main"
     )
 
-    
     private lazy var httpClient: HTTPClient = URLSessionHTTPClient(
         session: URLSession(configuration: .ephemeral)
     )
