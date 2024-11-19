@@ -14,11 +14,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private lazy var localFeedLoader = LocalFeedLoader(store: store, currentDate: Date.init)
     
     // swiftlint:disable:next force_try
-    private lazy var store: FeedStore & FeedImageDataStore = try! CoreDataFeedStore(
-        storeURL: NSPersistentContainer
-            .defaultDirectoryURL()
-            .appendingPathComponent("feed-store.sqlite")
-    )
+    private lazy var store: FeedStore & FeedImageDataStore = {
+        do {
+            return try CoreDataFeedStore(
+                storeURL: NSPersistentContainer
+                    .defaultDirectoryURL()
+                    .appendingPathComponent("feed-store.sqlite")
+            )
+        } catch {
+            return NullStore()
+        }
+    }()
     
     // swiftlint:disable:next force_unwrapping
     private lazy var baseURL = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed")!
