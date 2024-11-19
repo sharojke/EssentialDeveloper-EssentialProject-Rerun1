@@ -725,6 +725,15 @@ final class FeedUIIntegrationTests: XCTestCase {
         sut.simulateFeedImageViewNotVisible(at: .zero) // cancels the request
         sut.simulateFeedImageViewVisible(at: .zero)
         XCTAssertEqual(loader.loadedImageURLs, [image.url, image.url, image.url])
+        
+        sut.simulateLoadMoreFeedAction()
+        loader.completeLoadMore(with: [image, makeImage()])
+        sut.simulateFeedImageViewVisible(at: 0)
+        XCTAssertEqual(
+            loader.loadedImageURLs,
+            [image.url, image.url, image.url],
+            "Expected no request until previous completes"
+        )
     }
     
     func test_loadImageDataCompletion_dispatchesFromBackgroundToMainThread() {
