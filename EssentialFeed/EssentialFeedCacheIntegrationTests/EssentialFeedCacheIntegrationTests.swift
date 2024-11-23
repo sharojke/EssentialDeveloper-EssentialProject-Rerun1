@@ -201,24 +201,19 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Wait for save completion")
-        loader.save(data, for: url) { result in
-            switch result {
-            case .success:
-                break
-                
-            case .failure(let error):
-                XCTFail(
-                    "Expected to save image data successfully, got error: \(error)",
-                    file: file,
-                    line: line
-                )
-            }
-            
-            exp.fulfill()
-        }
+        let result = Result { try loader.save(data, for: url) }
         
-        wait(for: [exp], timeout: 1)
+        switch result {
+        case .success:
+            break
+            
+        case .failure(let error):
+            XCTFail(
+                "Expected to save image data successfully, got error: \(error)",
+                file: file,
+                line: line
+            )
+        }
     }
     
     private func expect(
@@ -228,20 +223,15 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Wait for load")
-        _ = loader.loadImageData(from: url) { result in
-            switch result {
-            case .success(let receivedData):
-                XCTAssertEqual(receivedData, expectedData, file: file, line: line)
-                
-            case let .failure(error):
-                XCTFail("Expected successful image data result, got \(error) instead", file: file, line: line)
-            }
-            
-            exp.fulfill()
-        }
+        let result = Result { try loader.loadImageData(from: url) }
         
-        wait(for: [exp], timeout: 1)
+        switch result {
+        case .success(let receivedData):
+            XCTAssertEqual(receivedData, expectedData, file: file, line: line)
+            
+        case let .failure(error):
+            XCTFail("Expected successful image data result, got \(error) instead", file: file, line: line)
+        }
     }
     
     private func testSpecificStoreURL() -> URL {
