@@ -8,8 +8,8 @@ final class FeedImageDataStoreSpy: FeedImageDataStore {
     }
     
     private(set) var receivedMessages = [Message]()
-    private var retrieveResult: RetrieveResult?
-    private var insertResult: InsertResult?
+    private var retrieveResult: Result<Data?, Error>?
+    private var insertResult: Result<Void, Error>?
     
     // MARK: Retrieve
     

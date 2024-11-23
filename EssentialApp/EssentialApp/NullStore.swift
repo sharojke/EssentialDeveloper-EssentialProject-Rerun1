@@ -18,11 +18,9 @@ extension NullStore: FeedStore {
 }
 
 extension NullStore: FeedImageDataStore {
-    func insert(_ data: Data, for url: URL, completion: @escaping InsertCompletion) {
-        completion(.success(Void()))
-    }
+    func insert(_ data: Data, for url: URL) throws {}
     
-    func retrieveData(for url: URL, completion: @escaping FeedImageDataStore.RetrieveCompletion) {
-        completion(.success(nil))
+    func retrieveData(for url: URL) throws -> Data? {
+        return nil
     }
 }
