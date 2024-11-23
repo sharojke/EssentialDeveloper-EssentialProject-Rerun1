@@ -49,13 +49,13 @@ final class CacheFeedImageDataUseCaseTests: XCTestCase {
     
     private func failure(
         _ error: LocalFeedImageDataLoader.SaveError
-    ) -> LocalFeedImageDataLoader.SaveImageResult {
+    ) -> Result<Void, Error> {
         return .failure(error)
     }
     
     private func expect(
         _ sut: LocalFeedImageDataLoader,
-        toCompleteWith expectedResult: LocalFeedImageDataLoader.SaveImageResult,
+        toCompleteWith expectedResult: Result<Void, Error>,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
