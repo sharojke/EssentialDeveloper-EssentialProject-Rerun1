@@ -13,7 +13,7 @@ final class CacheFeedImageDataUseCaseTests: XCTestCase {
         let url = anyURL()
         let data = anyData()
         
-        sut.save(data, for: url) { _ in }
+        try? sut.save(data, for: url)
         
         XCTAssertEqual(store.receivedMessages, [.insert(data, for: url)])
     }
@@ -60,31 +60,26 @@ final class CacheFeedImageDataUseCaseTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Wait for save completion")
         action()
         
-        sut.save(anyData(), for: anyURL()) { receivedResult in
-            switch (receivedResult, expectedResult) {
-            case (.success, .success):
-                break
-                
-            case let (
-                .failure(receivedError as LocalFeedImageDataLoader.SaveError),
-                .failure(expectedError as LocalFeedImageDataLoader.SaveError)
-            ):
-                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
-                
-            default:
-                XCTFail(
-                    "Expected result \(expectedResult), got \(receivedResult) instead",
-                    file: file,
-                    line: line
-                )
-            }
-            
-            exp.fulfill()
-        }
+        let receivedResult = Result { try sut.save(anyData(), for: anyURL()) }
         
-        wait(for: [exp], timeout: 1)
+        switch (receivedResult, expectedResult) {
+        case (.success, .success):
+            break
+            
+        case let (
+            .failure(receivedError as LocalFeedImageDataLoader.SaveError),
+            .failure(expectedError as LocalFeedImageDataLoader.SaveError)
+        ):
+            XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+            
+        default:
+            XCTFail(
+                "Expected result \(expectedResult), got \(receivedResult) instead",
+                file: file,
+                line: line
+            )
+        }
     }
 }
