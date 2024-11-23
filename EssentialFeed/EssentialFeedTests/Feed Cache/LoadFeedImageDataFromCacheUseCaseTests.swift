@@ -42,35 +42,6 @@ final class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
         }
     }
     
-    func test_loadImageDataFromURL_doesNotDeliverResultAfterCancellingTask() {
-        let (sut, store) = makeSUT()
-        
-        var receivedResults = [LocalFeedImageDataLoader.LoadImageResult]()
-        let task = sut.loadImageData(from: anyURL()) { receivedResults.append($0) }
-        
-        task.cancel()
-        store.completeRetrieval(with: anyError())
-        store.completeRetrieval(with: anyData())
-        store.completeRetrieval(with: nil)
-        
-        XCTAssertTrue(receivedResults.isEmpty)
-    }
-    
-    func test_loadImageDataFromURL_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
-        let store = FeedImageDataStoreSpy()
-        var sut: LocalFeedImageDataLoader? = LocalFeedImageDataLoader(store: store)
-        
-        var receivedResults = [LocalFeedImageDataLoader.LoadImageResult]()
-        _ = sut?.loadImageData(from: anyURL()) { receivedResults.append($0) }
-        
-        sut = nil
-        store.completeRetrieval(with: anyError())
-        store.completeRetrieval(with: anyData())
-        store.completeRetrieval(with: nil)
-        
-        XCTAssertTrue(receivedResults.isEmpty)
-    }
-    
     // MARK: Helpers
     
     private func makeSUT(
@@ -98,6 +69,7 @@ final class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
         line: UInt = #line
     ) {
         let url = anyURL()
+        action()
         
         let exp = expectation(description: "Wait for load image data completion")
         _ = sut.loadImageData(from: url) { receivedResult in
@@ -130,7 +102,6 @@ final class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
             exp.fulfill()
         }
         
-        action()
         wait(for: [exp], timeout: 1)
     }
 }

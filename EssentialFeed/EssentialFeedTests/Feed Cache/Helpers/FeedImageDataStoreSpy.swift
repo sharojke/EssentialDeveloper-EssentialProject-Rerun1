@@ -8,22 +8,22 @@ final class FeedImageDataStoreSpy: FeedImageDataStore {
     }
     
     private(set) var receivedMessages = [Message]()
-    private var retrieveCompletions = [RetrieveCompletion]()
+    private var retrieveResult: RetrieveResult?
     private var insertResult: InsertResult?
     
     // MARK: Retrieve
     
-    func retrieveData(for url: URL, completion: @escaping RetrieveCompletion) {
+    func retrieveData(for url: URL) throws -> Data? {
         receivedMessages.append(.retrieveData(for: url))
-        retrieveCompletions.append(completion)
+        return try retrieveResult?.get()
     }
     
     func completeRetrieval(with error: Error, at index: Int = .zero) {
-        retrieveCompletions[index](.failure(error))
+        retrieveResult = .failure(error)
     }
     
     func completeRetrieval(with data: Data?, at index: Int = .zero) {
-        retrieveCompletions[index](.success(data))
+        retrieveResult = .success(data)
     }
     
     // MARK: Insertion
