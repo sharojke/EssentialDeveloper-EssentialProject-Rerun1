@@ -9,7 +9,7 @@ final class FeedImageDataStoreSpy: FeedImageDataStore {
     
     private(set) var receivedMessages = [Message]()
     private var retrieveCompletions = [RetrieveCompletion]()
-    private var insertCompletions = [InsertCompletion]()
+    private var insertResult: InsertResult?
     
     // MARK: Retrieve
     
@@ -28,16 +28,16 @@ final class FeedImageDataStoreSpy: FeedImageDataStore {
     
     // MARK: Insertion
     
-    func insert(_ data: Data, for url: URL, completion: @escaping InsertCompletion) {
+    func insert(_ data: Data, for url: URL) throws {
         receivedMessages.append(.insert(data, for: url))
-        insertCompletions.append(completion)
+        try insertResult?.get()
     }
     
     func completeInsertion(with error: Error, at index: Int = .zero) {
-        insertCompletions[index](.failure(error))
+        insertResult = .failure(error)
     }
     
     func completeInsertionSuccessfully(at index: Int = .zero) {
-        insertCompletions[index](.success(Void()))
+        insertResult = .success(Void())
     }
 }
