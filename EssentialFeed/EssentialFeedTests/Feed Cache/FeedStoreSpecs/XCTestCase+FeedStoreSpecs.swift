@@ -119,41 +119,6 @@ extension FeedStoreSpecs where Self: XCTestCase {
         
         expect(sut, toRetrieveTwice: .success(nil), file: file, line: line)
     }
-    
-    func assertThatSideEffectsRunSerially(
-        on sut: FeedStore,
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) {
-        var completedOperationsInOrder = [XCTestExpectation]()
-        
-        let operation1 = expectation(description: "Operation 1")
-        sut.insert(uniqueFeed().local, timestamp: Date()) { _ in
-            completedOperationsInOrder.append(operation1)
-            operation1.fulfill()
-        }
-        
-        let operation2 = expectation(description: "Operation 2")
-        sut.deleteCachedFeed { _ in
-            completedOperationsInOrder.append(operation2)
-            operation2.fulfill()
-        }
-        
-        let operation3 = expectation(description: "Operation 3")
-        sut.insert(uniqueFeed().local, timestamp: Date()) { _ in
-            completedOperationsInOrder.append(operation3)
-            operation3.fulfill()
-        }
-        
-        waitForExpectations(timeout: 5)
-        XCTAssertEqual(
-            completedOperationsInOrder,
-            [operation1, operation2, operation3],
-            "The order is wrong",
-            file: file,
-            line: line
-        )
-    }
 }
 
 extension FeedStoreSpecs where Self: XCTestCase {
@@ -163,29 +128,23 @@ extension FeedStoreSpecs where Self: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Wait for retrieval")
-
-        sut.retrieve { receivedResult in
-            switch (receivedResult, expectedResult) {
-            case let (.success(.some(receivedFeed)), .success(.some(expectedFeed))):
-                XCTAssertEqual(receivedFeed.feed, expectedFeed.feed, file: file, line: line)
-                XCTAssertEqual(receivedFeed.timestamp, expectedFeed.timestamp, file: file, line: line)
-                
-            case (.failure, .failure), (.success, .success):
-                break
-                
-            default:
-                XCTFail(
-                    "Expected \(expectedResult), got \(receivedResult) instead",
-                    file: file,
-                    line: line
-                )
-            }
-            
-            exp.fulfill()
-        }
+        let receivedResult = Result { try sut.retrieve() }
         
-        wait(for: [exp], timeout: 1)
+        switch (receivedResult, expectedResult) {
+        case let (.success(.some(receivedFeed)), .success(.some(expectedFeed))):
+            XCTAssertEqual(receivedFeed.feed, expectedFeed.feed, file: file, line: line)
+            XCTAssertEqual(receivedFeed.timestamp, expectedFeed.timestamp, file: file, line: line)
+            
+        case (.failure, .failure), (.success, .success):
+            break
+            
+        default:
+            XCTFail(
+                "Expected \(expectedResult), got \(receivedResult) instead",
+                file: file,
+                line: line
+            )
+        }
     }
     
     func expect(
@@ -206,22 +165,19 @@ extension FeedStoreSpecs where Self: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Wait for insert")
-        sut.insert(feed, timestamp: timestamp) { receivedResult in
-            switch (receivedResult, expectedResult) {
-            case (.success, .success), (.failure, .failure):
-                break
-                
-            default:
-                XCTFail(
-                    "Expected \(expectedResult), got \(receivedResult) instead",
-                    file: file,
-                    line: line
-                )
-            }
-            exp.fulfill()
+        let receivedResult = Result { try sut.insert(feed, timestamp: timestamp) }
+        
+        switch (receivedResult, expectedResult) {
+        case (.success, .success), (.failure, .failure):
+            break
+            
+        default:
+            XCTFail(
+                "Expected \(expectedResult), got \(receivedResult) instead",
+                file: file,
+                line: line
+            )
         }
-        wait(for: [exp], timeout: 1)
     }
     
     func expect(
@@ -230,25 +186,19 @@ extension FeedStoreSpecs where Self: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Wait for delete cache feed")
-
-        sut.deleteCachedFeed { receivedResult in
-            switch (receivedResult, expectedResult) {
-            case (.success, .success), (.failure, .failure):
-                break
-                
-            default:
-                XCTFail(
-                    "Expected \(expectedResult), got \(receivedResult) instead",
-                    file: file,
-                    line: line
-                )
-            }
-            
-            exp.fulfill()
-        }
+        let receivedResult = Result { try sut.deleteCachedFeed() }
         
-        wait(for: [exp], timeout: 1)
+        switch (receivedResult, expectedResult) {
+        case (.success, .success), (.failure, .failure):
+            break
+            
+        default:
+            XCTFail(
+                "Expected \(expectedResult), got \(receivedResult) instead",
+                file: file,
+                line: line
+            )
+        }
     }
     
     func insert(

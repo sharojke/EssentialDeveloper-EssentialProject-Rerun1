@@ -89,23 +89,9 @@ final class CoreDataFeedImageDataStoreTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let image = localImage(url: url)
-        let exp = expectation(description: "Wait for insert completion")
-        sut.insert([image], timestamp: Date()) { result in
-            switch result {
-            case .success:
-                break
-                
-            case .failure(let error):
-                XCTFail("Failed to save \(image) with error \(error)", file: file, line: line)
-            }
-            
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1)
-        
         do {
+            let image = localImage(url: url)
+            try sut.insert([image], timestamp: Date())
             try sut.insert(data, for: url)
         } catch {
             XCTFail("Failed to insert \(data) with error \(error)", file: file, line: line)
