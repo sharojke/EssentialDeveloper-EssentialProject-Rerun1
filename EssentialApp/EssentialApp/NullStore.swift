@@ -4,16 +4,11 @@ import Foundation
 final class NullStore {}
 
 extension NullStore: FeedStore {
-    func deleteCachedFeed(completion: @escaping DeleteCompletion) {
-        completion(.success(Void()))
-    }
+    func deleteCachedFeed() throws {}
+    func insert(_ feed: [LocalFeedImage], timestamp: Date) throws {}
     
-    func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertCompletion) {
-        completion(.success(Void()))
-    }
-    
-    func retrieve(completion: @escaping FeedStore.RetrieveCompletion) {
-        completion(.success(nil))
+    func retrieve() throws -> CachedFeed? {
+        return nil
     }
 }
 
