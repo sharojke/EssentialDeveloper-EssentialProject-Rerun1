@@ -86,6 +86,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .caching(to: localFeedLoader)
             .fallback(to: localFeedLoader.loadPublisher)
             .map(makeFirstPage)
+            .subscribe(on: scheduler)
             .eraseToAnyPublisher()
     }
     
@@ -97,6 +98,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
             .map(makePage)
             .caching(to: localFeedLoader)
+            .subscribe(on: scheduler)
             .eraseToAnyPublisher()
     }
     
@@ -127,12 +129,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         return localImageLoader
             .loadImageDataPublisher(from: url)
-            .fallback { [httpClient] in
+            .fallback { [httpClient, scheduler] in
                 httpClient
                     .getPublisher(url: url)
                     .tryMap(FeedImageDataMapper.map)
                     .caching(to: localImageLoader, using: url)
+                    .subscribe(on: scheduler)
+                    .eraseToAnyPublisher()
             }
+            .subscribe(on: scheduler)
+            .eraseToAnyPublisher()
     }
     
     private func showComments(for image: FeedImage) {
