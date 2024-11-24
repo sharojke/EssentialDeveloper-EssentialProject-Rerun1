@@ -13,7 +13,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
         let deletionError = anyNSError()
         store.completeDeletion(with: deletionError)
         
-        sut.save(uniqueFeed().models) { _ in }
+        try? sut.save(uniqueFeed().models)
         
         XCTAssertTrue(store.receivedMessages == [.deleteCachedFeed])
     }
@@ -24,7 +24,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
         let (models, local) = uniqueFeed()
         store.completeDeletionSuccessfully()
         
-        sut.save(models) { _ in }
+        try? sut.save(models)
         
         XCTAssertTrue(store.receivedMessages == [.deleteCachedFeed, .insert(local, timestamp)])
     }
@@ -73,22 +73,14 @@ final class CacheFeedUseCaseTests: XCTestCase {
     
     private func expect(
         _ sut: LocalFeedLoader,
-        toCompleteWithResult expectedResult: LocalFeedLoader.SaveResult,
+        toCompleteWithResult expectedResult: Result<Void, Error>,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Wait for save completion")
         action()
-        
-        var receivedResult: LocalFeedLoader.SaveResult?
-        sut.save(uniqueFeed().models) { result in
-            receivedResult = result
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1)
-        
+        let receivedResult = Result { try sut.save(uniqueFeed().models) }
+                
         switch (receivedResult, expectedResult) {
         case (.success, .success):
             break

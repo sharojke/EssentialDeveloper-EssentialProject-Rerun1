@@ -158,19 +158,11 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Wait for save")
-        loader.save(feed) { result in
-            switch result {
-            case .success:
-                break
-                
-            case .failure(let error):
-                XCTFail("Expect success, got \(error) instead", file: file, line: line)
-            }
-            
-            exp.fulfill()
+        do {
+            try loader.save(feed)
+        } catch {
+            XCTFail("Expect success, got \(error) instead", file: file, line: line)
         }
-        wait(for: [exp], timeout: 1)
     }
     
     private func validateCache(
