@@ -70,18 +70,18 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
     
     func test_load_hasNoSideEffectsOnRetrievalError() {
         let (sut, store) = makeSUT()
+        store.completeRetrieval(with: anyNSError())
         
         sut.load { _ in }
-        store.completeRetrieval(with: anyNSError())
         
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
     
     func test_load_hasNoSideEffectsOnEmptyCache() {
         let (sut, store) = makeSUT()
+        store.completeRetrievalWithEmptyCache()
         
         sut.load { _ in }
-        store.completeRetrievalWithEmptyCache()
         
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
@@ -92,9 +92,9 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         let lessThanSevenDaysOld = Date()
             .minusFeedCacheMaxAge(calendar: calendar)
             .adding(seconds: 1, calendar: calendar)
+        store.completeRetrieval(with: localFeed, date: lessThanSevenDaysOld)
         
         sut.load { _ in }
-        store.completeRetrieval(with: localFeed, date: lessThanSevenDaysOld)
         
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
@@ -104,9 +104,9 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let expiration = Date()
             .minusFeedCacheMaxAge(calendar: calendar)
+        store.completeRetrieval(with: localFeed, date: expiration)
         
         sut.load { _ in }
-        store.completeRetrieval(with: localFeed, date: expiration)
         
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
@@ -117,24 +117,11 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         let expired = Date()
             .minusFeedCacheMaxAge(calendar: calendar)
             .adding(seconds: -1, calendar: calendar)
-        
-        sut.load { _ in }
         store.completeRetrieval(with: localFeed, date: expired)
         
+        sut.load { _ in }
+        
         XCTAssertEqual(store.receivedMessages, [.retrieve])
-    }
-    
-    func test_load_doesNotDeliverResultAfterSUTHasBeenDeallocated() {
-        let store = FeedStoreSpy()
-        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: Date.init)
-        
-        var receivedResults = [LocalFeedLoader.LoadResult]()
-        sut?.load { receivedResults.append($0) }
-        
-        sut = nil
-        store.completeRetrievalWithEmptyCache()
-        
-        XCTAssertTrue(receivedResults.isEmpty)
     }
     
     // MARK: - Helpers
@@ -159,6 +146,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         line: UInt = #line
     ) {
         let exp = expectation(description: "Wait for load completion")
+        action()
         
         sut.load { receivedResult in
             switch (receivedResult, expectedResult) {
@@ -194,8 +182,6 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
             }
             exp.fulfill()
         }
-        
-        action()
         
         wait(for: [exp], timeout: 1)
     }

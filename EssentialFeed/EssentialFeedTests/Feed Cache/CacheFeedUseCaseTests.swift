@@ -8,20 +8,12 @@ final class CacheFeedUseCaseTests: XCTestCase {
         XCTAssertTrue(store.receivedMessages.isEmpty)
     }
     
-    func test_save_requestsCacheDeletion() {
-        let (sut, store) = makeSUT()
-        
-        sut.save(uniqueFeed().models) { _ in }
-        
-        XCTAssertTrue(store.receivedMessages == [.deleteCachedFeed])
-    }
-    
     func test_save_doesNotRequestCacheInsertionOnDeletionError() {
         let (sut, store) = makeSUT()
         let deletionError = anyNSError()
+        store.completeDeletion(with: deletionError)
         
         sut.save(uniqueFeed().models) { _ in }
-        store.completeDeletion(with: deletionError)
         
         XCTAssertTrue(store.receivedMessages == [.deleteCachedFeed])
     }
@@ -30,9 +22,9 @@ final class CacheFeedUseCaseTests: XCTestCase {
         let timestamp = Date()
         let (sut, store) = makeSUT(currentDate: { timestamp })
         let (models, local) = uniqueFeed()
+        store.completeDeletionSuccessfully()
         
         sut.save(models) { _ in }
-        store.completeDeletionSuccessfully()
         
         XCTAssertTrue(store.receivedMessages == [.deleteCachedFeed, .insert(local, timestamp)])
     }
@@ -65,31 +57,6 @@ final class CacheFeedUseCaseTests: XCTestCase {
         }
     }
     
-    func test_save_doesNotDeliverDeletionErrorAfterSUTHasBeenDeallocated() {
-        var (sut, store): (LocalFeedLoader?, FeedStoreSpy) = makeSUT()
-        
-        var receivedResults = [LocalFeedLoader.SaveResult]()
-        sut?.save(uniqueFeed().models) { receivedResults.append($0) }
-        
-        sut = nil
-        store.completeDeletion(with: anyNSError())
-        
-        XCTAssertTrue(receivedResults.isEmpty)
-    }
-    
-    func test_save_doesNotDeliverInsertionErrorAfterSUTHasBeenDeallocated() {
-        var (sut, store): (LocalFeedLoader?, FeedStoreSpy) = makeSUT()
-        
-        var receivedResults = [LocalFeedLoader.SaveResult]()
-        sut?.save(uniqueFeed().models) { receivedResults.append($0) }
-        
-        store.completeDeletionSuccessfully()
-        sut = nil
-        store.completeInsertion(with: anyNSError())
-        
-        XCTAssertTrue(receivedResults.isEmpty)
-    }
-    
     // MARK: - Helpers
     
     private func makeSUT(
@@ -112,6 +79,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
         line: UInt = #line
     ) {
         let exp = expectation(description: "Wait for save completion")
+        action()
         
         var receivedResult: LocalFeedLoader.SaveResult?
         sut.save(uniqueFeed().models) { result in
@@ -119,7 +87,6 @@ final class CacheFeedUseCaseTests: XCTestCase {
             exp.fulfill()
         }
         
-        action()
         wait(for: [exp], timeout: 1)
         
         switch (receivedResult, expectedResult) {
