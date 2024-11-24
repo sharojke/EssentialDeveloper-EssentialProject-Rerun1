@@ -11,7 +11,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
     func test_load_requestsCacheRetrieval() {
         let (sut, store) = makeSUT()
         
-        sut.load { _ in }
+        _ = try? sut.load()
         
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
@@ -72,7 +72,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         store.completeRetrieval(with: anyNSError())
         
-        sut.load { _ in }
+        _ = try? sut.load()
         
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
@@ -81,7 +81,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         store.completeRetrievalWithEmptyCache()
         
-        sut.load { _ in }
+        _ = try? sut.load()
         
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
@@ -94,7 +94,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
             .adding(seconds: 1, calendar: calendar)
         store.completeRetrieval(with: localFeed, date: lessThanSevenDaysOld)
         
-        sut.load { _ in }
+        _ = try? sut.load()
         
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
@@ -106,7 +106,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
             .minusFeedCacheMaxAge(calendar: calendar)
         store.completeRetrieval(with: localFeed, date: expiration)
         
-        sut.load { _ in }
+        _ = try? sut.load()
         
         XCTAssertTrue(store.receivedMessages == [.retrieve])
     }
@@ -119,7 +119,7 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
             .adding(seconds: -1, calendar: calendar)
         store.completeRetrieval(with: localFeed, date: expired)
         
-        sut.load { _ in }
+        _ = try? sut.load()
         
         XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
@@ -145,44 +145,40 @@ final class LoadFromCacheUseCaseTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Wait for load completion")
         action()
         
-        sut.load { receivedResult in
-            switch (receivedResult, expectedResult) {
-            case let (.success(receivedFeed), .success(expectedFeed)):
-                XCTAssertEqual(
-                    receivedFeed,
-                    expectedFeed,
-                    "Expected \(expectedFeed), got \(receivedFeed) instead",
-                    file: file,
-                    line: line
-                )
-                
-            case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
-                XCTAssertEqual(
-                    receivedError.domain,
-                    expectedError.domain,
-                    "Expected \(receivedError.domain), got \(receivedError.domain) instead",
-                    file: file,
-                    line: line
-                )
-                XCTAssertEqual(
-                    receivedError.code,
-                    receivedError.code,
-                    "Expected \(receivedError.code), got \(receivedError.code) instead",
-                    file: file,
-                    line: line
-                )
-                
-            default:
-                XCTFail(
-                    "Expected \(expectedResult), received \(receivedResult) instead", file: file, line: line
-                )
-            }
-            exp.fulfill()
-        }
+        let receivedResult = Result { try sut.load() }
         
-        wait(for: [exp], timeout: 1)
+        switch (receivedResult, expectedResult) {
+        case let (.success(receivedFeed), .success(expectedFeed)):
+            XCTAssertEqual(
+                receivedFeed,
+                expectedFeed,
+                "Expected \(expectedFeed), got \(receivedFeed) instead",
+                file: file,
+                line: line
+            )
+            
+        case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
+            XCTAssertEqual(
+                receivedError.domain,
+                expectedError.domain,
+                "Expected \(receivedError.domain), got \(receivedError.domain) instead",
+                file: file,
+                line: line
+            )
+            XCTAssertEqual(
+                receivedError.code,
+                receivedError.code,
+                "Expected \(receivedError.code), got \(receivedError.code) instead",
+                file: file,
+                line: line
+            )
+            
+        default:
+            XCTFail(
+                "Expected \(expectedResult), received \(receivedResult) instead", file: file, line: line
+            )
+        }
     }
 }
