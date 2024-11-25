@@ -2,13 +2,18 @@ import CoreData
 import Foundation
 
 public final class CoreDataFeedStore {
+    public enum ContextQueue {
+        case main
+        case background
+    }
+    
     public static let modelName = "FeedStore"
     public static let model = NSManagedObjectModel(name: modelName, in: Bundle(for: CoreDataFeedStore.self))
     
     private let container: NSPersistentContainer
     private let context: NSManagedObjectContext
     
-    public init(storeURL: URL) throws {
+    public init(storeURL: URL, contextQueue: ContextQueue = .background) throws {
         guard let model = Self.model else {
             throw ModelNotFound(modelName: Self.modelName)
         }
@@ -18,7 +23,7 @@ public final class CoreDataFeedStore {
             model: model,
             url: storeURL
         )
-        context = container.newBackgroundContext()
+        context = contextQueue == .main ? container.viewContext : container.newBackgroundContext()
     }
 
     func performAsync(_ action: @escaping (NSManagedObjectContext) -> Void) {
