@@ -11,7 +11,11 @@ public final class CoreDataFeedStore {
     public static let model = NSManagedObjectModel(name: modelName, in: Bundle(for: CoreDataFeedStore.self))
     
     private let container: NSPersistentContainer
-    private let context: NSManagedObjectContext
+    let context: NSManagedObjectContext
+    
+    public var contextQueue: ContextQueue {
+        return context == container.viewContext ? .main : .background
+    }
     
     public init(storeURL: URL, contextQueue: ContextQueue = .background) throws {
         guard let model = Self.model else {

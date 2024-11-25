@@ -13,11 +13,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         category: "main"
     )
     
-    private lazy var scheduler: AnyDispatchQueueScheduler = DispatchQueue(
-        label: "com.essentialdeveloper.infra.queue",
-        qos: .userInitiated,
-        attributes: .concurrent
-    ).eraseToAnyScheduler()
+    private lazy var scheduler: AnyDispatchQueueScheduler = {
+        if let store = store as? CoreDataFeedStore {
+            return .scheduler(for: store)
+        }
+        
+        return DispatchQueue(
+            label: "com.essentialdeveloper.infra.queue",
+            qos: .userInitiated
+        ).eraseToAnyScheduler()
+    }()
 
     private lazy var httpClient: HTTPClient = URLSessionHTTPClient(
         session: URLSession(configuration: .ephemeral)
@@ -52,13 +57,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     convenience init(
         httpClient: HTTPClient,
-        store: FeedStore & FeedImageDataStore,
-        scheduler: AnyDispatchQueueScheduler
+        store: FeedStore & FeedImageDataStore
     ) {
         self.init()
         self.httpClient = httpClient
         self.store = store
-        self.scheduler = scheduler
     }
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
