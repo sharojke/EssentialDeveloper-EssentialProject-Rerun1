@@ -29,23 +29,6 @@ public final class CoreDataFeedStore {
         )
         context = contextQueue == .main ? container.viewContext : container.newBackgroundContext()
     }
-
-    func performAsync(_ action: @escaping (NSManagedObjectContext) -> Void) {
-        context.perform { [context] in
-            action(context)
-        }
-    }
-    
-    func performSync<R>(_ action: (NSManagedObjectContext) -> Result<R, Error>) throws -> R {
-        // swiftlint:disable:next implicitly_unwrapped_optional
-        var result: Result<R, Error>!
-        
-        context.performAndWait { [context] in
-            result = action(context)
-        }
-        
-        return try result.get()
-    }
     
     public func perform(_ action: @escaping () -> Void) {
         context.perform(action)
